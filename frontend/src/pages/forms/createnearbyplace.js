@@ -39,18 +39,17 @@ const getBase64 = (file) =>
  });
 
 const CreateNearbyPlace = () => {
- const [nearbyPlace, setNearbyPlace] = useState(null);
  const { loading, error, success, createNearbyPlace } = useCreateNearbyPlace();
  const { uploadPhoto, uploading } = useUploadPhotos();
  const [form] = Form.useForm();
  const [Latitude, setLatitude] = useState(null);
  const [Longitude, setLongitude] = useState(null);
- const [placeName, setPlaceName] = useState('Rabat');
- const [placeURL, setPlaceURL] = useState();
- const [placeAddress, setPlaceAddress] = useState();
- const [placeRating, setPlaceRating] = useState();
- const [placePhoto, setPlacePhoto] = useState();
- const [placeTypes, setPlaceTypes] = useState();
+ const [placeName, setPlaceName] = useState('');
+ const [placeURL, setPlaceURL] = useState('');
+ const [placeAddress, setPlaceAddress] = useState('');
+ const [placeRating, setPlaceRating] = useState(0);
+ const [placePhoto, setPlacePhoto] = useState('');
+ const [placeTypes, setPlaceTypes] = useState([]);
  const [Photo, setPhoto] = useState({});
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
@@ -64,9 +63,7 @@ const CreateNearbyPlace = () => {
   'Magasin',
   'Parc',
  ]);
- const filteredOptions = OPTIONS
-  ? OPTIONS.filter((o) => !selectedItems.includes(o))
-  : [];
+ const filteredOptions = OPTIONS.filter((o) => !selectedItems.includes(o));
 
  const handlePlaceSelected = ({
   latitude,
@@ -78,6 +75,7 @@ const CreateNearbyPlace = () => {
   placePhoto,
   placeTypes,
  }) => {
+  console.log(placeName, placeAddress, placeURL);
   setLatitude(latitude);
   setLongitude(longitude);
   setPlaceName(placeName);
@@ -87,13 +85,14 @@ const CreateNearbyPlace = () => {
   setPlacePhoto(placePhoto);
   setPlaceTypes(placeTypes);
 
-  if (placeName && placeAddress && placeURL) {
+  setDisabled(placeName || placeAddress || placeURL);
+  setFileList([]);
+  /* if (placeName && placeAddress && placeURL) {
    setDisabled(true);
   } else {
    setFileList([]);
    setDisabled(false);
-  }
-  console.log(placeRating);
+  }  */
   if (placeRating) {
    setPlaceRating(placeRating);
   } else {
@@ -111,6 +110,7 @@ const CreateNearbyPlace = () => {
     types: null,
    });
   }
+
   // Update form fields with the new place values
   form.setFieldsValue({
    name: placeName,
@@ -159,18 +159,15 @@ const CreateNearbyPlace = () => {
    latitude: Latitude,
    longitude: Longitude,
   };
-  console.log(mergedValues);
-  setNearbyPlace(mergedValues);
   try {
-   await createNearbyPlace(nearbyPlace);
+   await createNearbyPlace(mergedValues);
+   if (success) {
+    message.success('Lieu à proximité créé avec succès');
+    form.resetFields();
+    setFileList([]);
+   }
   } catch (error) {
    console.error('Failed to create nearby place', error);
-  }
-  if (success) {
-   message.success('Lieu à proximité créé avec succès');
-   form.resetFields();
-   setNearbyPlace(null);
-  } else {
    message.error('Échec de la création du lieu à proximité');
   }
  };
@@ -178,6 +175,7 @@ const CreateNearbyPlace = () => {
  const handleOpenImage = () => {
   window.open(placePhoto, '_blank');
  };
+
  return (
   <Layout className="contentStyle">
    <Head />

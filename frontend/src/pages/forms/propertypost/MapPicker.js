@@ -1,17 +1,22 @@
 import React, { useState, useRef } from 'react';
 import MapConfig from '../../../mapconfig';
+import { Spin } from 'antd';
 import {
  APIProvider,
  Map,
  AdvancedMarker,
  Pin,
- InfoWindow,
 } from '@vis.gl/react-google-maps';
-import { LoadScript, Autocomplete } from '@react-google-maps/api';
+import { Autocomplete, useJsApiLoader } from '@react-google-maps/api';
 
 const libraries = ['places'];
 
-const MapPicker = ({ onPlaceSelected }) => {
+const MapPicker = React.memo(({ onPlaceSelected }) => {
+ const { isLoaded } = useJsApiLoader({
+  id: MapConfig.MAP_ID,
+  googleMapsApiKey: MapConfig.REACT_APP_GOOGLE_MAP_API_KEY,
+  libraries: libraries,
+ });
  const [position, setPosition] = useState({ lat: 34.0083637, lng: -6.8538748 });
  const [placeName, setPlaceName] = useState();
  const [placeURL, setPlaceURL] = useState();
@@ -19,11 +24,11 @@ const MapPicker = ({ onPlaceSelected }) => {
  const [placeRating, setPlaceRating] = useState();
  const [placePhoto, setPlacePhoto] = useState();
  const [placeTypes, setPlaceTypes] = useState();
- const [open, setOpen] = useState(false);
  const [markerKey, setMarkerKey] = useState(0);
  const autocompleteRef = useRef(null);
 
  const handlePlaceSelect = (place) => {
+  console.log('selected');
   if (place && place.geometry && place.geometry.location) {
    setPosition({
     lat: place.geometry.location.lat(),
@@ -36,6 +41,17 @@ const MapPicker = ({ onPlaceSelected }) => {
    setPlaceRating(place.rating);
    setPlacePhoto(place.photos[0]?.getUrl());
    setPlaceTypes(place.types);
+   const selectedPlace = {
+    latitude: place.geometry.location.lat() || null,
+    longitude: place.geometry.location.lng() || null,
+    placeName: place.name || null,
+    placeURL: place.url || null,
+    placeAddress: place.formatted_address || null,
+    placeRating: place.rating || null,
+    placePhoto: place.photos[0]?.getUrl() || null,
+    placeTypes: place.types || null,
+   };
+   onPlaceSelected(selectedPlace);
   }
  };
 
@@ -54,65 +70,59 @@ const MapPicker = ({ onPlaceSelected }) => {
   }
  };
 
+ if (!isLoaded) {
+  return (
+   <div className="loading">
+    <Spin size="large" />
+   </div>
+  );
+ }
  return (
-  <LoadScript
-   googleMapsApiKey={MapConfig.REACT_APP_GOOGLE_MAP_API_KEY}
-   libraries={libraries}
-   loading="lazy"
-  >
-   <APIProvider>
-    <div
-     style={{
-      display: 'inline-block',
-      width: '100%',
-      height: '400px',
+  <APIProvider>
+   <div
+    style={{
+     display: 'inline-block',
+     width: '100%',
+     height: '400px',
+    }}
+   >
+    <Autocomplete
+     onLoad={(autocomplete) => {
+      autocompleteRef.current = autocomplete;
+     }}
+     onPlaceChanged={() => {
+      if (autocompleteRef.current !== null) {
+       const place = autocompleteRef.current.getPlace();
+       handlePlaceSelect(place);
+      }
      }}
     >
-     <Autocomplete
-      onLoad={(autocomplete) => {
-       autocompleteRef.current = autocomplete;
-      }}
-      onPlaceChanged={() => {
-       if (autocompleteRef.current !== null) {
-        const place = autocompleteRef.current.getPlace();
-        handlePlaceSelect(place);
-       }
-      }}
+     <input
+      placeholder="Indiquer une place"
+      style={{ width: '100%', padding: '0.5rem' }}
+     />
+    </Autocomplete>
+    <Map
+     key={markerKey}
+     defaultZoom={14}
+     defaultCenter={position}
+     mapId={MapConfig.MAP_ID}
+    >
+     <AdvancedMarker
+      position={position}
+      onDragEnd={({ latLng }) => handleMarkerDragEnd({ latLng })}
+      draggable
      >
-      <input
-       placeholder="Indiquer une place"
-       style={{ width: '100%', padding: '0.5rem' }}
+      <Pin
+       background={'#aa7e42'}
+       borderColor={'#2b2c32'}
+       glyphColor={'#fbfbfb'}
       />
-     </Autocomplete>
-     <Map
-      key={markerKey}
-      defaultZoom={14}
-      defaultCenter={position}
-      mapId={MapConfig.MAP_ID}
-     >
-      <AdvancedMarker
-       position={position}
-       onClick={() => setOpen(true)}
-       onDragEnd={({ latLng }) => handleMarkerDragEnd({ latLng })}
-       draggable
-      >
-       <Pin
-        background={'#aa7e42'}
-        borderColor={'#2b2c32'}
-        glyphColor={'#fbfbfb'}
-       />
-      </AdvancedMarker>
-
-      {open && (
-       <InfoWindow position={position} onCloseClick={() => setOpen(false)}>
-        <p>I'm in Rabat</p>
-       </InfoWindow>
-      )}
-     </Map>
-    </div>
-   </APIProvider>
-  </LoadScript>
+     </AdvancedMarker>
+    </Map>
+   </div>
+  </APIProvider>
  );
-};
+});
 
 export default MapPicker;

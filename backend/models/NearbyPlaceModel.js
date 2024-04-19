@@ -9,10 +9,6 @@ module.exports = (db, type) => {
    type: type.STRING,
    allowNull: false,
   },
-  description: {
-   type: type.TEXT,
-   allowNull: false,
-  },
   address: {
    type: type.STRING,
    allowNull: false,
@@ -31,6 +27,14 @@ module.exports = (db, type) => {
   },
   url: {
    type: type.STRING,
+   allowNull: true,
+  },
+  rating: {
+   type: type.FLOAT,
+   allowNull: true,
+  },
+  rating: {
+   type: type.JSON,
    allowNull: true,
   },
  });
