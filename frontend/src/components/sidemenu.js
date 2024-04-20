@@ -30,12 +30,7 @@ const items = [
  getItem('Wifis', '5', <WifiOutlined />, '/wifis'),
  getItem('Informations', '6', <InfoCircleOutlined />, '/informations'),
  getItem('Recommendations', '7', <StarOutlined />, '/recommendations'),
- getItem(
-  'Ajouter un lieu à proximité',
-  '8',
-  <PlusSquareOutlined />,
-  'createnearbyplace'
- ),
+ getItem('Lieu à proximité', '8', <PlusSquareOutlined />, '/createnearbyplace'),
 ];
 
 const SideMenu = () => {

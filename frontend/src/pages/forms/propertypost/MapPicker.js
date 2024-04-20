@@ -18,17 +18,18 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
   libraries: libraries,
  });
  const [position, setPosition] = useState({ lat: 34.0083637, lng: -6.8538748 });
- const [placeName, setPlaceName] = useState();
- const [placeURL, setPlaceURL] = useState();
- const [placeAddress, setPlaceAddress] = useState();
- const [placeRating, setPlaceRating] = useState();
- const [placePhoto, setPlacePhoto] = useState();
- const [placeTypes, setPlaceTypes] = useState();
+
+ const [placeName, setPlaceName] = useState('');
+ const [placeURL, setPlaceURL] = useState('');
+ const [placeAddress, setPlaceAddress] = useState('');
+ const [placeRating, setPlaceRating] = useState(0);
+ const [placePhoto, setPlacePhoto] = useState('');
+ const [placeTypes, setPlaceTypes] = useState([]);
+
  const [markerKey, setMarkerKey] = useState(0);
  const autocompleteRef = useRef(null);
 
  const handlePlaceSelect = (place) => {
-  console.log('selected');
   if (place && place.geometry && place.geometry.location) {
    setPosition({
     lat: place.geometry.location.lat(),
@@ -57,6 +58,12 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
 
  const handleMarkerDragEnd = ({ latLng }) => {
   if (typeof onPlaceSelected === 'function') {
+   setPlaceName('');
+   setPlaceURL('');
+   setPlaceAddress('');
+   setPlaceRating(0);
+   setPlacePhoto('');
+   setPlaceTypes([]);
    onPlaceSelected({
     latitude: latLng.lat() || null,
     longitude: latLng.lng() || null,

@@ -6,6 +6,7 @@ const useCreateNearbyPlace = () => {
  const [success, setSuccess] = useState(false);
 
  const createNearbyPlace = async (nearbyPlaceData) => {
+  console.log(nearbyPlaceData);
   setLoading(true);
   try {
    const response = await fetch('/api/v1/nearbyplaces', {
@@ -20,6 +21,7 @@ const useCreateNearbyPlace = () => {
     throw new Error(data.message || 'Failed to create nearby place');
    }
    setSuccess(true);
+   console.log(success);
   } catch (error) {
    setError(error.message);
    console.log('Error:', error);

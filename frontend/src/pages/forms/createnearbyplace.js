@@ -75,7 +75,7 @@ const CreateNearbyPlace = () => {
   placePhoto,
   placeTypes,
  }) => {
-  console.log(placeName, placeAddress, placeURL);
+  form.resetFields();
   setLatitude(latitude);
   setLongitude(longitude);
   setPlaceName(placeName);
@@ -87,12 +87,6 @@ const CreateNearbyPlace = () => {
 
   setDisabled(placeName || placeAddress || placeURL);
   setFileList([]);
-  /* if (placeName && placeAddress && placeURL) {
-   setDisabled(true);
-  } else {
-   setFileList([]);
-   setDisabled(false);
-  }  */
   if (placeRating) {
    setPlaceRating(placeRating);
   } else {
@@ -159,6 +153,7 @@ const CreateNearbyPlace = () => {
    latitude: Latitude,
    longitude: Longitude,
   };
+  console.log(mergedValues);
   try {
    await createNearbyPlace(mergedValues);
    if (success) {
@@ -296,13 +291,15 @@ const CreateNearbyPlace = () => {
             C'est la photo de couverture définie par Google{' '}
            </Title>
            <Row gutter={[24, 0]}>
-            <Col xs={24} md={10}>
-             <Image
-              width={'100%'}
-              style={{ marginBottom: 12 }}
-              src={placePhoto}
-             />
-             <br />
+            <Col
+             xs={24}
+             md={10}
+             style={{
+              marginBottom: 12,
+              textAlign: 'center',
+             }}
+            >
+             <Image style={{ maxHeight: 360 }} src={placePhoto} />
             </Col>
             <Col xs={24} md={14}>
              <Flex gap="middle" vertical>

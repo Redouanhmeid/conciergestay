@@ -6,10 +6,15 @@ const {
  getNearbyPlaces,
  getNearbyPlaceById,
  deleteNearbyPlace,
+ getNearbyPlacesByPlaceLatLon,
 } = require('../controllers/NearbyPlaceController');
 
 // Route to get all properties
 router.get('/', getNearbyPlaces);
+
+// Route for get a NearbyPlace by Latitude & Longitude
+router.get('/nearby-places', getNearbyPlacesByPlaceLatLon);
+
 // Route to get a NearbyPlace by Id
 router.get('/:id', getNearbyPlaceById);
 // Route for creating a new NearbyPlace

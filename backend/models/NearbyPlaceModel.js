@@ -6,12 +6,14 @@ module.exports = (db, type) => {
    autoIncrement: true,
   },
   name: {
-   type: type.STRING,
+   type: type.STRING(50),
    allowNull: false,
   },
   address: {
    type: type.STRING,
    allowNull: false,
+   charset: 'utf8mb4',
+   collate: 'utf8mb4_unicode_ci',
   },
   latitude: {
    type: type.FLOAT,
@@ -22,11 +24,11 @@ module.exports = (db, type) => {
    allowNull: false,
   },
   photo: {
-   type: type.STRING,
+   type: type.STRING(90),
    allowNull: true,
   },
   url: {
-   type: type.STRING,
+   type: type.STRING(90),
    allowNull: true,
   },
   rating: {
