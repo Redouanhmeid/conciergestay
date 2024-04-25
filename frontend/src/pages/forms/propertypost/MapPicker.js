@@ -8,15 +8,13 @@ import {
  Pin,
 } from '@vis.gl/react-google-maps';
 import { Autocomplete, useJsApiLoader } from '@react-google-maps/api';
+import { useGoogleMapsLoader } from '../../../services/GoogleMapService';
 
 const libraries = ['places'];
 
 const MapPicker = React.memo(({ onPlaceSelected }) => {
- const { isLoaded } = useJsApiLoader({
-  id: MapConfig.MAP_ID,
-  googleMapsApiKey: MapConfig.REACT_APP_GOOGLE_MAP_API_KEY,
-  libraries: libraries,
- });
+ const isLoaded = useGoogleMapsLoader();
+
  const [position, setPosition] = useState({ lat: 34.0083637, lng: -6.8538748 });
 
  const [placeName, setPlaceName] = useState('');

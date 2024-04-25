@@ -5,6 +5,14 @@ const { Property } = require('../models');
 // Create a new nearby place
 const createNearbyPlace = async (req, res) => {
  try {
+  const { name, address } = req.body;
+
+  // Check if a place with the same name and address already exists
+  const existingPlace = await NearbyPlace.findOne({ name, address });
+  if (existingPlace) {
+   return res.status(400).json({ error: 'Place already exists' });
+  }
+
   const nearbyPlaceData = req.body;
   const nearbyPlace = await NearbyPlace.createNearbyPlace(nearbyPlaceData);
   res.status(201).json(nearbyPlace);
@@ -103,20 +111,21 @@ const getNearbyPlacesbyLatLon = async (propertyLat, propertyLon) => {
   return [];
  }
 
- // Filter places within 10km radius
- const nearbyPlaces = places.filter((place) => {
+ // Calculate distance for each place and add it to the place object
+ const placesWithDistance = places.map((place) => {
   const placeCoords = { latitude: place.latitude, longitude: place.longitude };
   const propertyCoords = { latitude: lat, longitude: lon };
-
-  // Calculate distance using Haversine formula
   const distance = haversine(placeCoords, propertyCoords);
-
-  console.log(
-   JSON.stringify(`Distance from property to place ${place.id}: ${distance}`)
-  ); // Log the distance
-
-  return distance <= RADIUS;
+  return { ...place.toJSON(), distance };
  });
+
+ // Sort places by distance
+ const sortedPlaces = placesWithDistance.sort(
+  (a, b) => a.distance - b.distance
+ );
+
+ // Filter places within 10km radius
+ const nearbyPlaces = sortedPlaces.filter((place) => place.distance <= RADIUS);
 
  return nearbyPlaces;
 };

@@ -2,16 +2,11 @@ import React, { useEffect } from 'react';
 import SideMenu from '../components/sidemenu';
 import Head from '../components/common/header';
 import Foot from '../components/common/footer';
-import { Layout, Spin, Card, Button, Col, Row, Carousel } from 'antd';
-import {
- PlusOutlined,
- EditOutlined,
- EllipsisOutlined,
- EyeOutlined,
-} from '@ant-design/icons';
+import { Layout, Spin, Card, Col, Row, Carousel } from 'antd';
+import { EditOutlined, EllipsisOutlined, EyeOutlined } from '@ant-design/icons';
 import '../App.css';
 import AddPropertyCard from './components/AddPropertyCard';
-import { useAuthContext } from '../hooks/useAuthContext ';
+import { useAuthContext } from '../hooks/useAuthContext';
 import { useUserData } from '../hooks/useUserData';
 import useGetProperties from '../hooks/useGetProperties';
 import ClientConfig from '../ClientConfig';

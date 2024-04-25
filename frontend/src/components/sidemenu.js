@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
  DashboardOutlined,
  BookOutlined,
@@ -10,31 +10,48 @@ import {
  PlusSquareOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const { Sider } = Layout;
 
-function getItem(label, key, icon, route) {
- return {
-  label,
-  key,
-  icon,
-  route,
- };
-}
 const items = [
- getItem('Tableau de bord', '1', <DashboardOutlined />, '/pmhome'),
- getItem('Guides', '2', <BookOutlined />, '/guides'),
- getItem('Présentations', '3', <IdcardOutlined />, '/presentations'),
- getItem('Directions', '4', <AimOutlined />, '/directions'),
- getItem('Wifis', '5', <WifiOutlined />, '/wifis'),
- getItem('Informations', '6', <InfoCircleOutlined />, '/informations'),
- getItem('Recommendations', '7', <StarOutlined />, '/recommendations'),
- getItem('Lieu à proximité', '8', <PlusSquareOutlined />, '/createnearbyplace'),
+ {
+  label: 'Tableau de bord',
+  icon: <DashboardOutlined />,
+  key: '1',
+  route: '/pmhome',
+ },
+ {
+  label: 'Guides',
+  icon: <BookOutlined />,
+  key: '2',
+  route: '/guides',
+ },
+ {
+  label: 'Présentations',
+  icon: <IdcardOutlined />,
+  key: '3',
+  route: '/presentations',
+ },
+ {
+  label: 'Lieu à proximité',
+  icon: <PlusSquareOutlined />,
+  key: '4',
+  route: '/createnearbyplace',
+ },
 ];
 
 const SideMenu = () => {
+ const location = useLocation();
  const [collapsed, setCollapsed] = useState(false);
+ const [selectedKey, setSelectedKey] = useState('1'); // Default selected key
+ useEffect(() => {
+  // Find the matching item based on the current route
+  const selectedItem = items.find((item) => item.route === location.pathname);
+  if (selectedItem) {
+   setSelectedKey(selectedItem.key);
+  }
+ }, [location.pathname]);
  return (
   <Sider
    collapsible
@@ -43,7 +60,7 @@ const SideMenu = () => {
    breakpoint="sm"
    collapsedWidth="65"
   >
-   <Menu defaultSelectedKeys={['1']} mode="inline">
+   <Menu selectedKeys={[selectedKey]} mode="inline">
     {items.map((item) => (
      <Menu.Item key={item.key} icon={item.icon}>
       <Link to={item.route}>{item.label}</Link>

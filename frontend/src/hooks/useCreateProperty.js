@@ -5,7 +5,7 @@ const useCreateProperty = () => {
  const [error, setError] = useState(null);
  const [success, setSuccess] = useState(false);
 
- const createProperty = async (propertyData) => {
+ const createProperty = async (nearbyPlaceData) => {
   setLoading(true);
   try {
    const response = await fetch('/api/v1/properties', {
@@ -13,7 +13,7 @@ const useCreateProperty = () => {
     headers: {
      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(propertyData),
+    body: JSON.stringify(nearbyPlaceData),
    });
    const data = await response.json();
    if (!response.ok) {

@@ -1,4 +1,4 @@
-import { useAuthContext } from './hooks/useAuthContext ';
+import { useAuthContext } from './hooks/useAuthContext';
 import Login from './pages/forms/login';
 import { Spin } from 'antd';
 import PropertyManagerHome from './pages/propertymanagerhome';

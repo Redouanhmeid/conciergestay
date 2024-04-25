@@ -35,7 +35,7 @@ module.exports = (db, type) => {
    type: type.FLOAT,
    allowNull: true,
   },
-  rating: {
+  types: {
    type: type.JSON,
    allowNull: true,
   },

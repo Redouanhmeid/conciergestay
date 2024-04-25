@@ -6,7 +6,6 @@ const useCreateNearbyPlace = () => {
  const [success, setSuccess] = useState(false);
 
  const createNearbyPlace = async (nearbyPlaceData) => {
-  console.log(nearbyPlaceData);
   setLoading(true);
   try {
    const response = await fetch('/api/v1/nearbyplaces', {
@@ -18,13 +17,22 @@ const useCreateNearbyPlace = () => {
    });
    const data = await response.json();
    if (!response.ok) {
-    throw new Error(data.message || 'Failed to create nearby place');
+    if (response.status === 400) {
+     throw new Error('Le lieu existe déjà');
+    } else {
+     throw new Error(
+      data.message || 'Échec de la création du lieu à proximité'
+     );
+    }
    }
+   setLoading(false);
    setSuccess(true);
-   console.log(success);
+   return true; // Indicate success
   } catch (error) {
+   console.error(error);
+   setLoading(false);
    setError(error.message);
-   console.log('Error:', error);
+   throw error; // Indicate failure
   }
   setLoading(false);
  };

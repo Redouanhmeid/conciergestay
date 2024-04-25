@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import './App.css';
 import { AuthContextProvider } from './context/AuthContext';
 import frFR from 'antd/locale/fr_FR';
 import App from './App';

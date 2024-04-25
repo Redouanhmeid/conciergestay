@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
+ Alert,
  Row,
  Col,
  Layout,
@@ -64,6 +65,8 @@ const CreateNearbyPlace = () => {
   'Parc',
  ]);
  const filteredOptions = OPTIONS.filter((o) => !selectedItems.includes(o));
+ const [submitted, setSubmitted] = useState(false);
+ const [placeExists, setPlaceExists] = useState(false); // State to track if place already exists
 
  const handlePlaceSelected = ({
   latitude,
@@ -153,19 +156,30 @@ const CreateNearbyPlace = () => {
    latitude: Latitude,
    longitude: Longitude,
   };
-  console.log(mergedValues);
   try {
-   await createNearbyPlace(mergedValues);
-   if (success) {
+   const isSuccess = await createNearbyPlace(mergedValues);
+   if (isSuccess) {
     message.success('Lieu à proximité créé avec succès');
-    form.resetFields();
     setFileList([]);
    }
   } catch (error) {
-   console.error('Failed to create nearby place', error);
-   message.error('Échec de la création du lieu à proximité');
+   console.log(error.message);
+   if (error.message === 'Le lieu existe déjà') {
+    setPlaceExists(true);
+   } else {
+    message.error('Échec de la création du lieu à proximité');
+   }
   }
  };
+
+ useEffect(() => {
+  if (success && submitted) {
+   message.success('Lieu à proximité créé avec succès');
+   form.resetFields();
+   setFileList([]);
+   setSubmitted(false); // Reset the submitted state
+  }
+ }, [success, submitted]);
 
  const handleOpenImage = () => {
   window.open(placePhoto, '_blank');
@@ -317,7 +331,22 @@ const CreateNearbyPlace = () => {
           </Col>
          )}
         </Row>
+        <br />
+        {placeExists && (
+         <Row justify="center">
+          <Col xs={24} md={6}>
+           <Alert
+            message="Le lieu existe déjà"
+            type="warning"
+            showIcon
+            closable
+            onClose={() => setPlaceExists(false)}
+           />
+          </Col>
+         </Row>
+        )}
 
+        <br />
         <Row justify="center">
          <Col xs={24} md={6}>
           <Form.Item>
