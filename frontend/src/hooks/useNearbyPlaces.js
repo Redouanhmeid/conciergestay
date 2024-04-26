@@ -4,7 +4,6 @@ const useNearbyPlaces = (latitude, longitude) => {
  const [loading, setLoading] = useState(true);
  const [error, setError] = useState(null);
  const [data, setData] = useState(null);
- console.log(latitude, longitude);
 
  useEffect(() => {
   const fetchData = async () => {

@@ -8,7 +8,9 @@ const createNearbyPlace = async (req, res) => {
   const { name, address } = req.body;
 
   // Check if a place with the same name and address already exists
-  const existingPlace = await NearbyPlace.findOne({ name, address });
+  const existingPlace = await NearbyPlace.findOne({
+   where: { name: name, address: address },
+  });
   if (existingPlace) {
    return res.status(400).json({ error: 'Place already exists' });
   }

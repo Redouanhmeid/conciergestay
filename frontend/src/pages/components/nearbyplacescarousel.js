@@ -14,11 +14,13 @@ import {
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import useNearbyPlaces from '../../hooks/useNearbyPlaces';
 
-const { Text } = Typography;
+const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
 
 const NearbyPlacesCarousel = ({ latitude, longitude }) => {
- const slider = useRef(null);
+ const slider1 = useRef(null);
+ const slider2 = useRef(null);
+ const slider3 = useRef(null);
  const { loading, error, data } = useNearbyPlaces(latitude, longitude);
  const screens = useBreakpoint();
 
@@ -31,97 +33,146 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
  }
  if (error) return <div>Error: {error.message}</div>;
 
- const getSlidesToShow = () => {
-  console.log(screens);
+ const PlacesToEat = data.filter(
+  (place) => place.types.includes('restaurant') || place.types.includes('food')
+ );
+ const Activities = data.filter((place) =>
+  place.types.includes('natural_feature')
+ );
+ const pointsOfInterest = data.filter((place) =>
+  place.types.includes('point_of_interest')
+ );
+
+ const getSlidesToShow = (data) => {
+  if (!data || !Array.isArray(data)) {
+   return 0; // Return 0 if data is undefined or not an array
+  }
+  const totalSlides = data.length;
   if (screens.xs) {
-   return 1;
+   return Math.min(1, totalSlides);
   } else {
-   return 4;
+   return Math.min(4, totalSlides);
   }
  };
 
  return (
-  <div style={{ position: 'relative' }}>
-   <div
-    style={{
-     position: 'absolute',
-     fontSize: 20,
-     top: '40%',
-     left: 0,
-     zIndex: 1,
-     color: '#2b2c32',
-    }}
-   >
-    <LeftOutlined onClick={() => slider.current.prev()} />
+  <>
+   <div style={{ position: 'relative' }}>
+    <div className="nearbyplacescarouselarrow left">
+     <LeftOutlined onClick={() => slider1.current.prev()} />
+    </div>
+
+    <Carousel
+     ref={slider1}
+     slidesToShow={4}
+     dots={false}
+     autoplay
+     style={{ padding: '0 28px' }}
+    >
+     {data.map((place, index) => (
+      <div key={index} style={{ margin: '0 12px' }}>
+       <Place place={place} />
+      </div>
+     ))}
+    </Carousel>
+
+    <div className="nearbyplacescarouselarrow right">
+     <RightOutlined onClick={() => slider1.current.next()} />
+    </div>
    </div>
 
-   <Carousel
-    ref={slider}
-    slidesToShow={getSlidesToShow()}
-    dots={false}
-    autoplay
-    style={{ padding: '0 28px' }}
-   >
-    {data.map((place, index) => (
-     <div key={index} style={{ margin: '0 12px' }}>
-      <Card
-       cover={
-        <div className="nearbyplacescarousel">
-         <Image
-          alt={place.name}
-          src={place.photo}
-          style={{
-           objectFit: 'cover',
-           width: '100%',
-           height: '100%',
-          }}
-         />
-        </div>
-       }
-       style={{ width: 'calc(100% - 16px)' }}
-      >
-       <Card.Meta
-        title={place.name}
-        description={
-         <Space wrap>
-          <Text size={14}>Avis</Text>{' '}
-          <Rate
-           allowHalf
-           disabled
-           defaultValue={place.rating}
-           style={{ color: '#cfaf83', fontSize: 14 }}
-          />{' '}
-          {place.rating}{' '}
-          <Button
-           href={place.url}
-           target="_blank"
-           type="default"
-           shape="round"
-           size={36}
-           icon={<i className="fa-lg fa-light fa-map-location-dot"></i>}
-          />
-         </Space>
-        }
-       />
-      </Card>
-     </div>
-    ))}
-   </Carousel>
-
-   <div
-    style={{
-     position: 'absolute',
-     fontSize: 20,
-     top: '40%',
-     right: 0,
-     zIndex: 1,
-     color: '#2b2c32',
-    }}
-   >
-    <RightOutlined onClick={() => slider.current.next()} />
+   <Title level={2}>Endroits où manger</Title>
+   <div style={{ position: 'relative' }}>
+    <div className="nearbyplacescarouselarrow left">
+     <LeftOutlined onClick={() => slider2.current.prev()} />
+    </div>
+    <Carousel
+     ref={slider2}
+     slidesToShow={getSlidesToShow(PlacesToEat)}
+     dots={false}
+     autoplay
+     style={{ padding: '0 28px' }}
+    >
+     {PlacesToEat.map((place, index) => (
+      <div key={index} style={{ margin: '0 12px' }}>
+       <Place place={place} />
+      </div>
+     ))}
+    </Carousel>
+    <div className="nearbyplacescarouselarrow right">
+     <RightOutlined onClick={() => slider2.current.next()} />
+    </div>
    </div>
-  </div>
+   <br />
+   <Title level={2}>Activités</Title>
+   <div style={{ position: 'relative' }}>
+    <div className="nearbyplacescarouselarrow left">
+     <LeftOutlined onClick={() => slider3.current.prev()} />
+    </div>
+    <Carousel
+     ref={slider3}
+     slidesToShow={getSlidesToShow(Activities)}
+     dots={false}
+     autoplay
+     style={{ padding: '0 28px' }}
+    >
+     {Activities.map((place, index) => (
+      <div key={index} style={{ margin: '0 12px' }}>
+       <Place place={place} />
+      </div>
+     ))}
+    </Carousel>
+    <div className="nearbyplacescarouselarrow right">
+     <RightOutlined onClick={() => slider3.current.next()} />
+    </div>
+   </div>
+  </>
  );
 };
 
 export default NearbyPlacesCarousel;
+
+const Place = ({ place }) => {
+ return (
+  <Card
+   cover={
+    <div className="nearbyplacescarousel">
+     <Image
+      alt={place.name}
+      src={place.photo}
+      style={{
+       objectFit: 'cover',
+       width: '100%',
+       height: '100%',
+      }}
+     />
+    </div>
+   }
+   style={{ width: 'calc(100% - 16px)' }}
+  >
+   <Card.Meta
+    title={place.name}
+    description={
+     <Space wrap>
+      <Text size={14}>Note</Text>{' '}
+      <Rate
+       allowHalf
+       disabled
+       defaultValue={place.rating}
+       style={{ color: '#cfaf83', fontSize: 14 }}
+      />{' '}
+      {place.rating}{' '}
+      <Button
+       href={place.url}
+       target="_blank"
+       type="default"
+       shape="round"
+       size={36}
+       icon={<i className="fa-lg fa-light fa-map-location-dot"></i>}
+      />
+     </Space>
+    }
+   />
+  </Card>
+ );
+};

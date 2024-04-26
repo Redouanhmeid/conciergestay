@@ -29,7 +29,6 @@ const useCreateNearbyPlace = () => {
    setSuccess(true);
    return true; // Indicate success
   } catch (error) {
-   console.error(error);
    setLoading(false);
    setError(error.message);
    throw error; // Indicate failure

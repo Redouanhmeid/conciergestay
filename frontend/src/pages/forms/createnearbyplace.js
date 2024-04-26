@@ -163,7 +163,6 @@ const CreateNearbyPlace = () => {
     setFileList([]);
    }
   } catch (error) {
-   console.log(error.message);
    if (error.message === 'Le lieu existe déjà') {
     setPlaceExists(true);
    } else {
@@ -242,12 +241,12 @@ const CreateNearbyPlace = () => {
              value={placeRating}
              style={{ color: '#aa7e42' }}
             />
+
+            {placeRating > 0 && (
+             <span style={{ fontSize: 16 }}> {placeRating}</span>
+            )}
            </Flex>
           </Form.Item>
-
-          {placeRating > 0 && (
-           <span style={{ fontSize: 16 }}>{placeRating}</span>
-          )}
          </Col>
          <Col xs={24} md={16}>
           <Form.Item name="types" label="Types">
@@ -268,34 +267,36 @@ const CreateNearbyPlace = () => {
          </Col>
          <Col xs={24} md={4}>
           <Form.Item name="photo" label="Photo">
-           <Upload
-            action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-            listType="picture-card"
-            fileList={fileList}
-            onPreview={handlePreview}
-            onChange={handleChange}
-           >
-            {fileList.length >= 1 ? null : uploadButton}
-           </Upload>
+           <div>
+            <Upload
+             action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+             listType="picture-card"
+             fileList={fileList}
+             onPreview={handlePreview}
+             onChange={handleChange}
+            >
+             {fileList.length >= 1 ? null : uploadButton}
+            </Upload>
 
-           {previewImage && (
-            <Image
-             style={{
-              width: '100%', // Ensure the image fills the circular area
-              height: '100%', // Ensure the image fills the circular area
-              objectFit: 'cover', // Crop the image to fit within the circular area
-             }}
-             wrapperStyle={{
-              display: 'none',
-             }}
-             preview={{
-              visible: previewOpen,
-              onVisibleChange: (visible) => setPreviewOpen(visible),
-              afterOpenChange: (visible) => !visible && setPreviewImage(''),
-             }}
-             src={previewImage}
-            />
-           )}
+            {previewImage && (
+             <Image
+              style={{
+               width: '100%', // Ensure the image fills the circular area
+               height: '100%', // Ensure the image fills the circular area
+               objectFit: 'cover', // Crop the image to fit within the circular area
+              }}
+              wrapperStyle={{
+               display: 'none',
+              }}
+              preview={{
+               visible: previewOpen,
+               onVisibleChange: (visible) => setPreviewOpen(visible),
+               afterOpenChange: (visible) => !visible && setPreviewImage(''),
+              }}
+              src={previewImage}
+             />
+            )}
+           </div>
           </Form.Item>
          </Col>
 

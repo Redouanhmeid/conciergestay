@@ -62,6 +62,19 @@
 .logoStyle {
   height: 46px !important;
 }
+.nearbyplacescarouselarrow{
+  position: absolute;
+  font-size: 20px;
+  top: 40%;
+  z-index: 1;
+  color: '#2b2c32';
+}
+.left{
+  left: 0;
+}
+.right{
+  right: 0;
+}
 .nearbyplacescarousel{
   height: 180px;
   overflow: hidden;
