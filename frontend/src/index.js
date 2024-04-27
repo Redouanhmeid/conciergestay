@@ -32,56 +32,54 @@ const router = createBrowserRouter([
 ]);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
- <React.StrictMode>
-  <ConfigProvider
-   locale={frFR}
-   theme={{
-    token: {
-     fontFamily: '"Jost", sans-serif',
-     borderRadius: 0,
-     colorPrimary: '#aa7e42',
-     colorInfo: '#aa7e42',
-     colorTextBase: '#2b2c32',
+ <ConfigProvider
+  locale={frFR}
+  theme={{
+   token: {
+    fontFamily: '"Jost", sans-serif',
+    borderRadius: 0,
+    colorPrimary: '#aa7e42',
+    colorInfo: '#aa7e42',
+    colorTextBase: '#2b2c32',
+   },
+   components: {
+    Layout: {
+     headerBg: 'rgb(241, 241, 241)',
+     bodyBg: 'rgb(255, 255, 255)',
+     footerBg: 'rgb(251, 251, 251)',
+     lightSiderBg: 'rgb(251, 251, 251)',
+     headerColor: 'rgb(43, 44, 50)',
+     siderBg: 'rgb(251, 251, 251)',
+     triggerBg: 'rgb(241, 241, 241)',
+     triggerColor: 'rgb(43, 44, 50)',
     },
-    components: {
-     Layout: {
-      headerBg: 'rgb(241, 241, 241)',
-      bodyBg: 'rgb(255, 255, 255)',
-      footerBg: 'rgb(251, 251, 251)',
-      lightSiderBg: 'rgb(251, 251, 251)',
-      headerColor: 'rgb(43, 44, 50)',
-      siderBg: 'rgb(251, 251, 251)',
-      triggerBg: 'rgb(241, 241, 241)',
-      triggerColor: 'rgb(43, 44, 50)',
-     },
-     Menu: {
-      itemActiveBg: 'rgb(250, 246, 241)',
-      itemBg: 'rgb(251, 251, 251, 0)',
-      itemHoverBg: 'rgb(250, 246, 241)',
-      itemColor: 'rgb(43, 44, 50)',
-      itemHoverColor: 'rgb(43, 44, 50)',
-      collapsedIconSize: 18,
-      iconSize: 18,
-      fontSize: 16,
-      itemHeight: 45,
-      itemSelectedColor: 'rgb(43, 44, 50)',
-      itemSelectedBg: 'rgb(235, 222, 205)',
-      iconMarginInlineEnd: 14,
-      colorSplit: 'rgba(116, 62, 62, 0)',
-     },
-     Form: {
-      labelColor: 'rgb(43, 44, 50)',
-      verticalLabelPadding: '0',
-      labelHeight: 20,
-     },
+    Menu: {
+     itemActiveBg: 'rgb(250, 246, 241)',
+     itemBg: 'rgb(251, 251, 251, 0)',
+     itemHoverBg: 'rgb(250, 246, 241)',
+     itemColor: 'rgb(43, 44, 50)',
+     itemHoverColor: 'rgb(43, 44, 50)',
+     collapsedIconSize: 18,
+     iconSize: 18,
+     fontSize: 16,
+     itemHeight: 45,
+     itemSelectedColor: 'rgb(43, 44, 50)',
+     itemSelectedBg: 'rgb(235, 222, 205)',
+     iconMarginInlineEnd: 14,
+     colorSplit: 'rgba(116, 62, 62, 0)',
     },
-   }}
-  >
-   <AuthContextProvider>
-    <RouterProvider router={router} />
-   </AuthContextProvider>
-  </ConfigProvider>
- </React.StrictMode>
+    Form: {
+     labelColor: 'rgb(43, 44, 50)',
+     verticalLabelPadding: '0',
+     labelHeight: 20,
+    },
+   },
+  }}
+ >
+  <AuthContextProvider>
+   <RouterProvider router={router} />
+  </AuthContextProvider>
+ </ConfigProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

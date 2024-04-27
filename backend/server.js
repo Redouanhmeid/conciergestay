@@ -22,6 +22,9 @@ app.use(bodyParser.json());
 const corsOptions = {
  origin: 'http://localhost:3000', // Replace with your frontend server's URL
 };
+/* const corsOptions = {
+ origin: 'http://csapp.nextbedesign.com/', // Replace with your frontend server's URL
+}; */
 app.use(cors(corsOptions));
 
 // Home Page
