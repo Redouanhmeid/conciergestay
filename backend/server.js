@@ -1,18 +1,38 @@
 // require important modules
 require('dotenv').config();
 const express = require('express');
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
+
+// create our App
+const app = express();
+const port = process.env.PORT || 4000;
+
+// Use helmet middleware to set the Content Security Policy (CSP) header
+app.use(
+ helmet.contentSecurityPolicy({
+  directives: {
+   defaultSrc: ["'self'"],
+   scriptSrc: ["'self'", "'unsafe-inline'"],
+   imgSrc: ["'self'"],
+  },
+ })
+);
+
+// Other middleware and route handlers
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(cors());
+
 // require routes
 const PropertyManagerRouter = require('./routes/propertymanager');
 const GuestRouter = require('./routes/guest');
 const PropertyRouter = require('./routes/property');
 const NearbyPlaceRouter = require('./routes/nearbyplace');
-// create our App
-const app = express();
-const port = process.env.PORT || 4000;
+
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -20,11 +40,9 @@ app.use(bodyParser.json());
 
 // Enable CORS for only frontend
 const corsOptions = {
- origin: 'http://localhost:3000', // Replace with your frontend server's URL
+ // origin: 'http://localhost:3000', // Replace with your frontend server's URL
+ origin: 'https://csapp.nextbedesign.com', // Replace with your frontend server's URL
 };
-/* const corsOptions = {
- origin: 'http://csapp.nextbedesign.com/', // Replace with your frontend server's URL
-}; */
 app.use(cors(corsOptions));
 
 // Home Page

@@ -6,16 +6,12 @@ const format = 'HH:mm';
 const CheckInForm = ({ form }) => {
  // Get the hour and minute values from the TimePicker field
  const checkInTime = form.getFieldValue('checkInTime');
- const hour = checkInTime ? checkInTime.hour() : null;
- const minute = checkInTime ? checkInTime.minute() : null;
+ const hour = checkInTime ? checkInTime.hour() : '12';
+ const minute = checkInTime ? checkInTime.minute() : '00';
  const onChangeCheckIn = (checkInTime) => {
-  // Log the hour and minute values
-  console.log('Hour:', hour);
-  console.log('Minute:', minute);
   // Check if timeString is a valid time format
   // Set the value of checkInTime field
   form.setFieldsValue({ [checkInTime]: `${hour}:${minute}` });
-  console.log(checkInTime);
  };
  return (
   <Row gutter={[24, 0]}>
@@ -125,16 +121,12 @@ const CheckInForm = ({ form }) => {
 const CheckOutForm = ({ form }) => {
  // Get the hour and minute values from the TimePicker field
  const checkOutTime = form.getFieldValue('checkOutTime');
- const hour = checkOutTime ? checkOutTime.hour() : null;
- const minute = checkOutTime ? checkOutTime.minute() : null;
+ const hour = checkOutTime ? checkOutTime.hour() : '12';
+ const minute = checkOutTime ? checkOutTime.minute() : '00';
  const onChangeCheckOut = (checkOutTime) => {
-  // Log the hour and minute values
-  console.log('Hour:', hour);
-  console.log('Minute:', minute);
   // Check if timeString is a valid time format
   // Set the value of checkInTime field
   form.setFieldsValue({ [checkOutTime]: `${hour}:${minute}` });
-  console.log(checkOutTime);
  };
  return (
   <Row gutter={[24, 0]}>

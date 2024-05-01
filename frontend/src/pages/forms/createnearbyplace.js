@@ -27,6 +27,7 @@ import MapPicker from './propertypost/MapPicker';
 import { Link } from 'react-router-dom';
 import useCreateNearbyPlace from '../../hooks/useCreateNearbyPlace';
 import useUploadPhotos from '../../hooks/useUploadPhotos';
+import ImgCrop from 'antd-img-crop';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -268,16 +269,17 @@ const CreateNearbyPlace = () => {
          <Col xs={24} md={4}>
           <Form.Item name="photo" label="Photo">
            <div>
-            <Upload
-             action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-             listType="picture-card"
-             fileList={fileList}
-             onPreview={handlePreview}
-             onChange={handleChange}
-            >
-             {fileList.length >= 1 ? null : uploadButton}
-            </Upload>
-
+            <ImgCrop rotationSlider>
+             <Upload
+              action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+              listType="picture-card"
+              fileList={fileList}
+              onPreview={handlePreview}
+              onChange={handleChange}
+             >
+              {fileList.length >= 1 ? null : uploadButton}
+             </Upload>
+            </ImgCrop>
             {previewImage && (
              <Image
               style={{

@@ -52,6 +52,10 @@
   /* margin: 0 auto; */
   padding: 1em 2em;
 }
+.container {
+  /* margin: 0 auto; */
+  padding: 4em 12em;
+}
 
 .headerStyle {
   position: sticky;
@@ -92,6 +96,10 @@
     display: flex !important;
     justify-content: center;
     align-items: center;
+  }
+  .container {
+    /* margin: 0 auto; */
+    padding: 2em 2em;
   }
 }
 

@@ -27,6 +27,9 @@ const PropertyManagerHome = () => {
    getUserData(User.email);
   }
  }, [isLoading]);
+ console.log(properties);
+ console.log(typeof properties.photos);
+ console.log(properties.photos);
 
  if (!isLoading) {
   return (
@@ -39,20 +42,26 @@ const PropertyManagerHome = () => {
        {!loading && properties && (
         <>
          {properties.map((property) => (
-          <Col span={6}>
+          <Col span={6} key={property.id}>
            <Card
-            key={property.id}
             style={{ textAlign: 'center' }}
             cover={
-             <Carousel autoplay effect="fade">
-              {property.photos &&
-               property.photos.map((photo) => (
-                <img
-                 key={photo.id}
-                 alt={property.name}
-                 src={`${ClientConfig.URI}${ClientConfig.BACK_PORT}${photo}`}
-                />
-               ))}
+             <Carousel autoplay effect="fade" key={property.id}>
+              {typeof property.photos === 'string'
+               ? JSON.parse(property.photos).map((photo) => (
+                  <img
+                   key={photo}
+                   alt={property.name}
+                   src={`${ClientConfig.URI}${photo}`}
+                  />
+                 ))
+               : property.photos.map((photo, index) => (
+                  <img
+                   key={index}
+                   alt={property.name}
+                   src={`${ClientConfig.URI}${photo}`}
+                  />
+                 ))}
              </Carousel>
             }
             actions={[

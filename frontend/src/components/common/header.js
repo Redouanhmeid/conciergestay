@@ -22,6 +22,7 @@ import {
  LogoutOutlined,
 } from '@ant-design/icons';
 import Logo from '../../assets/logo.png';
+import { Helmet } from 'react-helmet';
 
 /* const { Search } = Input; */
 const { Header } = Layout;
@@ -76,76 +77,82 @@ const Head = () => {
   onClose();
  };
  return (
-  <Header className="headerStyle">
-   <Row>
-    <Col xs={8} sm={6} md={4}>
-     <Link to={'/'}>
-      <Image className="logoStyle" src={Logo} preview={false} />
-     </Link>
-    </Col>
-    {/* <Col xs={14} sm={6} md={8}>
-            <Space>
-              <Search placeholder="saisir le texte de recherche" onSearch={onSearch} allowClear enterButton size="large" style={{ display: "block" }}/>
-            </Space>
-          </Col> */}
+  <>
+   <Helmet>
+    <link
+     rel="stylesheet"
+     href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css"
+    />
+   </Helmet>
+   <Header className="headerStyle">
+    <Row>
+     <Col xs={8} sm={6} md={4}>
+      <Link to={'/'}>
+       <Image className="logoStyle" src={Logo} preview={false} />
+      </Link>
+     </Col>
 
-    {user && (
-     <Col
-      xs={{ span: 1, offset: 15 }}
-      sm={{ span: 1, offset: 17 }}
-      md={{ span: 1, offset: 19 }}
-     >
-      <Avatar
-       onClick={showDrawer}
-       size={{ xs: 40, sm: 46, md: 46, lg: 46, xl: 50, xxl: 50 }}
-       src="https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png"
-       style={{ cursor: 'pointer' }}
-      />
-     </Col>
-    )}
-    {!user && (
-     <Col
-      xs={{ span: 4, offset: 12 }}
-      sm={{ span: 4, offset: 14 }}
-      md={{ span: 6, offset: 14 }}
-     >
-      <Space>
-       <Button onClick={handleLogin} type="primary">
-        Se connecter
-       </Button>
-       <Button onClick={handleSignUp}>Créer un compte</Button>
-      </Space>
-     </Col>
-    )}
-   </Row>
-   <Drawer title="Profile" onClose={onClose} open={open}>
-    <List
-     dataSource={[{ id: 1, name: 'Redouan' }]}
-     bordered
-     renderItem={(item) => (
-      <List.Item key={item.id}>
-       <List.Item.Meta
-        avatar={
-         <Avatar
-          size={{ xs: 40, sm: 46, md: 46, lg: 46, xl: 50, xxl: 50 }}
-          src="https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png"
-         />
-        }
-        title="Bonjour"
-        description={user.email}
+     {user && (
+      <Col
+       xs={{ span: 1, offset: 15 }}
+       sm={{ span: 1, offset: 17 }}
+       md={{ span: 1, offset: 19 }}
+      >
+       <Avatar
+        onClick={showDrawer}
+        size={{ xs: 40, sm: 46, md: 46, lg: 46, xl: 50, xxl: 50 }}
+        src="https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png"
+        style={{ cursor: 'pointer' }}
        />
-      </List.Item>
+      </Col>
      )}
-    />
-    <br />
-    <Menu
-     onClick={onClick}
-     mode="vertical"
-     selectable={false}
-     items={menuItems}
-    />
-   </Drawer>
-  </Header>
+     {!user && (
+      <Col
+       xs={{ span: 12, offset: 4 }}
+       sm={{ span: 4, offset: 14 }}
+       md={{ span: 4, offset: 16 }}
+      >
+       <Space>
+        <Button
+         onClick={handleLogin}
+         type="primary"
+         icon={<i className="fa-light fa-user"></i>}
+         shape="circle"
+        />
+        <Button onClick={handleSignUp}>Créer un compte</Button>
+       </Space>
+      </Col>
+     )}
+    </Row>
+    <Drawer title="Profile" onClose={onClose} open={open}>
+     <List
+      dataSource={[{ id: 1, name: 'Redouan' }]}
+      bordered
+      renderItem={(item) => (
+       <List.Item key={item.id}>
+        <List.Item.Meta
+         avatar={
+          <Avatar
+           size={{ xs: 40, sm: 46, md: 46, lg: 46, xl: 50, xxl: 50 }}
+           src="https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png"
+          />
+         }
+         title="Bonjour"
+         description={user.email}
+        />
+       </List.Item>
+      )}
+     />
+     <br />
+     <Menu
+      onClick={onClick}
+      mode="vertical"
+      selectable={false}
+      items={menuItems}
+     />
+    </Drawer>
+   </Header>
+  </>
  );
 };
 

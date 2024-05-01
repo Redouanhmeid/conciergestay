@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
- DashboardOutlined,
- BookOutlined,
- WifiOutlined,
- IdcardOutlined,
- StarOutlined,
- InfoCircleOutlined,
- AimOutlined,
- PlusSquareOutlined,
-} from '@ant-design/icons';
+import { DashboardOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -22,21 +13,9 @@ const items = [
   route: '/pmhome',
  },
  {
-  label: 'Guides',
-  icon: <BookOutlined />,
-  key: '2',
-  route: '/guides',
- },
- {
-  label: 'Présentations',
-  icon: <IdcardOutlined />,
-  key: '3',
-  route: '/presentations',
- },
- {
   label: 'Lieu à proximité',
   icon: <PlusSquareOutlined />,
-  key: '4',
+  key: '2',
   route: '/createnearbyplace',
  },
 ];

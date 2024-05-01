@@ -22,6 +22,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
  const slider2 = useRef(null);
  const slider3 = useRef(null);
  const { loading, error, data } = useNearbyPlaces(latitude, longitude);
+ const dataArray = data ? Object.values(data) : [];
  const screens = useBreakpoint();
 
  if (loading) {
@@ -33,21 +34,21 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
  }
  if (error) return <div>Error: {error.message}</div>;
 
- const PlacesToEat = data.filter(
+ const PlacesToEat = dataArray.filter(
   (place) => place.types.includes('restaurant') || place.types.includes('food')
  );
- const Activities = data.filter((place) =>
+ const Activities = dataArray.filter((place) =>
   place.types.includes('natural_feature')
  );
- const pointsOfInterest = data.filter((place) =>
+ const pointsOfInterest = dataArray.filter((place) =>
   place.types.includes('point_of_interest')
  );
 
- const getSlidesToShow = (data) => {
-  if (!data || !Array.isArray(data)) {
+ const getSlidesToShow = (dataArray) => {
+  if (!dataArray || !Array.isArray(dataArray)) {
    return 0; // Return 0 if data is undefined or not an array
   }
-  const totalSlides = data.length;
+  const totalSlides = dataArray.length;
   if (screens.xs) {
    return Math.min(1, totalSlides);
   } else {
@@ -69,7 +70,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
      autoplay
      style={{ padding: '0 28px' }}
     >
-     {data.map((place, index) => (
+     {dataArray.map((place, index) => (
       <div key={index} style={{ margin: '0 12px' }}>
        <Place place={place} />
       </div>

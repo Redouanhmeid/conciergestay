@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Row, Col, Divider, Upload, Modal, message, Image } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import ImgCrop from 'antd-img-crop';
 
 const getBase64 = (file) =>
  new Promise((resolve, reject) => {
@@ -91,17 +92,19 @@ const Photos = ({ onPhotosChange, photos }) => {
     <Divider orientation="left">Ajouter des Photos de votre logement</Divider>
    </Col>
    <Col xs={24} md={24}>
-    <Upload
-     action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-     listType="picture-card"
-     fileList={fileList}
-     onPreview={handlePreview}
-     onChange={handleChange}
-     onRemove={handleRemove}
-     disabled={uploading}
-    >
-     {fileList.length >= 8 ? null : uploadButton}
-    </Upload>
+    <ImgCrop rotationSlider>
+     <Upload
+      action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+      listType="picture-card"
+      fileList={fileList}
+      onPreview={handlePreview}
+      onChange={handleChange}
+      onRemove={handleRemove}
+      disabled={uploading}
+     >
+      {fileList.length >= 8 ? null : uploadButton}
+     </Upload>
+    </ImgCrop>
     <Modal open={previewOpen} footer={null} onCancel={handleCancel}>
      <Image width={200} src={previewImage} />
     </Modal>

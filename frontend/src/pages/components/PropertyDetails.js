@@ -311,7 +311,33 @@ const PropertyDetails = () => {
  const location = useLocation();
  const { id, properties } = location.state;
  const selectedProperty = properties.find((property) => property.id === id);
- if (properties) {
+
+ // Check if the photos property is a string
+ if (typeof selectedProperty.photos === 'string') {
+  // Parse string representation of array to actual array
+  selectedProperty.photos = JSON.parse(selectedProperty.photos);
+ }
+ // Check if property items are a string and parse them accordingly
+ if (typeof selectedProperty.basicAmenities === 'string') {
+  selectedProperty.basicAmenities = JSON.parse(selectedProperty.basicAmenities);
+ }
+ if (typeof selectedProperty.uncommonAmenities === 'string') {
+  selectedProperty.uncommonAmenities = JSON.parse(
+   selectedProperty.uncommonAmenities
+  );
+ }
+ if (typeof selectedProperty.safetyFeatures === 'string') {
+  selectedProperty.safetyFeatures = JSON.parse(selectedProperty.safetyFeatures);
+ }
+ if (typeof selectedProperty.elements === 'string') {
+  selectedProperty.elements = JSON.parse(selectedProperty.elements);
+ }
+ if (typeof selectedProperty.houseRules === 'string') {
+  selectedProperty.houseRules = JSON.parse(selectedProperty.houseRules);
+ }
+ console.log(typeof selectedProperty.photos);
+ console.log(selectedProperty.photos);
+ if (selectedProperty) {
   return (
    <>
     <Helmet>
@@ -333,12 +359,13 @@ const PropertyDetails = () => {
          <div
           style={{ maxWidth: '600px', heidth: '400px', margin: '12px auto' }}
          >
-          <Carousel autoplay dotPosition="top">
-           {selectedProperty.photos.map((photo, index) => (
-            <div key={index}>
-             <Image src={photo} />
-            </div>
-           ))}
+          <Carousel autoplay effect="fade">
+           {Array.isArray(selectedProperty.photos) &&
+            selectedProperty.photos.map((photo, index) => (
+             <div key={index}>
+              <Image src={photo} />
+             </div>
+            ))}
           </Carousel>
          </div>
         </Col>

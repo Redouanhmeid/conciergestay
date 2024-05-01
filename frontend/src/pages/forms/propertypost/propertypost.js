@@ -43,9 +43,7 @@ const PropertyPost = () => {
  const handlePhotosChange = (newFileList) => {
   setPhotos(newFileList);
  };
- /* if (form.getFieldValue('checkInTime')) {
-  console.log(form.getFieldValue('checkInTime'));
- } */
+
  const onFinish = async (formValues) => {
   try {
    const photoUrls = await uploadPhotos(photos);
@@ -68,12 +66,12 @@ const PropertyPost = () => {
 
  useEffect(() => {
   if (success) {
-   message.success('Property created successfully');
+   message.success('Propriété créée avec succès');
    form.resetFields();
    setPropertyData(null);
   }
   if (error) {
-   message.error('Failed to create property');
+   message.error('Échec de la création de la propriété');
   }
  }, [success, error, form]);
 
