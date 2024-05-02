@@ -311,6 +311,7 @@ const PropertyDetails = () => {
  const location = useLocation();
  const { id, properties } = location.state;
  const selectedProperty = properties.find((property) => property.id === id);
+ console.log(id, properties);
 
  // Check if the photos property is a string
  if (typeof selectedProperty.photos === 'string') {

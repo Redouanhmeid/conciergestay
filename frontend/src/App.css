@@ -86,6 +86,38 @@
   justify-content: center;
   align-items: center;
 }
+.pin {
+  cursor: 'pointer';
+  position: relative;
+  width: 80px;
+  height: 80px;
+  overflow: visible;
+}
+
+.pin img {
+  position: relative;
+  border: 6px solid #aa7e42;
+  border-radius: 50%;
+  top: -28px;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  z-index: 1000;
+}
+.pin::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 28px solid transparent;
+  border-right: 28px solid transparent;
+  border-top: 40px solid #aa7e42;
+  z-index: 999;
+}
 @media only screen and (max-width: 576px) {
   .logoStyle {
     height: 40px !important;

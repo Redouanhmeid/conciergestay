@@ -7,10 +7,13 @@ const {
  createProperty,
  updateProperty,
  deleteProperty,
+ getPropertiesByPlaceLatLon,
 } = require('../controllers/PropertyController');
 
 // Route to get all properties
 router.get('/', getProperties);
+// Route for get Properties by Latitude & Longitude
+router.get('/properties', getPropertiesByPlaceLatLon);
 // Route to get a property
 router.get('/:id', getProperty);
 // Route to get a property by propertyManagerId

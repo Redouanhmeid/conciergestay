@@ -1,4 +1,4 @@
-const haversine = require('haversine-distance'); // You need to install this package
+const haversine = require('haversine-distance');
 const { NearbyPlace } = require('../models');
 const { Property } = require('../models');
 
@@ -134,7 +134,7 @@ const getNearbyPlacesbyLatLon = async (propertyLat, propertyLon) => {
 
 const getNearbyPlacesByPlaceLatLon = async (req, res) => {
  const { latitude, longitude } = req.query;
- console.log(JSON.stringify(`Latitude: ${latitude}, Longitude: ${latitude}`)); // Add this line
+ console.log(JSON.stringify(`Latitude: ${latitude}, Longitude: ${longitude}`)); // Add this line
 
  if (!latitude || !longitude) {
   return res.status(400).json({ error: 'Latitude and longitude are required' });

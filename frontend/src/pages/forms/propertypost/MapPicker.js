@@ -101,6 +101,10 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
        handlePlaceSelect(place);
       }
      }}
+     options={{
+      types: ['(cities)'],
+      componentRestrictions: { country: 'ma' }, // Restrict search to Morocco
+     }}
     >
      <input
       placeholder="Indiquer une place"

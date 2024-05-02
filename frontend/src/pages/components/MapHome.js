@@ -1,35 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { Spin } from 'antd';
+import { Spin, Space, Tag, Typography, Button } from 'antd';
+import { RightOutlined } from '@ant-design/icons';
 import MapConfig from '../../mapconfig';
-import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
-import { useJsApiLoader } from '@react-google-maps/api';
-import pinIcon from '../../assets/pin.gif';
-import { useGoogleMapsLoader } from '../../services/GoogleMapService';
+import {
+ Map,
+ AdvancedMarker,
+ InfoWindow,
+ Pin,
+ useAdvancedMarkerRef,
+} from '@vis.gl/react-google-maps';
+import useGetPropertiesByLatLon from '../../hooks/useGetPropertiesByLatLon';
+import { Link } from 'react-router-dom';
 
-// Define libraries as a const variable outside of the component
-const libraries = ['places', 'geometry'];
+const { Title, Text } = Typography;
 
-const MapHome = ({ city }) => {
- const isLoaded = useGoogleMapsLoader();
+const MapHome = React.memo(({ isLoaded, city }) => {
  const [center, setCenter] = useState({ lat: 34.0209, lng: -6.8416 });
+ const [selectedPlace, setSelectedPlace] = useState(null);
+ const { loading, error, data } = useGetPropertiesByLatLon(
+  center.lat,
+  center.lng
+ );
 
- const handleCityButtonClick = (city) => {
-  // Use a mapping of cities to coordinates here
-  const cityCoordinates = {
-   Casablanca: { lat: 33.5731, lng: -7.5898 },
-   Rabat: { lat: 34.0209, lng: -6.8416 },
-   Marrakesh: { lat: 31.6295, lng: -7.9811 },
-   // Add other city coordinates here
-  };
-
-  if (cityCoordinates[city]) {
-   setCenter(cityCoordinates[city]);
-  }
+ console.log(selectedPlace);
+ const [markerRef, marker] = useAdvancedMarkerRef();
+ const [infowindowShown, setInfowindowShown] = useState(false);
+ const toggleInfoWindow = (place) => {
+  setSelectedPlace(place);
+  setInfowindowShown((previousState) => !previousState);
+ };
+ const closeInfoWindow = () => {
+  setSelectedPlace(null);
+  setInfowindowShown(false);
  };
 
  // Set center coordinates based on the city value
- const getCityCoordinates = (city) => {
-  if (!city) return; // Do nothing if city is not provided
+ const getCityCoordinates = async (city) => {
+  if (!city || !isLoaded || !window.google) return; // Do nothing if city is not provided
 
   const placesService = new window.google.maps.places.PlacesService(
    document.createElement('div')
@@ -46,11 +53,12 @@ const MapHome = ({ city }) => {
    }
   });
  };
-
  // Set center coordinates when city prop changes
  useEffect(() => {
-  getCityCoordinates(city);
- }, [city]);
+  if (isLoaded) {
+   getCityCoordinates(city);
+  }
+ }, [city, isLoaded]);
 
  // Get user's current position
  useEffect(() => {
@@ -71,36 +79,84 @@ const MapHome = ({ city }) => {
   }
  }, []);
 
- if (isLoaded) {
+ if (!isLoaded) {
   return (
-   <APIProvider>
-    <div
-     style={{
-      display: 'inline-block',
-      width: '100%',
-      height: '520px',
-     }}
-    >
-     <Map
-      key={`${center.lat}-${center.lng}`}
-      defaultZoom={13}
-      defaultCenter={center}
-      onDragend={(mapProps) => {
-       // Update center when the map is moved
-       if (mapProps && mapProps.center) {
-        setCenter({ lat: mapProps.center.lat(), lng: mapProps.center.lng() });
-       }
-      }}
-     />
-    </div>
-   </APIProvider>
+   <div className="loading">
+    <Spin size="large" />
+   </div>
   );
  }
  return (
-  <div className="loading">
-   <Spin size="large" />
+  <div
+   style={{
+    display: 'inline-block',
+    width: '100%',
+    height: '520px',
+   }}
+  >
+   <Map
+    key={`${center.lat}-${center.lng}`}
+    mapId={MapConfig.MAP_ID}
+    defaultZoom={13}
+    defaultCenter={center}
+    onDragend={(mapProps) => {
+     // Update center when the map is moved
+     if (mapProps && mapProps.center) {
+      setCenter({ lat: mapProps.center.lat(), lng: mapProps.center.lng() });
+     }
+    }}
+   >
+    {data &&
+     data.map((place, index) => (
+      <AdvancedMarker
+       ref={markerRef}
+       key={index}
+       position={{ lat: place.latitude, lng: place.longitude }}
+       onClick={() => toggleInfoWindow(place)}
+      >
+       <div className="pin">
+        <img src={place.photos[0]} alt={place.name} />
+       </div>
+      </AdvancedMarker>
+     ))}
+    {infowindowShown && selectedPlace && (
+     <InfoWindow
+      style={{ padding: 6 }}
+      anchor={marker}
+      onCloseClick={closeInfoWindow}
+     >
+      <Space direction="vertical">
+       <Title level={5} style={{ marginTop: 0, marginBottom: 0 }}>
+        {selectedPlace.name}
+       </Title>
+       <Text strong>
+        <span style={{ color: '#aa7e42' }}>{selectedPlace.price}</span> Dh /
+        Nuit
+       </Text>
+       <Space wrap>
+        <Tag>
+         <Text size={18}>{selectedPlace.rooms} Chambres</Text>
+        </Tag>
+        <Tag>
+         <Text size={18}>
+          {selectedPlace.capacity} Capacité Personne {selectedPlace.id}
+         </Text>
+        </Tag>
+        <Link
+         to={{
+          pathname: '/propertydetails',
+          state: { id: selectedPlace.id, properties: [] },
+         }}
+        >
+         <Button type="default" shape="round" icon={<RightOutlined />} />
+        </Link>
+       </Space>
+      </Space>
+     </InfoWindow>
+    )}
+   </Map>
   </div>
  );
-};
+});
 
 export default MapHome;
