@@ -39,6 +39,11 @@ module.exports = (db, type) => {
    type: type.JSON,
    allowNull: true,
   },
+  isVerified: {
+   type: type.BOOLEAN,
+   defaultValue: false,
+   allowNull: false,
+  },
  });
  nearbyPlace.createNearbyPlace = async (nearbyPlaceData) => {
   return await nearbyPlace.create(nearbyPlaceData);

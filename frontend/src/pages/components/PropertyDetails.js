@@ -22,6 +22,7 @@ import { Link } from 'react-router-dom';
 import MapMarker1 from './MapMarker1';
 import NearbyPlacesCarousel from './nearbyplacescarousel';
 import { Helmet } from 'react-helmet';
+import useGetProperty from '../../hooks/useGetProperty';
 
 const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
@@ -258,7 +259,7 @@ const getHouseRules = (item) => {
  switch (item) {
   case 'noNoise':
    return {
-    avatar: <i className="icon-style icon-style fa-light fa-volume-slash"></i>,
+    avatar: <i className="icon-style fa-light fa-volume-slash"></i>,
     title: 'Pas de bruit après 23h',
     description:
      'Respectez le calme des voisins en évitant les bruits excessifs.',
@@ -309,133 +310,103 @@ const getHouseRules = (item) => {
 
 const PropertyDetails = () => {
  const location = useLocation();
- const { id, properties } = location.state;
- const selectedProperty = properties.find((property) => property.id === id);
- console.log(id, properties);
+ const { id } = location.state;
+ const { property, loading } = useGetProperty(id);
+ console.log(id, location);
 
  // Check if the photos property is a string
- if (typeof selectedProperty.photos === 'string') {
+ if (typeof property.photos === 'string') {
   // Parse string representation of array to actual array
-  selectedProperty.photos = JSON.parse(selectedProperty.photos);
+  property.photos = JSON.parse(property.photos);
  }
  // Check if property items are a string and parse them accordingly
- if (typeof selectedProperty.basicAmenities === 'string') {
-  selectedProperty.basicAmenities = JSON.parse(selectedProperty.basicAmenities);
+ if (typeof property.basicAmenities === 'string') {
+  property.basicAmenities = JSON.parse(property.basicAmenities);
  }
- if (typeof selectedProperty.uncommonAmenities === 'string') {
-  selectedProperty.uncommonAmenities = JSON.parse(
-   selectedProperty.uncommonAmenities
+ if (typeof property.uncommonAmenities === 'string') {
+  property.uncommonAmenities = JSON.parse(property.uncommonAmenities);
+ }
+ if (typeof property.safetyFeatures === 'string') {
+  property.safetyFeatures = JSON.parse(property.safetyFeatures);
+ }
+ if (typeof property.elements === 'string') {
+  property.elements = JSON.parse(property.elements);
+ }
+ if (typeof property.houseRules === 'string') {
+  property.houseRules = JSON.parse(property.houseRules);
+ }
+ console.log(typeof property.photos);
+ console.log(property.photos);
+
+ if (loading) {
+  return (
+   <div className="loading">
+    <Spin size="large" />
+   </div>
   );
  }
- if (typeof selectedProperty.safetyFeatures === 'string') {
-  selectedProperty.safetyFeatures = JSON.parse(selectedProperty.safetyFeatures);
- }
- if (typeof selectedProperty.elements === 'string') {
-  selectedProperty.elements = JSON.parse(selectedProperty.elements);
- }
- if (typeof selectedProperty.houseRules === 'string') {
-  selectedProperty.houseRules = JSON.parse(selectedProperty.houseRules);
- }
- console.log(typeof selectedProperty.photos);
- console.log(selectedProperty.photos);
- if (selectedProperty) {
-  return (
-   <>
-    <Helmet>
-     <link
-      rel="stylesheet"
-      href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css"
-     />
-    </Helmet>
-    <Layout className="contentStyle">
-     <Head />
-     <Layout>
-      <SideMenu width="25%" className="siderStyle" />
-      <Content className="container-fluid">
-       <Link to="/">
-        <ArrowLeftOutlined /> Retour
-       </Link>
-       <Row gutter={[32, 32]}>
+ return (
+  <>
+   <Helmet>
+    <link
+     rel="stylesheet"
+     href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css"
+    />
+   </Helmet>
+   <Layout className="contentStyle">
+    <Head />
+    <Layout>
+     <SideMenu width="25%" className="siderStyle" />
+     <Content className="container-fluid">
+      <Link to="/">
+       <ArrowLeftOutlined /> Retour
+      </Link>
+      <Row gutter={[32, 32]}>
+       <Col xs={24} sm={12}>
+        <div
+         style={{ maxWidth: '600px', heidth: '400px', margin: '12px auto' }}
+        >
+         <Carousel autoplay effect="fade">
+          {Array.isArray(property.photos) &&
+           property.photos.map((photo, index) => (
+            <div key={index}>
+             <Image src={photo} />
+            </div>
+           ))}
+         </Carousel>
+        </div>
+       </Col>
+       <Col xs={24} sm={12}>
+        <Title level={1}>{property.name}</Title>
+        <div>
+         <Rate disabled defaultValue="4.7" />
+         <Text> 4.7</Text>
+         <Text> (107 avis)</Text>
+        </div>
+        <Title level={3}>{property.price} Dh / Nuit</Title>
+        <Space wrap>
+         <Tag>
+          <Text size={18}>{property.rooms} Chambres</Text>
+         </Tag>
+         <Tag>
+          <Text size={18}>{property.capacity} Capacité Personne</Text>
+         </Tag>
+         <Tag>
+          <Text size={18}>{property.beds} Lit</Text>
+         </Tag>
+        </Space>
+        <Divider />
+        <Paragraph>{property.description}</Paragraph>
+        <Divider />
+       </Col>
+       {property.basicAmenities && (
         <Col xs={24} sm={12}>
-         <div
-          style={{ maxWidth: '600px', heidth: '400px', margin: '12px auto' }}
-         >
-          <Carousel autoplay effect="fade">
-           {Array.isArray(selectedProperty.photos) &&
-            selectedProperty.photos.map((photo, index) => (
-             <div key={index}>
-              <Image src={photo} />
-             </div>
-            ))}
-          </Carousel>
-         </div>
-        </Col>
-        <Col xs={24} sm={12}>
-         <Title level={1}>{selectedProperty.name}</Title>
-         <div>
-          <Rate disabled defaultValue="4.7" />
-          <Text> 4.7</Text>
-          <Text> (107 avis)</Text>
-         </div>
-         <Title level={3}>{selectedProperty.price} Dh / Nuit</Title>
-         <Space wrap>
-          <Tag>
-           <Text size={18}>{selectedProperty.rooms} Chambres</Text>
-          </Tag>
-          <Tag>
-           <Text size={18}>{selectedProperty.capacity} Capacité Personne</Text>
-          </Tag>
-          <Tag>
-           <Text size={18}>{selectedProperty.beds} Lit</Text>
-          </Tag>
-         </Space>
-         <Divider />
-         <Paragraph>{selectedProperty.description}</Paragraph>
-         <Divider />
-        </Col>
-        {selectedProperty.basicAmenities && (
-         <Col xs={24} sm={12}>
-          <Title level={3}>Commodités de base :</Title>
-          <List
-           itemLayout="horizontal"
-           dataSource={selectedProperty.basicAmenities}
-           renderItem={(item, index) => {
-            const { avatar, title, description } = getbasicAmenityDetails(item);
-            return (
-             <List.Item key={index}>
-              <List.Item.Meta
-               avatar={avatar}
-               title={title}
-               description={description}
-              />
-             </List.Item>
-            );
-           }}
-          />
-         </Col>
-        )}
-
-        <Col xs={24} sm={24}>
-         <Title level={3}>Où se situe le logement</Title>
-         <MapMarker1
-          latitude={selectedProperty.latitude}
-          longitude={selectedProperty.longitude}
-         />
-        </Col>
-        <Col xs={24}>
-         <NearbyPlacesCarousel
-          latitude={selectedProperty.latitude}
-          longitude={selectedProperty.longitude}
-         />
-        </Col>
-        <Col xs={24} sm={12}>
-         <Title level={3}>Équipement hors du commun :</Title>
+         <Title level={3}>Commodités de base :</Title>
          <List
           itemLayout="horizontal"
-          dataSource={selectedProperty.uncommonAmenities}
+          dataSource={property.basicAmenities}
           renderItem={(item, index) => {
-           const { avatar, title, description } =
-            getuncommonAmenityDetails(item);
+           const { avatar, title, description } = getbasicAmenityDetails(item);
            return (
             <List.Item key={index}>
              <List.Item.Meta
@@ -448,87 +419,115 @@ const PropertyDetails = () => {
           }}
          />
         </Col>
-        <Col xs={24} sm={12}>
-         {selectedProperty.safetyFeatures !== null && (
-          <div>
-           <Title level={3}>Équipement de sécurité :</Title>
-           <List
-            itemLayout="horizontal"
-            dataSource={selectedProperty.safetyFeatures}
-            renderItem={(item, index) => {
-             const { avatar, title, description } = getSecurityEquipment(item);
-             return (
-              <List.Item key={index}>
-               <List.Item.Meta
-                avatar={avatar}
-                title={title}
-                description={description}
-               />
-              </List.Item>
-             );
-            }}
-           />
-          </div>
-         )}
-         {selectedProperty.elements !== null && (
-          <div>
-           <br />
-           <Title level={3}>Équipement supplémentaire :</Title>
-           <List
-            itemLayout="horizontal"
-            dataSource={selectedProperty.elements}
-            renderItem={(item, index) => {
-             const { avatar, title, description } = getElements(item);
-             return (
-              <List.Item key={index}>
-               <List.Item.Meta
-                avatar={avatar}
-                title={title}
-                description={description}
-               />
-              </List.Item>
-             );
-            }}
-           />
-          </div>
-         )}
-         {selectedProperty.houseRules !== null && (
-          <div>
-           <br />
-           <Title level={3}>Règles de la maison :</Title>
-           <List
-            itemLayout="horizontal"
-            dataSource={selectedProperty.houseRules}
-            renderItem={(item, index) => {
-             const { avatar, title, description } = getHouseRules(item);
-             return (
-              <List.Item key={index}>
-               <List.Item.Meta
-                avatar={avatar}
-                title={title}
-                description={description}
-               />
-              </List.Item>
-             );
-            }}
-           />
-          </div>
-         )}
-        </Col>
-       </Row>
-      </Content>
-     </Layout>
-     <Foot />
+       )}
+
+       <Col xs={24} sm={24}>
+        <Title level={3}>Où se situe le logement</Title>
+        <MapMarker1
+         latitude={property.latitude}
+         longitude={property.longitude}
+        />
+       </Col>
+       <Col xs={24}>
+        <NearbyPlacesCarousel
+         latitude={property.latitude}
+         longitude={property.longitude}
+        />
+       </Col>
+       <Col xs={24} sm={12}>
+        <Title level={3}>Équipement hors du commun :</Title>
+        <List
+         itemLayout="horizontal"
+         dataSource={property.uncommonAmenities}
+         renderItem={(item, index) => {
+          const { avatar, title, description } =
+           getuncommonAmenityDetails(item);
+          return (
+           <List.Item key={index}>
+            <List.Item.Meta
+             avatar={avatar}
+             title={title}
+             description={description}
+            />
+           </List.Item>
+          );
+         }}
+        />
+       </Col>
+       <Col xs={24} sm={12}>
+        {property.safetyFeatures !== null && (
+         <div>
+          <Title level={3}>Équipement de sécurité :</Title>
+          <List
+           itemLayout="horizontal"
+           dataSource={property.safetyFeatures}
+           renderItem={(item, index) => {
+            const { avatar, title, description } = getSecurityEquipment(item);
+            return (
+             <List.Item key={index}>
+              <List.Item.Meta
+               avatar={avatar}
+               title={title}
+               description={description}
+              />
+             </List.Item>
+            );
+           }}
+          />
+         </div>
+        )}
+        {property.elements !== null && (
+         <div>
+          <br />
+          <Title level={3}>Équipement supplémentaire :</Title>
+          <List
+           itemLayout="horizontal"
+           dataSource={property.elements}
+           renderItem={(item, index) => {
+            const { avatar, title, description } = getElements(item);
+            return (
+             <List.Item key={index}>
+              <List.Item.Meta
+               avatar={avatar}
+               title={title}
+               description={description}
+              />
+             </List.Item>
+            );
+           }}
+          />
+         </div>
+        )}
+        {property.houseRules !== null && (
+         <div>
+          <br />
+          <Title level={3}>Règles de la maison :</Title>
+          <List
+           itemLayout="horizontal"
+           dataSource={property.houseRules}
+           renderItem={(item, index) => {
+            const { avatar, title, description } = getHouseRules(item);
+            return (
+             <List.Item key={index}>
+              <List.Item.Meta
+               avatar={avatar}
+               title={title}
+               description={description}
+              />
+             </List.Item>
+            );
+           }}
+          />
+         </div>
+        )}
+       </Col>
+      </Row>
+     </Content>
     </Layout>
-   </>
-  );
- } else {
-  return (
-   <div className="loading">
-    <Spin size="large" />
-   </div>
-  );
- }
+    <Foot />
+   </Layout>
+  </>
+ );
 };
 
 export default PropertyDetails;

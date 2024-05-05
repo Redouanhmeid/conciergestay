@@ -17,84 +17,87 @@ const PropertyManagerHome = () => {
  const { user } = useAuthContext();
  const { isLoading, userData, getUserData } = useUserData();
  const User = user || JSON.parse(localStorage.getItem('user'));
- const { properties, loading } = useGetProperties(userData.id);
+ const { properties, loading, fetchProperties } = useGetProperties();
  const navigate = useNavigate();
  const display = (id) => {
-  navigate('/propertydetails', { state: { id, properties } });
+  navigate('/propertydetails', { state: { id } });
  };
+
  useEffect(() => {
   if (user) {
    getUserData(User.email);
   }
- }, [isLoading]);
- console.log(properties);
- console.log(typeof properties.photos);
- console.log(properties.photos);
+ }, [user]);
 
- if (!isLoading) {
-  return (
-   <Layout className="contentStyle">
-    <Head />
-    <Layout>
-     <SideMenu width="25%" className="siderStyle" />
-     <Content className="container-fluid">
-      <Row gutter={[32, 32]}>
-       {!loading && properties && (
-        <>
-         {properties.map((property) => (
-          <Col span={6} key={property.id}>
-           <Card
-            style={{ textAlign: 'center' }}
-            cover={
-             <Carousel autoplay effect="fade" key={property.id}>
-              {typeof property.photos === 'string'
-               ? JSON.parse(property.photos).map((photo) => (
-                  <img
-                   key={photo}
-                   alt={property.name}
-                   src={`${ClientConfig.URI}${photo}`}
-                  />
-                 ))
-               : property.photos.map((photo, index) => (
-                  <img
-                   key={index}
-                   alt={property.name}
-                   src={`${ClientConfig.URI}${photo}`}
-                  />
-                 ))}
-             </Carousel>
-            }
-            actions={[
-             <EyeOutlined key="display" onClick={() => display(property.id)} />,
-             <EditOutlined key="edit" />,
-             <EllipsisOutlined key="ellipsis" />,
-            ]}
-           >
-            <Card.Meta
-             title={property.name}
-             description={property.description}
-            />
-           </Card>
-          </Col>
-         ))}
-        </>
-       )}
-       <Col span={6}>
-        <AddPropertyCard userData={userData} />
-       </Col>
-      </Row>
-     </Content>
-    </Layout>
-    <Foot />
-   </Layout>
-  );
- } else {
+ useEffect(() => {
+  if (!isLoading) {
+   fetchProperties(userData.id);
+  }
+ }, [isLoading]);
+
+ if (isLoading) {
   return (
    <div className="loading">
     <Spin size="large" />
    </div>
   );
  }
+ return (
+  <Layout className="contentStyle">
+   <Head />
+   <Layout>
+    <SideMenu width="25%" className="siderStyle" />
+    <Content className="container-fluid">
+     <Row gutter={[32, 32]}>
+      {!loading && properties && (
+       <>
+        {properties.map((property) => (
+         <Col span={6} key={property.id}>
+          <Card
+           style={{ textAlign: 'center' }}
+           cover={
+            <Carousel autoplay effect="fade" key={property.id}>
+             {typeof property.photos === 'string'
+              ? JSON.parse(property.photos).map((photo) => (
+                 <img
+                  key={photo}
+                  alt={property.name}
+                  src={`${ClientConfig.URI}${photo}`}
+                 />
+                ))
+              : property.photos.map((photo, index) => (
+                 <img
+                  key={index}
+                  alt={property.name}
+                  src={`${ClientConfig.URI}${photo}`}
+                 />
+                ))}
+            </Carousel>
+           }
+           actions={[
+            <EyeOutlined key="display" onClick={() => display(property.id)} />,
+            <EditOutlined key="edit" />,
+            <EllipsisOutlined key="ellipsis" />,
+           ]}
+          >
+           <Card.Meta
+            title={property.name}
+            description={property.description}
+           />
+          </Card>
+         </Col>
+        ))}
+       </>
+      )}
+      <Col span={6}>
+       <AddPropertyCard userData={userData} />
+      </Col>
+     </Row>
+    </Content>
+   </Layout>
+   <Foot />
+  </Layout>
+ );
 };
 
 export default PropertyManagerHome;

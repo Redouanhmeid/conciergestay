@@ -10,19 +10,19 @@ import {
  useAdvancedMarkerRef,
 } from '@vis.gl/react-google-maps';
 import useGetPropertiesByLatLon from '../../hooks/useGetPropertiesByLatLon';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import pinIcon from '../../assets/position.gif';
 
 const { Title, Text } = Typography;
 
 const MapHome = React.memo(({ isLoaded, city }) => {
  const [center, setCenter] = useState({ lat: 34.0209, lng: -6.8416 });
+ const [currentPosition, setCurrentPosition] = useState();
  const [selectedPlace, setSelectedPlace] = useState(null);
  const { loading, error, data } = useGetPropertiesByLatLon(
   center.lat,
   center.lng
  );
-
- console.log(selectedPlace);
  const [markerRef, marker] = useAdvancedMarkerRef();
  const [infowindowShown, setInfowindowShown] = useState(false);
  const toggleInfoWindow = (place) => {
@@ -53,6 +53,11 @@ const MapHome = React.memo(({ isLoaded, city }) => {
    }
   });
  };
+
+ const navigate = useNavigate();
+ const display = (id) => {
+  navigate('/propertydetails', { state: { id } });
+ };
  // Set center coordinates when city prop changes
  useEffect(() => {
   if (isLoaded) {
@@ -66,6 +71,10 @@ const MapHome = React.memo(({ isLoaded, city }) => {
    navigator.geolocation.getCurrentPosition(
     (position) => {
      setCenter({
+      lat: position.coords.latitude,
+      lng: position.coords.longitude,
+     });
+     setCurrentPosition({
       lat: position.coords.latitude,
       lng: position.coords.longitude,
      });
@@ -106,6 +115,10 @@ const MapHome = React.memo(({ isLoaded, city }) => {
      }
     }}
    >
+    <AdvancedMarker position={currentPosition}>
+     <img src={pinIcon} alt="User's current position" />
+    </AdvancedMarker>
+
     {data &&
      data.map((place, index) => (
       <AdvancedMarker
@@ -120,36 +133,32 @@ const MapHome = React.memo(({ isLoaded, city }) => {
       </AdvancedMarker>
      ))}
     {infowindowShown && selectedPlace && (
-     <InfoWindow
-      style={{ padding: 6 }}
-      anchor={marker}
-      onCloseClick={closeInfoWindow}
-     >
-      <Space direction="vertical">
-       <Title level={5} style={{ marginTop: 0, marginBottom: 0 }}>
+     <InfoWindow anchor={marker} onCloseClick={closeInfoWindow}>
+      <Space direction="vertical" style={{ margin: 4 }}>
+       <Text size={18}>
         {selectedPlace.name}
-       </Title>
-       <Text strong>
-        <span style={{ color: '#aa7e42' }}>{selectedPlace.price}</span> Dh /
-        Nuit
+        {' | '}
+        <span style={{ color: '#aa7e42', fontWeight: 'bold' }}>
+         {selectedPlace.price}
+        </span>{' '}
+        Dh / Nuit
        </Text>
        <Space wrap>
         <Tag>
-         <Text size={18}>{selectedPlace.rooms} Chambres</Text>
+         <Text size={16}>{selectedPlace.rooms} Chambres</Text>
         </Tag>
         <Tag>
-         <Text size={18}>
+         <Text size={16}>
           {selectedPlace.capacity} Capacité Personne {selectedPlace.id}
          </Text>
         </Tag>
-        <Link
-         to={{
-          pathname: '/propertydetails',
-          state: { id: selectedPlace.id, properties: [] },
-         }}
-        >
-         <Button type="default" shape="round" icon={<RightOutlined />} />
-        </Link>
+        <Button
+         type="primary"
+         size="small"
+         shape="round"
+         icon={<RightOutlined />}
+         onClick={() => display(selectedPlace.id)}
+        />
        </Space>
       </Space>
      </InfoWindow>

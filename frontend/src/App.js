@@ -7,7 +7,7 @@ const App = () => {
  const { user, isLoading } = useAuthContext();
 
  if (!isLoading) {
-  return <>{user === null ? <Home /> : <PropertyManagerHome />}</>;
+  return <Home />;
  } else {
   return (
    <div className="loading">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLogout } from '../../hooks/useLogout';
 import { useAuthContext } from '../../hooks/useAuthContext';
@@ -23,6 +23,8 @@ import {
 } from '@ant-design/icons';
 import Logo from '../../assets/logo.png';
 import { Helmet } from 'react-helmet';
+import PropertyManagerHome from '../../pages/propertymanagerhome';
+import { useUserData } from '../../hooks/useUserData';
 
 /* const { Search } = Input; */
 const { Header } = Layout;
@@ -41,6 +43,8 @@ function getItem(label, key, icon, children, type) {
 const Head = () => {
  const { logout } = useLogout();
  const { user } = useAuthContext();
+ const User = user || JSON.parse(localStorage.getItem('user'));
+ const { isLoading, userData, getUserData } = useUserData();
  const navigate = useNavigate();
  const handleLogOut = () => {
   logout();
@@ -54,16 +58,25 @@ const Head = () => {
   navigate('/signup');
  };
  const menuItems = [
-  getItem(<Link to="/account">Mon compte</Link>, '1', <UserOutlined />),
-  getItem('Paramètres', '2', <SettingOutlined />),
-  getItem('Référez un ami', '3', <UsergroupAddOutlined />),
+  getItem(
+   <Link to="/pmhome">Tableau de bord</Link>,
+   '1',
+   <i className="fa-light fa-grid-2-plus"></i>
+  ),
+  getItem(
+   <Link to="/account">Mon compte</Link>,
+   '2',
+   <i className="fa-light fa-user-pen"></i>
+  ),
+  getItem('Paramètres', '3', <i className="fa-light fa-gear"></i>),
+  getItem('Référez un ami', '4', <i className="fa-light fa-users-medical"></i>),
   {
    type: 'divider',
   },
   getItem(
    <Link onClick={handleLogOut}>Se déconnecter</Link>,
-   '4',
-   <LogoutOutlined />
+   '5',
+   <i className="fa-light fa-right-from-bracket"></i>
   ),
  ];
  const [open, setOpen] = useState(false);
@@ -76,6 +89,11 @@ const Head = () => {
  const onClick = () => {
   onClose();
  };
+ useEffect(() => {
+  if (User) {
+   getUserData(User.email);
+  }
+ }, []);
  return (
   <>
    <Helmet>
@@ -92,7 +110,7 @@ const Head = () => {
       </Link>
      </Col>
 
-     {user && (
+     {Object.keys(userData).length > 0 && (
       <Col
        xs={{ span: 1, offset: 15 }}
        sm={{ span: 1, offset: 17 }}
@@ -101,12 +119,12 @@ const Head = () => {
        <Avatar
         onClick={showDrawer}
         size={{ xs: 40, sm: 46, md: 46, lg: 46, xl: 50, xxl: 50 }}
-        src="https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png"
+        src={userData.avatar}
         style={{ cursor: 'pointer' }}
        />
       </Col>
      )}
-     {!user && (
+     {Object.keys(userData).length === 0 && (
       <Col
        xs={{ span: 12, offset: 4 }}
        sm={{ span: 4, offset: 14 }}
@@ -134,11 +152,11 @@ const Head = () => {
          avatar={
           <Avatar
            size={{ xs: 40, sm: 46, md: 46, lg: 46, xl: 50, xxl: 50 }}
-           src="https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png"
+           src={userData.avatar}
           />
          }
          title="Bonjour"
-         description={user.email}
+         description={userData.email}
         />
        </List.Item>
       )}

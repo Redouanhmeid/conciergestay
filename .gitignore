@@ -11,3 +11,4 @@ backend/.env.production
 frontend/build
 backend/0.env.development
 backend/0.env.production
+backend/avatars

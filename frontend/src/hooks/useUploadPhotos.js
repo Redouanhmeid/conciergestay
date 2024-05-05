@@ -3,6 +3,30 @@ import React, { useState } from 'react';
 const useUploadPhotos = () => {
  const [uploading, setUploading] = useState(false);
 
+ const uploadAvatar = async (avatar) => {
+  console.log(avatar);
+  const formData = new FormData();
+  formData.append('avatar', avatar[0].originFileObj);
+  try {
+   setUploading(true);
+   const response = await fetch('/upload/avatars', {
+    method: 'POST',
+    body: formData,
+   });
+   if (!response.ok) {
+    throw new Error('Failed to upload Avatar');
+   }
+   const data = await response.json();
+   setUploading(false);
+
+   return data.file.url;
+  } catch (error) {
+   console.error('Error uploading Avatar:', error);
+   setUploading(false);
+   throw error;
+  }
+ };
+
  const uploadPhoto = async (photo) => {
   const formData = new FormData();
   formData.append('photo', photo[0].originFileObj);
@@ -18,7 +42,7 @@ const useUploadPhotos = () => {
    const data = await response.json();
    setUploading(false);
 
-   return data.file.url; // Assuming the response contains the URL of the uploaded photo
+   return data.file.url;
   } catch (error) {
    console.error('Error uploading photo:', error);
    setUploading(false);
@@ -49,7 +73,7 @@ const useUploadPhotos = () => {
   }
  };
 
- return { uploadPhotos, uploadPhoto, uploading };
+ return { uploadPhotos, uploadPhoto, uploadAvatar, uploading };
 };
 
 export default useUploadPhotos;

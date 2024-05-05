@@ -1,4 +1,5 @@
 require('dotenv').config();
+const bcrypt = require('bcryptjs');
 const { PropertyManager, PropertyManagerVerification } = require('../models');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
@@ -17,6 +18,9 @@ const transporter = nodemailer.createTransport({
  auth: {
   user: process.env.AUTH_EMAIL,
   pass: process.env.AUTH_PASS,
+ },
+ tls: {
+  rejectUnauthorized: false,
  },
 });
 
@@ -174,6 +178,88 @@ const verifyEmail = async (req, res) => {
  }
 };
 
+// Update property manager's firstname, lastname, and phone
+const updatePropertyManagerDetails = async (req, res) => {
+ const { id } = req.params; // Assuming the id of the property manager is passed in the URL
+ const { firstname, lastname, phone } = req.body;
+
+ try {
+  const propertyManager = await PropertyManager.findByPk(id);
+  if (!propertyManager) {
+   return res.status(404).json({ message: 'Property manager not found' });
+  }
+
+  // Update the property manager's details
+  await propertyManager.update({
+   firstname,
+   lastname,
+   phone,
+  });
+
+  return res.status(200).json({ message: 'Détails mis à jour avec succès' });
+ } catch (error) {
+  console.error('Erreur lors de la mise à jour des détails:', error);
+  return res.status(500).json({ message: 'Internal server error' });
+ }
+};
+
+// Update property manager's avatar
+const updatePropertyManagerAvatar = async (req, res) => {
+ const { id } = req.params;
+ const { avatar } = req.body;
+
+ try {
+  const propertyManager = await PropertyManager.findByPk(id);
+  if (!propertyManager) {
+   return res.status(404).json({ message: 'Property manager not found' });
+  }
+
+  // Update the property manager's avatar
+  await propertyManager.update({
+   avatar,
+  });
+
+  return res
+   .status(200)
+   .json({ message: 'Property manager avatar updated successfully' });
+ } catch (error) {
+  console.error('Error updating property manager avatar:', error);
+  return res.status(500).json({ message: 'Internal server error' });
+ }
+};
+
+// Controller function to update the password
+const updatePassword = async (req, res) => {
+ const { id } = req.params;
+ const { currentPassword, newPassword } = req.body;
+
+ try {
+  // Check if the propertyManager exists
+  const propertyManager = await PropertyManager.findByPk(id);
+  if (!propertyManager) {
+   return res.status(404).json({ message: 'Manager introuvable' });
+  }
+
+  // Check if the current password matches the propertyManager's password
+  const isMatch = await propertyManager.comparePassword(currentPassword);
+  if (!isMatch) {
+   return res.status(400).json({ message: 'Mot de passe actuel invalide' });
+  }
+  // Encrypt the new password
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(newPassword, salt);
+
+  // Update the password
+  propertyManager.password = hash;
+  await propertyManager.save();
+
+  res.status(200).json({ message: 'Mot de passe mis à jour avec succès' });
+ } catch (error) {
+  console.error('Erreur lors de la mise à jour du mot de passe:', error);
+  res.status(500).json({ message: 'Erreur interne du serveur' });
+ }
+};
+
 module.exports = {
  getPropertyManager,
  getPropertyManagerByEmail,
@@ -181,4 +267,7 @@ module.exports = {
  postPropertyManager,
  loginPropertyManager,
  verifyEmail,
+ updatePropertyManagerDetails,
+ updatePropertyManagerAvatar,
+ updatePassword,
 };

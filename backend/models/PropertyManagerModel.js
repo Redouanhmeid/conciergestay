@@ -27,6 +27,16 @@ module.exports = (db, type) => {
   phone: {
    type: type.STRING(50),
   },
+  avatar: {
+   type: type.STRING,
+   defaultValue: '/avatars/default.png',
+   allowNull: true,
+  },
+  role: {
+   type: type.STRING,
+   defaultValue: 'manager',
+   allowNull: false,
+  },
   //isVerified is set to default false once a user signs up
   //this will change later after email has been verified
   isVerified: {
@@ -41,7 +51,9 @@ module.exports = (db, type) => {
   password,
   firstname,
   lastname,
-  phone
+  phone,
+  avatar,
+  role
  ) {
   const emailExists = await this.findOne({ where: { email } });
   if (emailExists) {
@@ -62,6 +74,8 @@ module.exports = (db, type) => {
    firstname,
    lastname,
    phone,
+   avatar,
+   role,
   });
 
   return propertymanager;
@@ -76,8 +90,13 @@ module.exports = (db, type) => {
   if (!match) {
    throw Error('Mot de passe incorrecte!');
   }
-
   return user;
+ };
+
+ propertymanager.prototype.comparePassword = async function (
+  candidatePassword
+ ) {
+  return bcrypt.compare(candidatePassword, this.password);
  };
 
  return propertymanager;

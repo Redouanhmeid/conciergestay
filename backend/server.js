@@ -40,8 +40,8 @@ app.use(bodyParser.json());
 
 // Enable CORS for only frontend
 const corsOptions = {
- // origin: 'http://localhost:3000', // Replace with your frontend server's URL
- origin: 'https://csapp.nextbedesign.com', // Replace with your frontend server's URL
+ origin: 'http://localhost:3000', // Replace with your frontend server's URL
+ // origin: 'https://csapp.nextbedesign.com', // Replace with your frontend server's URL
 };
 app.use(cors(corsOptions));
 
@@ -111,6 +111,25 @@ const singleUpload = multer({
   checkFileType(file, cb);
  },
 });
+// Configure multer to store single file in the 'avatars' directory
+const avatars = multer({
+ storage: multer.diskStorage({
+  destination: (req, file, cb) => {
+   cb(null, 'avatars/');
+  },
+  filename: (req, file, cb) => {
+   const ext = path.extname(file.originalname);
+   const name = path.basename(file.originalname, ext);
+   const newName = `${name.replace(/\s+/g, '-')}-${counter}${ext}`;
+   counter++;
+   cb(null, newName);
+  },
+ }),
+ limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+ fileFilter: function (req, file, cb) {
+  checkFileType(file, cb);
+ },
+});
 // Check file type
 function checkFileType(file, cb) {
  // Allowed extensions
@@ -152,3 +171,17 @@ app.post('/upload/single', singleUpload.single('photo'), (req, res) => {
  res.json({ file: file });
 });
 app.use('/places', express.static(path.join(__dirname, 'places')));
+
+app.post('/upload/avatars', avatars.single('avatar'), (req, res) => {
+ if (!req.file) {
+  return res.status(400).json({ error: 'No file uploaded' });
+ }
+
+ const file = {
+  filename: req.file.filename,
+  url: `/avatars/${req.file.filename}`,
+ };
+
+ res.json({ file: file });
+});
+app.use('/avatars', express.static(path.join(__dirname, 'avatars')));
