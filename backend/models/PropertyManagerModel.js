@@ -33,7 +33,7 @@ module.exports = (db, type) => {
    allowNull: true,
   },
   role: {
-   type: type.STRING,
+   type: type.STRING(50),
    defaultValue: 'manager',
    allowNull: false,
   },

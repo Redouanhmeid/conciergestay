@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+ Anchor,
  Layout,
  Typography,
  List,
@@ -12,13 +13,13 @@ import {
  Carousel,
  Row,
  Col,
+ FloatButton,
+ Button,
 } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { useLocation } from 'react-router-dom';
 import Head from '../../components/common/header';
-import SideMenu from '../../components/sidemenu';
 import Foot from '../../components/common/footer';
-import { Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import MapMarker1 from './MapMarker1';
 import NearbyPlacesCarousel from './nearbyplacescarousel';
 import { Helmet } from 'react-helmet';
@@ -307,13 +308,24 @@ const getHouseRules = (item) => {
    };
  }
 };
-
+function scrollToAnchor(anchorId) {
+ const element = document.getElementById(anchorId);
+ if (element) {
+  element.scrollIntoView({ behavior: 'smooth' });
+ }
+}
 const PropertyDetails = () => {
  const location = useLocation();
  const { id } = location.state;
  const { property, loading } = useGetProperty(id);
- console.log(id, location);
+ const navigate = useNavigate();
 
+ const goBack = () => {
+  navigate(-1); // This will navigate back to the previous page
+ };
+ const nearbyPlace = () => {
+  navigate('/createnearbyplace');
+ };
  // Check if the photos property is a string
  if (typeof property.photos === 'string') {
   // Parse string representation of array to actual array
@@ -335,8 +347,6 @@ const PropertyDetails = () => {
  if (typeof property.houseRules === 'string') {
   property.houseRules = JSON.parse(property.houseRules);
  }
- console.log(typeof property.photos);
- console.log(property.photos);
 
  if (loading) {
   return (
@@ -355,14 +365,66 @@ const PropertyDetails = () => {
    </Helmet>
    <Layout className="contentStyle">
     <Head />
+
     <Layout>
-     <SideMenu width="25%" className="siderStyle" />
+     <div
+      style={{
+       padding: '20px',
+      }}
+     >
+      <Anchor
+       direction="horizontal"
+       className="custom-anchor"
+       onClick={(e, link) => {
+        e.preventDefault();
+        scrollToAnchor(link.href.slice(1));
+       }}
+       items={[
+        {
+         key: '1',
+         href: '#desc',
+         title: 'Informations de base',
+        },
+        {
+         key: '2',
+         href: '#basicamenities',
+         title: 'Commodités de base',
+        },
+        {
+         key: '3',
+         href: '#map&nearbyplaces',
+         title: 'Où se situe',
+        },
+        {
+         key: '4',
+         href: '#equipements',
+         title: 'Équipements',
+        },
+        {
+         key: '5',
+         href: '#rules',
+         title: 'Règles',
+        },
+       ]}
+      />
+     </div>
      <Content className="container-fluid">
-      <Link to="/">
-       <ArrowLeftOutlined /> Retour
-      </Link>
+      <Button
+       type="default"
+       shape="round"
+       icon={<ArrowLeftOutlined />}
+       onClick={goBack}
+      >
+       Retour
+      </Button>
+      <FloatButton
+       icon={<i className="fa-light fa-location-plus"></i>}
+       tooltip={<div>Ajouter un lieu à proximité</div>}
+       type="primary"
+       onClick={nearbyPlace}
+      />
       <Row gutter={[32, 32]}>
-       <Col xs={24} sm={12}>
+       <Col xs={24} sm={12} id="desc">
         <div
          style={{ maxWidth: '600px', heidth: '400px', margin: '12px auto' }}
         >
@@ -400,7 +462,7 @@ const PropertyDetails = () => {
         <Divider />
        </Col>
        {property.basicAmenities && (
-        <Col xs={24} sm={12}>
+        <Col xs={24} sm={12} id="basicamenities">
          <Title level={3}>Commodités de base :</Title>
          <List
           itemLayout="horizontal"
@@ -421,7 +483,7 @@ const PropertyDetails = () => {
         </Col>
        )}
 
-       <Col xs={24} sm={24}>
+       <Col xs={24} sm={24} id="map&nearbyplaces">
         <Title level={3}>Où se situe le logement</Title>
         <MapMarker1
          latitude={property.latitude}
@@ -434,8 +496,8 @@ const PropertyDetails = () => {
          longitude={property.longitude}
         />
        </Col>
-       <Col xs={24} sm={12}>
-        <Title level={3}>Équipement hors du commun :</Title>
+       <Col xs={24} sm={12} id="equipements">
+        <Title level={3}>Équipement hors du commun:</Title>
         <List
          itemLayout="horizontal"
          dataSource={property.uncommonAmenities}
@@ -457,7 +519,7 @@ const PropertyDetails = () => {
        <Col xs={24} sm={12}>
         {property.safetyFeatures !== null && (
          <div>
-          <Title level={3}>Équipement de sécurité :</Title>
+          <Title level={3}>Équipement de sécurité:</Title>
           <List
            itemLayout="horizontal"
            dataSource={property.safetyFeatures}
@@ -479,7 +541,7 @@ const PropertyDetails = () => {
         {property.elements !== null && (
          <div>
           <br />
-          <Title level={3}>Équipement supplémentaire :</Title>
+          <Title level={3}>Équipement supplémentaire:</Title>
           <List
            itemLayout="horizontal"
            dataSource={property.elements}
@@ -498,10 +560,12 @@ const PropertyDetails = () => {
           />
          </div>
         )}
+       </Col>
+       <Col xs={24} sm={24} id="rules">
         {property.houseRules !== null && (
          <div>
           <br />
-          <Title level={3}>Règles de la maison :</Title>
+          <Title level={3}>Règles de la maison:</Title>
           <List
            itemLayout="horizontal"
            dataSource={property.houseRules}

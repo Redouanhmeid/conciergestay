@@ -12,18 +12,10 @@ import {
  List,
  Menu,
  Button,
- Flex,
  Space,
 } from 'antd';
-import {
- UserOutlined,
- SettingOutlined,
- UsergroupAddOutlined,
- LogoutOutlined,
-} from '@ant-design/icons';
 import Logo from '../../assets/logo.png';
 import { Helmet } from 'react-helmet';
-import PropertyManagerHome from '../../pages/propertymanagerhome';
 import { useUserData } from '../../hooks/useUserData';
 
 /* const { Search } = Input; */
@@ -44,7 +36,7 @@ const Head = () => {
  const { logout } = useLogout();
  const { user } = useAuthContext();
  const User = user || JSON.parse(localStorage.getItem('user'));
- const { isLoading, userData, getUserData } = useUserData();
+ const { userData, getUserData } = useUserData();
  const navigate = useNavigate();
  const handleLogOut = () => {
   logout();
@@ -59,7 +51,7 @@ const Head = () => {
  };
  const menuItems = [
   getItem(
-   <Link to="/pmhome">Tableau de bord</Link>,
+   <Link to="/dashboard">Tableau de bord</Link>,
    '1',
    <i className="fa-light fa-grid-2-plus"></i>
   ),
@@ -93,7 +85,7 @@ const Head = () => {
   if (User) {
    getUserData(User.email);
   }
- }, []);
+ }, [User]);
  return (
   <>
    <Helmet>

@@ -5,15 +5,15 @@ const useCreateProperty = () => {
  const [error, setError] = useState(null);
  const [success, setSuccess] = useState(false);
 
- const createProperty = async (nearbyPlaceData) => {
+ const createProperty = async (property) => {
   setLoading(true);
   try {
-   const response = await fetch('/api/v1/properties', {
+   const response = await fetch('/api/v1/propertjies', {
     method: 'POST',
     headers: {
      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(nearbyPlaceData),
+    body: JSON.stringify(property),
    });
    const data = await response.json();
    if (!response.ok) {
@@ -22,6 +22,7 @@ const useCreateProperty = () => {
    setSuccess(true);
   } catch (error) {
    setError(error.message);
+   setSuccess(false);
   }
   setLoading(false);
  };

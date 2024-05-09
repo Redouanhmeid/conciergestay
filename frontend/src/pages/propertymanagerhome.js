@@ -34,7 +34,7 @@ const PropertyManagerHome = () => {
    fetchProperties(userData.id);
   }
  }, [isLoading]);
-
+ console.log(properties);
  if (isLoading) {
   return (
    <div className="loading">
@@ -52,7 +52,7 @@ const PropertyManagerHome = () => {
       {!loading && properties && (
        <>
         {properties.map((property) => (
-         <Col span={6} key={property.id}>
+         <Col xs={24} md={6} key={property.id}>
           <Card
            style={{ textAlign: 'center' }}
            cover={
@@ -89,7 +89,7 @@ const PropertyManagerHome = () => {
         ))}
        </>
       )}
-      <Col span={6}>
+      <Col xs={24} md={6}>
        <AddPropertyCard userData={userData} />
       </Col>
      </Row>

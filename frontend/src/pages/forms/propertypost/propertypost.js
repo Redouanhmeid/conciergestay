@@ -79,9 +79,8 @@ const PropertyPost = () => {
   <Layout className="contentStyle">
    <Head />
    <Layout>
-    <SideMenu width="25%" className="siderStyle" />
     <Content className="container-fluid">
-     <Link to="/">
+     <Link to="/dashboard">
       <ArrowLeftOutlined /> Retour
      </Link>
      <Title level={2}>Enregistrez les informations de votre propriété</Title>

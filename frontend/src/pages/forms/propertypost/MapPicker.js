@@ -102,7 +102,6 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
       }
      }}
      options={{
-      types: ['(cities)'],
       componentRestrictions: { country: 'ma' }, // Restrict search to Morocco
      }}
     >

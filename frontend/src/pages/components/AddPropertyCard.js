@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom';
 const AddPropertyCard = ({ userData }) => {
  const navigate = useNavigate();
  const handleClick = () => {
-  navigate('/postproperty', { state: { userData } });
+  // navigate('/postproperty', { state: { userData } });
+  navigate('/addproperty');
  };
  return (
   <Card

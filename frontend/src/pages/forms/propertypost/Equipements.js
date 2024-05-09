@@ -4,11 +4,10 @@ import { Form, Checkbox, Row, Col } from 'antd';
 const Equipments = () => {
  return (
   <>
+   <h2 style={{ margin: 0 }}>
+    Indiquez aux voyageurs quels sont les équipements de votre logement:
+   </h2>
    <Row gutter={[24, 0]}>
-    <h2 style={{ margin: 0 }}>
-     Indiquez aux voyageurs quels sont les équipements de votre logement:
-    </h2>
-
     <Col xs={24} md={12}>
      <Form.Item label="Commodités de base:" name="basicAmenities">
       <Checkbox.Group>

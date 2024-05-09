@@ -18,14 +18,16 @@ import MapPicker from './pages/forms/propertypost/MapPicker';
 import PropertyManagerHome from './pages/propertymanagerhome';
 import PropertyDetails from './pages/components/PropertyDetails';
 import CreateNearbyPlace from './pages/forms/createnearbyplace';
+import AddProperty from './pages/forms/propertypost/AddProperty';
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
- { path: '/pmhome', element: <PropertyManagerHome /> },
+ { path: '/dashboard', element: <PropertyManagerHome /> },
  { path: '/login', element: <Login /> },
  { path: '/signup', element: <Signup /> },
  { path: '/account', element: <Account /> },
  { path: '/guestform', element: <Guestform /> },
  { path: '/postproperty', element: <PropertyPost /> },
+ { path: '/addproperty', element: <AddProperty /> },
  { path: '/mappicker', element: <MapPicker /> },
  { path: '/propertydetails', element: <PropertyDetails /> },
  { path: '/createnearbyplace', element: <CreateNearbyPlace /> },
@@ -72,6 +74,10 @@ root.render(
      labelColor: 'rgb(43, 44, 50)',
      verticalLabelPadding: '0',
      labelHeight: 20,
+    },
+    Anchor: {
+     fontSize: 16,
+     linkPaddingBlock: 6,
     },
    },
   }}

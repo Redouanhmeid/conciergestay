@@ -191,7 +191,7 @@ const CreateNearbyPlace = () => {
    <Layout>
     <SideMenu width="25%" className="siderStyle" />
     <Content className="container-fluid">
-     <Link to="/">
+     <Link to="/dashboard">
       <ArrowLeftOutlined /> Retour
      </Link>
      <Row gutter={[24, 0]}>

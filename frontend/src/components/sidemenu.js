@@ -10,7 +10,7 @@ const items = [
   label: 'Tableau de bord',
   icon: <DashboardOutlined />,
   key: '1',
-  route: '/pmhome',
+  route: '/dashboard',
  },
  {
   label: 'Lieu à proximité',
