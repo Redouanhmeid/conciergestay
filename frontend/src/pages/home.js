@@ -48,7 +48,6 @@ const Home = () => {
         }}
         onPlaceChanged={handlePlaceSelect}
         options={{
-         types: ['(cities)'],
          componentRestrictions: { country: 'ma' }, // Restrict search to Morocco
         }}
        >

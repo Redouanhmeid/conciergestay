@@ -19,6 +19,7 @@ import PropertyManagerHome from './pages/propertymanagerhome';
 import PropertyDetails from './pages/components/PropertyDetails';
 import CreateNearbyPlace from './pages/forms/createnearbyplace';
 import AddProperty from './pages/forms/propertypost/AddProperty';
+import EditProperty from './pages/forms/propertyedit/EditProperty';
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
  { path: '/dashboard', element: <PropertyManagerHome /> },
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
  { path: '/mappicker', element: <MapPicker /> },
  { path: '/propertydetails', element: <PropertyDetails /> },
  { path: '/createnearbyplace', element: <CreateNearbyPlace /> },
+ { path: '/editproperty', element: <EditProperty /> },
 ]);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -39,7 +41,7 @@ root.render(
   theme={{
    token: {
     fontFamily: '"Jost", sans-serif',
-    borderRadius: 0,
+    borderRadius: 12,
     colorPrimary: '#aa7e42',
     colorInfo: '#aa7e42',
     colorTextBase: '#2b2c32',
@@ -78,6 +80,32 @@ root.render(
     Anchor: {
      fontSize: 16,
      linkPaddingBlock: 6,
+    },
+    Card: {
+     colorTextHeading: 'rgb(43, 44, 50)',
+     colorBorderSecondary: 'rgb(235, 222, 205)',
+     boxShadowCard: '0',
+     boxShadowTertiary: '0',
+     fontWeightStrong: 500,
+     headerFontSize: 16,
+     headerFontSizeSM: 11,
+    },
+    Upload: {
+     controlHeightLG: 60,
+     colorError: 'rgb(235, 222, 205)',
+     colorBorder: 'rgb(235, 222, 205)',
+     colorFillAlter: 'rgb(250, 246, 241)',
+     borderRadiusLG: 4,
+     padding: 12,
+     paddingSM: 10,
+     paddingXS: 6,
+    },
+    Checkbox: {
+     controlInteractiveSize: 24,
+     borderRadiusSM: 8,
+     lineWidthBold: 4,
+     paddingXS: 8,
+     lineHeight: 2.2,
     },
    },
   }}

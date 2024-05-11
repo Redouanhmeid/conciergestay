@@ -15,6 +15,7 @@ import {
  Col,
  FloatButton,
  Button,
+ Card,
 } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import Head from '../../components/common/header';
@@ -27,6 +28,8 @@ import useGetProperty from '../../hooks/useGetProperty';
 
 const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
+const { Meta } = Card;
+
 const getbasicAmenityDetails = (item) => {
  switch (item) {
   case 'wifi':
@@ -72,7 +75,7 @@ const getbasicAmenityDetails = (item) => {
   case 'dedicatedWorkspace':
    return {
     avatar: <i className="icon-style fa-light fa-laptop"></i>,
-    title: 'Espace de travail dédié',
+    title: 'Espace de travail',
     description:
      'Travaillez confortablement avec un espace de travail dédié dans la propriété.',
    };
@@ -347,7 +350,6 @@ const PropertyDetails = () => {
  if (typeof property.houseRules === 'string') {
   property.houseRules = JSON.parse(property.houseRules);
  }
-
  if (loading) {
   return (
    <div className="loading">
@@ -459,31 +461,34 @@ const PropertyDetails = () => {
         </Space>
         <Divider />
         <Paragraph>{property.description}</Paragraph>
-        <Divider />
        </Col>
+       <Divider id="basicamenities" />
        {property.basicAmenities && (
-        <Col xs={24} sm={12} id="basicamenities">
-         <Title level={3}>Commodités de base :</Title>
-         <List
-          itemLayout="horizontal"
-          dataSource={property.basicAmenities}
-          renderItem={(item, index) => {
-           const { avatar, title, description } = getbasicAmenityDetails(item);
+        <Col xs={24} sm={24}>
+         <Title level={3}>Commodités de base:</Title>
+         <br />
+         <Row gutter={[0, 16]}>
+          {property.basicAmenities.map((amenity, index) => {
+           const { avatar, title, description } =
+            getbasicAmenityDetails(amenity);
            return (
-            <List.Item key={index}>
-             <List.Item.Meta
-              avatar={avatar}
-              title={title}
-              description={description}
-             />
-            </List.Item>
+            <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
+             <Card
+              bordered={false}
+              hoverable={false}
+              cover={avatar}
+              style={{ width: '100%', textAlign: 'center' }}
+             >
+              <Meta title={title} />
+             </Card>
+            </Col>
            );
-          }}
-         />
+          })}
+         </Row>
         </Col>
        )}
-
-       <Col xs={24} sm={24} id="map&nearbyplaces">
+       <Divider id="map&nearbyplaces" />
+       <Col xs={24} sm={24}>
         <Title level={3}>Où se situe le logement</Title>
         <MapMarker1
          latitude={property.latitude}
@@ -496,95 +501,108 @@ const PropertyDetails = () => {
          longitude={property.longitude}
         />
        </Col>
-       <Col xs={24} sm={12} id="equipements">
-        <Title level={3}>Équipement hors du commun:</Title>
-        <List
-         itemLayout="horizontal"
-         dataSource={property.uncommonAmenities}
-         renderItem={(item, index) => {
-          const { avatar, title, description } =
-           getuncommonAmenityDetails(item);
-          return (
-           <List.Item key={index}>
-            <List.Item.Meta
-             avatar={avatar}
-             title={title}
-             description={description}
-            />
-           </List.Item>
-          );
-         }}
-        />
+       <Divider id="equipements" />
+       <Col xs={24} sm={8}>
+        {property.uncommonAmenities && (
+         <Col xs={24} sm={24}>
+          <Title level={3}>Équipement hors du commun:</Title>
+          <br />
+          <Row gutter={[0, 16]}>
+           {property.uncommonAmenities.map((uncommonAmenity, index) => {
+            const { avatar, title, description } =
+             getuncommonAmenityDetails(uncommonAmenity);
+            return (
+             <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
+              <Card
+               bordered={false}
+               hoverable={false}
+               cover={avatar}
+               style={{ width: '100%', textAlign: 'center' }}
+              >
+               <Meta title={title} />
+              </Card>
+             </Col>
+            );
+           })}
+          </Row>
+         </Col>
+        )}
        </Col>
-       <Col xs={24} sm={12}>
-        {property.safetyFeatures !== null && (
-         <div>
+       <Col xs={24} sm={8}>
+        {property.safetyFeatures && (
+         <Col xs={24} sm={24}>
           <Title level={3}>Équipement de sécurité:</Title>
-          <List
-           itemLayout="horizontal"
-           dataSource={property.safetyFeatures}
-           renderItem={(item, index) => {
-            const { avatar, title, description } = getSecurityEquipment(item);
-            return (
-             <List.Item key={index}>
-              <List.Item.Meta
-               avatar={avatar}
-               title={title}
-               description={description}
-              />
-             </List.Item>
-            );
-           }}
-          />
-         </div>
-        )}
-        {property.elements !== null && (
-         <div>
           <br />
+          <Row gutter={[0, 16]}>
+           {property.safetyFeatures.map((safetyFeature, index) => {
+            const { avatar, title, description } =
+             getSecurityEquipment(safetyFeature);
+            return (
+             <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
+              <Card
+               bordered={false}
+               hoverable={false}
+               cover={avatar}
+               style={{ width: '100%', textAlign: 'center' }}
+              >
+               <Meta title={title} />
+              </Card>
+             </Col>
+            );
+           })}
+          </Row>
+         </Col>
+        )}
+       </Col>
+       <Col xs={24} sm={8}>
+        {property.elements && (
+         <Col xs={24} sm={24}>
           <Title level={3}>Équipement supplémentaire:</Title>
-          <List
-           itemLayout="horizontal"
-           dataSource={property.elements}
-           renderItem={(item, index) => {
-            const { avatar, title, description } = getElements(item);
-            return (
-             <List.Item key={index}>
-              <List.Item.Meta
-               avatar={avatar}
-               title={title}
-               description={description}
-              />
-             </List.Item>
-            );
-           }}
-          />
-         </div>
-        )}
-       </Col>
-       <Col xs={24} sm={24} id="rules">
-        {property.houseRules !== null && (
-         <div>
           <br />
-          <Title level={3}>Règles de la maison:</Title>
-          <List
-           itemLayout="horizontal"
-           dataSource={property.houseRules}
-           renderItem={(item, index) => {
-            const { avatar, title, description } = getHouseRules(item);
+          <Row gutter={[0, 16]}>
+           {property.elements.map((element, index) => {
+            const { avatar, title, description } = getElements(element);
             return (
-             <List.Item key={index}>
-              <List.Item.Meta
-               avatar={avatar}
-               title={title}
-               description={description}
-              />
-             </List.Item>
+             <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
+              <Card
+               bordered={false}
+               hoverable={false}
+               cover={avatar}
+               style={{ width: '100%', textAlign: 'center' }}
+              >
+               <Meta title={title} />
+              </Card>
+             </Col>
             );
-           }}
-          />
-         </div>
+           })}
+          </Row>
+         </Col>
         )}
        </Col>
+       <Divider id="rules" />
+       {property.houseRules && (
+        <Col xs={24} sm={24}>
+         <Title level={3}>Règles de la maison:</Title>
+         <br />
+         <Row gutter={[0, 16]}>
+          {property.houseRules.map((houseRule, index) => {
+           const { avatar, title, description } = getHouseRules(houseRule);
+           return (
+            <Col xs={24} md={4} key={index} style={{ maxWidth: '100%' }}>
+             <Card
+              bordered={false}
+              hoverable={false}
+              cover={avatar}
+              style={{ width: '100%', textAlign: 'center' }}
+             >
+              <Meta title={title} />
+             </Card>
+            </Col>
+           );
+          })}
+         </Row>
+        </Col>
+       )}
       </Row>
      </Content>
     </Layout>

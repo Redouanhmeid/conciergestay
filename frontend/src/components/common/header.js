@@ -82,7 +82,7 @@ const Head = () => {
   onClose();
  };
  useEffect(() => {
-  if (User) {
+  if (User && User.status !== 'EN ATTENTE') {
    getUserData(User.email);
   }
  }, [User]);

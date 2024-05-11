@@ -5,7 +5,7 @@ import {
  Spin,
  Image,
  Button,
- Space,
+ Flex,
  Typography,
  Tag,
  Rate,
@@ -14,7 +14,7 @@ import {
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import useNearbyPlaces from '../../hooks/useNearbyPlaces';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { useBreakpoint } = Grid;
 
 const NearbyPlacesCarousel = ({ latitude, longitude }) => {
@@ -52,7 +52,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
   if (screens.xs) {
    return Math.min(1, totalSlides);
   } else {
-   return Math.min(4, totalSlides);
+   return Math.min(5, totalSlides);
   }
  };
 
@@ -65,7 +65,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
 
     <Carousel
      ref={slider1}
-     slidesToShow={4}
+     slidesToShow={getSlidesToShow(dataArray)}
      dots={false}
      autoplay
      style={{ padding: '0 28px' }}
@@ -87,6 +87,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
     <div className="nearbyplacescarouselarrow left">
      <LeftOutlined onClick={() => slider2.current.prev()} />
     </div>
+
     <Carousel
      ref={slider2}
      slidesToShow={getSlidesToShow(PlacesToEat)}
@@ -100,6 +101,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
       </div>
      ))}
     </Carousel>
+
     <div className="nearbyplacescarouselarrow right">
      <RightOutlined onClick={() => slider2.current.next()} />
     </div>
@@ -137,7 +139,10 @@ const Place = ({ place }) => {
  return (
   <Card
    cover={
-    <div className="nearbyplacescarousel">
+    <div
+     className="nearbyplacescarousel"
+     style={{ borderTopLeftRadius: '12px', borderTopRightRadius: '12px' }}
+    >
      <Image
       alt={place.name}
       src={place.photo}
@@ -154,24 +159,24 @@ const Place = ({ place }) => {
    <Card.Meta
     title={place.name}
     description={
-     <Space wrap>
-      <Text size={14}>Note</Text>{' '}
-      <Rate
-       allowHalf
-       disabled
-       defaultValue={place.rating}
-       style={{ color: '#cfaf83', fontSize: 14 }}
-      />{' '}
-      {place.rating}{' '}
+     <Flex justify="space-between" align="center">
+      <div>
+       <Rate
+        allowHalf
+        disabled
+        defaultValue={place.rating}
+        style={{ color: '#cfaf83', fontSize: 12 }}
+       />{' '}
+       {place.rating}
+      </div>
       <Button
        href={place.url}
        target="_blank"
-       type="default"
-       shape="round"
-       size={36}
+       type="link"
+       size={40}
        icon={<i className="fa-lg fa-light fa-map-location-dot"></i>}
       />
-     </Space>
+     </Flex>
     }
    />
   </Card>

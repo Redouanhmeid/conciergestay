@@ -30,7 +30,9 @@ const MapMarker1 = React.memo(({ latitude, longitude }) => {
     style={{
      display: 'inline-block',
      width: '100%',
-     height: '400px',
+     height: '520px',
+     borderRadius: '12px',
+     overflow: 'hidden',
     }}
    >
     <Map defaultCenter={center} defaultZoom={14} mapId={MapConfig.MAP_ID}>

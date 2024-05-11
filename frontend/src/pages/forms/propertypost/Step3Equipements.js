@@ -83,31 +83,10 @@ const Step3Equipements = ({ next, prev, values }) => {
             <Checkbox value="pool">Piscine</Checkbox>
            </Col>
            <Col span={24}>
-            <Checkbox value="jacuzzi">Jacuzzi</Checkbox>
-           </Col>
-           <Col span={24}>
-            <Checkbox value="patio">Patio</Checkbox>
-           </Col>
-           <Col span={24}>
-            <Checkbox value="barbecue">Barbecue</Checkbox>
-           </Col>
-           <Col span={24}>
             <Checkbox value="outdoorDining">Espace repas en plein air</Checkbox>
            </Col>
            <Col span={24}>
-            <Checkbox value="firePit">Brasero</Checkbox>
-           </Col>
-           <Col span={24}>
-            <Checkbox value="billiards">Billard</Checkbox>
-           </Col>
-           <Col span={24}>
             <Checkbox value="fireplace">Cheminée</Checkbox>
-           </Col>
-           <Col span={24}>
-            <Checkbox value="piano">Piano</Checkbox>
-           </Col>
-           <Col span={24}>
-            <Checkbox value="fitnessEquipment">Appareils de fitness</Checkbox>
            </Col>
            <Col span={24}>
             <Checkbox value="lakeAccess">Accès au lac</Checkbox>
@@ -117,9 +96,6 @@ const Step3Equipements = ({ next, prev, values }) => {
            </Col>
            <Col span={24}>
             <Checkbox value="skiAccess">Accessible à skis</Checkbox>
-           </Col>
-           <Col span={24}>
-            <Checkbox value="outdoorShower">Douche extérieure</Checkbox>
            </Col>
           </Row>
          </Checkbox.Group>

@@ -36,14 +36,9 @@ const Step4Photos = ({ next, prev, values }) => {
  const { uploadPhotos, uploading } = useUploadPhotos();
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
- const [previewTitle, setPreviewTitle] = useState('');
  const [fileList, setFileList] = useState([]);
  const [upload, setUpload] = useState(false);
 
- const handleCancel = () => setPreviewOpen(false);
- const handlePhotosChange = (newFileList) => {
-  setFileList(newFileList);
- };
  const handlePreview = async (file) => {
   if (!file.url && !file.preview) {
    file.preview = await getBase64(file.originFileObj);
@@ -51,9 +46,6 @@ const Step4Photos = ({ next, prev, values }) => {
   file.error = false;
   setPreviewImage(file.url || file.preview);
   setPreviewOpen(true);
-  setPreviewTitle(
-   file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
-  );
  };
 
  const handleChange = async ({ fileList: newFileList }) => {
@@ -135,14 +127,23 @@ const Step4Photos = ({ next, prev, values }) => {
           onChange={handleChange}
           onRemove={handleRemove}
           disabled={upload}
-          beforeUpload={(file) => false}
          >
           {fileList.length >= 8 ? null : uploadButton}
          </Upload>
         </ImgCrop>
-        <Modal open={previewOpen} footer={null} onCancel={handleCancel}>
-         <Image src={previewImage} />
-        </Modal>
+        {previewOpen && (
+         <Image
+          wrapperStyle={{
+           display: 'none',
+          }}
+          preview={{
+           visible: previewOpen,
+           onVisibleChange: (visible) => setPreviewOpen(visible),
+           afterOpenChange: (visible) => !visible && setPreviewImage(''),
+          }}
+          src={previewImage}
+         />
+        )}
        </Col>
       </Row>
       <br />

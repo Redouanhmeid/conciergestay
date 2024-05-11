@@ -8,7 +8,7 @@ const useCreateProperty = () => {
  const createProperty = async (property) => {
   setLoading(true);
   try {
-   const response = await fetch('/api/v1/propertjies', {
+   const response = await fetch('/api/v1/properties', {
     method: 'POST',
     headers: {
      'Content-Type': 'application/json',

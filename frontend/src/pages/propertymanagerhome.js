@@ -22,6 +22,9 @@ const PropertyManagerHome = () => {
  const display = (id) => {
   navigate('/propertydetails', { state: { id } });
  };
+ const edit = (id) => {
+  navigate('/editproperty', { state: { id } });
+ };
 
  useEffect(() => {
   if (user) {
@@ -34,7 +37,7 @@ const PropertyManagerHome = () => {
    fetchProperties(userData.id);
   }
  }, [isLoading]);
- console.log(properties);
+
  if (isLoading) {
   return (
    <div className="loading">
@@ -76,7 +79,7 @@ const PropertyManagerHome = () => {
            }
            actions={[
             <EyeOutlined key="display" onClick={() => display(property.id)} />,
-            <EditOutlined key="edit" />,
+            <EditOutlined key="edit" onClick={() => edit(property.id)} />,
             <EllipsisOutlined key="ellipsis" />,
            ]}
           >

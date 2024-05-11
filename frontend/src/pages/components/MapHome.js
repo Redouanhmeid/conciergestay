@@ -101,6 +101,8 @@ const MapHome = React.memo(({ isLoaded, city }) => {
     display: 'inline-block',
     width: '100%',
     height: '520px',
+    borderRadius: '12px',
+    overflow: 'hidden',
    }}
   >
    <Map

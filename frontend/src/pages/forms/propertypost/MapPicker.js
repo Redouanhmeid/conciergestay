@@ -89,6 +89,8 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
      display: 'inline-block',
      width: '100%',
      height: '400px',
+     borderRadius: '12px',
+     overflow: 'hidden',
     }}
    >
     <Autocomplete
@@ -107,7 +109,13 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
     >
      <input
       placeholder="Indiquer une place"
-      style={{ width: '100%', padding: '0.5rem' }}
+      style={{
+       width: '100%',
+       padding: '0.5rem',
+       borderTopLeftRadius: '12px',
+       borderTopRightRadius: '12px',
+       border: '1px solid #ddc7a8',
+      }}
      />
     </Autocomplete>
     <Map

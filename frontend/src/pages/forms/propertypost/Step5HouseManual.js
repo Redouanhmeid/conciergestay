@@ -75,7 +75,7 @@ const Step5HouseManual = ({ prev, values }) => {
     setTimeout(() => {
      // Navigate to the dashboard
      navigate('/dashboard');
-    }, 2000);
+    }, 1000);
    }
   } catch (error) {
    console.error('Error:', error);
@@ -222,7 +222,7 @@ const Step5HouseManual = ({ prev, values }) => {
           loading={loading}
           disabled={success}
          >
-          Enrgistrer
+          Enregistrer
          </Button>
         </Form.Item>
        </Col>

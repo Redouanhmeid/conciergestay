@@ -31,8 +31,8 @@ const Step2CheckInOut = ({ next, prev, values }) => {
  const [AccessToProperty, setAccessToProperty] = useState([]);
  const [LateCheckOutPolicy, setLateCheckOutPolicy] = useState([]);
  const [BeforeCheckOut, setBeforeCheckOut] = useState([]);
- const [GuestAccessInfo, setGuestAccessInfo] = useState([]);
- const [AdditionalCheckOutInfo, setAdditionalCheckOutInfo] = useState([]);
+ const [GuestAccessInfo, setGuestAccessInfo] = useState('');
+ const [AdditionalCheckOutInfo, setAdditionalCheckOutInfo] = useState('');
 
  const submitFormData = () => {
   values.checkInTime = CheckInTime || dayjs().hour(12).minute(0);
