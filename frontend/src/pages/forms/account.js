@@ -187,6 +187,7 @@ const Account = () => {
        onFinish={onFinish}
        autoComplete="off"
        labelAlign="left"
+       size="large"
        initialValues={{
         lastname: userData.lastname,
         firstname: userData.firstname,

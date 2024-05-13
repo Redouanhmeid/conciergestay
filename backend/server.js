@@ -29,9 +29,9 @@ app.use(cors());
 
 // require routes
 const PropertyManagerRouter = require('./routes/propertymanager');
-const GuestRouter = require('./routes/guest');
 const PropertyRouter = require('./routes/property');
 const NearbyPlaceRouter = require('./routes/nearbyplace');
+const AmenityRouter = require('./routes/amenity');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -67,9 +67,9 @@ db
 // routes
 // all of our routes will be prefixed with /api/v1/
 app.use('/api/v1/propertymanagers', PropertyManagerRouter);
-app.use('/api/v1/guests', GuestRouter);
 app.use('/api/v1/properties', PropertyRouter);
 app.use('/api/v1/nearbyplaces', NearbyPlaceRouter);
+app.use('/api/v1/amenities', AmenityRouter);
 
 // Configure multer to store files in the 'uploads' directory
 let counter = 1;

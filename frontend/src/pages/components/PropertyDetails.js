@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
  Anchor,
  Layout,
@@ -8,7 +8,7 @@ import {
  Image,
  Rate,
  Divider,
- Space,
+ Flex,
  Tag,
  Carousel,
  Row,
@@ -16,8 +16,14 @@ import {
  FloatButton,
  Button,
  Card,
+ Modal,
 } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import {
+ ArrowLeftOutlined,
+ PlusOutlined,
+ EyeOutlined,
+ SettingOutlined,
+} from '@ant-design/icons';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -25,6 +31,10 @@ import MapMarker1 from './MapMarker1';
 import NearbyPlacesCarousel from './nearbyplacescarousel';
 import { Helmet } from 'react-helmet';
 import useGetProperty from '../../hooks/useGetProperty';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useUserData } from '../../hooks/useUserData';
+import useAmenity from '../../hooks/useAmenity';
+import ReactPlayer from 'react-player';
 
 const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
@@ -36,55 +46,39 @@ const getbasicAmenityDetails = (item) => {
    return {
     avatar: <i className="icon-style fa-light fa-wifi"></i>,
     title: 'Wifi',
-    description:
-     "Profitez d'un accès Internet haut débit pendant votre séjour.",
    };
   case 'television':
    return {
     avatar: <i className="icon-style fa-light fa-tv"></i>,
     title: 'Télévision',
-    description:
-     'Détendez-vous et regardez vos émissions préférées sur une télévision grand écran.',
    };
   case 'kitchen':
    return {
     avatar: <i className="icon-style fa-light fa-microwave"></i>,
     title: 'Cuisine',
-    description:
-     'Préparez vos repas à votre convenance dans une cuisine entièrement équipée',
    };
   case 'washingMachine':
    return {
     avatar: <i className="icon-style fa-light fa-washing-machine"></i>,
     title: 'Machine à laver',
-    description: 'Faites votre lessive facilement pendant votre séjour.',
    };
   case 'freeParking':
    return {
     avatar: <i className="icon-style fa-light fa-square-parking"></i>,
     title: 'Parking gratuit',
-    description: "Profitez d'un parking gratuit pour votre véhicule.",
    };
   case 'airConditioning':
    return {
     avatar: <i className="icon-style fa-light fa-snowflake"></i>,
     title: 'Climatisation',
-    description:
-     'Restez au frais grâce à la climatisation disponible dans la propriété.',
    };
   case 'dedicatedWorkspace':
    return {
     avatar: <i className="icon-style fa-light fa-laptop"></i>,
     title: 'Espace de travail',
-    description:
-     'Travaillez confortablement avec un espace de travail dédié dans la propriété.',
    };
   default:
-   return {
-    avatar: null,
-    title: '',
-    description: '',
-   };
+   return { avatar: null, title: '' };
  }
 };
 const getuncommonAmenityDetails = (item) => {
@@ -93,100 +87,39 @@ const getuncommonAmenityDetails = (item) => {
    return {
     avatar: <i className="icon-style fa-light fa-water-ladder"></i>,
     title: 'Piscine',
-    description:
-     "Profitez d'une piscine pour vous détendre et vous rafraîchir.",
-   };
-  case 'jacuzzi':
-   return {
-    avatar: <i className="icon-style fa-light fa-hot-tub-person"></i>,
-    title: 'Jacuzzi',
-    description: 'Détendez-vous dans un jacuzzi pour une expérience apaisante.',
-   };
-  case 'patio':
-   return {
-    avatar: <i className="icon-style fa-light fa-couch"></i>,
-    title: 'Patio',
-    description:
-     "Profitez d'un espace extérieur pour vous détendre et profiter de l'air frais.",
-   };
-  case 'barbecue':
-   return {
-    avatar: <i className="icon-style fa-light fa-grill-hot"></i>,
-    title: 'Barbecue',
-    description:
-     'Organisez des grillades en plein air avec un barbecue à disposition.',
    };
   case 'outdoorDining':
    return {
     avatar: <i className="icon-style fa-light fa-plate-utensils"></i>,
-    title: 'Salle à manger extérieure',
-    description: "Dînez en plein air dans un espace dédié à l'extérieur.",
-   };
-  case 'firePit':
-   return {
-    avatar: <i className="icon-style fa-light fa-fire"></i>,
-    title: 'Foyer extérieur',
-    description: "Rassemblez-vous autour d'un feu de camp en plein air.",
-   };
-  case 'billiards':
-   return {
-    avatar: <i className="icon-style fa-light fa-pool-8-ball"></i>,
-    title: 'Billard',
-    description:
-     'Amusez-vous avec une partie de billard entre amis ou en famille.',
-   };
-  case 'piano':
-   return {
-    avatar: <i className="icon-style fa-light fa-piano-keyboard"></i>,
-    title: 'Piano',
-    description: 'Jouez de la musique ou détendez-vous en écoutant du piano.',
+    title: 'Espace repas en plein air',
    };
   case 'fireplace':
    return {
     avatar: <i className="icon-style fa-light fa-fireplace"></i>,
     title: 'Cheminée',
-    description: "Réchauffez-vous près d'une cheminée confortable.",
    };
   case 'fitnessEquipment':
    return {
     avatar: <i className="icon-style fa-light fa-dumbbell"></i>,
     title: 'Équipement de fitness',
-    description:
-     'Maintenez votre routine de fitness avec un équipement adapté.',
    };
   case 'lakeAccess':
    return {
     avatar: <i className="icon-style fa-light fa-water"></i>,
     title: 'Accès au lac',
-    description: "Profitez de l'accès à un lac pour des activités nautiques.",
    };
   case 'beachAccess':
    return {
     avatar: <i className="icon-style fa-light fa-umbrella-beach"></i>,
     title: 'Accès à la plage',
-    description:
-     "Profitez de l'accès à une plage pour vous détendre au bord de l'eau.",
    };
   case 'skiAccess':
    return {
     avatar: <i className="icon-style fa-light fa-person-skiing"></i>,
     title: 'Accès aux pistes de ski',
-    description:
-     "Profitez de l'accès aux pistes de ski pour des vacances hivernales.",
-   };
-  case 'outdoorShower':
-   return {
-    avatar: <i className="icon-style fa-light fa-shower"></i>,
-    title: 'Douche extérieure',
-    description:
-     'Rafraîchissez-vous avec une douche en plein air après une journée ensoleillée.',
    };
   default:
-   return {
-    avatar: null,
-    title: '',
-    description: '',
-   };
+   return { avatar: null, title: '' };
  }
 };
 
@@ -196,36 +129,24 @@ const getSecurityEquipment = (item) => {
    return {
     avatar: <i className="icon-style fa-light fa-sensor-cloud"></i>,
     title: 'Détecteur de fumée',
-    description:
-     "Équipement de sécurité essentiel pour détecter la fumée en cas d'incendie.",
    };
   case 'firstAidKit':
    return {
     avatar: <i className="icon-style fa-light fa-suitcase-medical"></i>,
     title: 'Kit de premiers secours',
-    description:
-     "Équipement médical de base pour les premiers secours en cas d'urgence.",
    };
   case 'fireExtinguisher':
    return {
     avatar: <i className="icon-style fa-light fa-fire-extinguisher"></i>,
     title: 'Extincteur',
-    description:
-     "Équipement de lutte contre l'incendie pour éteindre les petits incendies.",
    };
   case 'carbonMonoxideDetector':
    return {
     avatar: <i className="icon-style fa-light fa-sensor"></i>,
     title: 'Détecteur de monoxyde de carbone',
-    description:
-     'Équipement de sécurité pour détecter le monoxyde de carbone, un gaz incolore et inodore.',
    };
   default:
-   return {
-    avatar: null,
-    title: '',
-    description: '',
-   };
+   return { avatar: null, title: '' };
  }
 };
 const getElements = (item) => {
@@ -234,29 +155,19 @@ const getElements = (item) => {
    return {
     avatar: <i className="icon-style fa-light fa-camera-cctv"></i>,
     title: 'Caméras de surveillance extérieures',
-    description:
-     'Sécurité renforcée avec des caméras de surveillance extérieures 24h/24.',
    };
   case 'sonometers':
    return {
     avatar: <i className="icon-style fa-light fa-gauge-low"></i>,
     title: 'Sonomètres',
-    description:
-     'Surveillez les niveaux sonores pour maintenir un environnement serein pour tous les clients.',
    };
   case 'weapons':
    return {
     avatar: <i className="icon-style fa-light fa-crosshairs"></i>,
     title: 'Armes',
-    description:
-     "Personnel de sécurité formé et systèmes de détection d'armes pour une sécurité accrue.",
    };
   default:
-   return {
-    avatar: null,
-    title: '',
-    description: '',
-   };
+   return { avatar: null, title: '' };
  }
 };
 const getHouseRules = (item) => {
@@ -265,50 +176,34 @@ const getHouseRules = (item) => {
    return {
     avatar: <i className="icon-style fa-light fa-volume-slash"></i>,
     title: 'Pas de bruit après 23h',
-    description:
-     'Respectez le calme des voisins en évitant les bruits excessifs.',
    };
   case 'noFoodDrinks':
    return {
     avatar: <i className="icon-style fa-light fa-utensils-slash"></i>,
     title: 'Pas de nourriture ni de boissons dans les chambres à coucher',
-    description:
-     "Pour maintenir la propreté, veuillez ne pas apporter de nourriture ou de boissons à l'intérieur des chambres à coucher.",
    };
   case 'noParties':
    return {
     avatar: <i className="icon-style fa-light fa-champagne-glasses"></i>,
     title: "Pas de fêtes ni d'événements",
-    description:
-     'Pour garantir la tranquillité des autres résidents, les fêtes ne sont pas autorisées.',
    };
   case 'noSmoking':
    return {
     avatar: <i className="icon-style fa-light fa-ban-smoking"></i>,
     title: 'Défense de fumer',
-    description:
-     "L'intérieur de la propriété est strictement non-fumeur. Merci de respecter cette règle.",
    };
   case 'petsAllowed':
    return {
     avatar: <i className="icon-style fa-light fa-paw-simple"></i>,
     title: "Pas d'animaux de compagnie",
-    description:
-     'Les animaux de compagnie sont les bienvenus, mais veuillez respecter les règles concernant les animaux domestiques.',
    };
   case 'additionalRules':
    return {
     avatar: <i className="icon-style fa-light fa-circle-info"></i>,
     title: 'Règles supplémentaires',
-    description:
-     'Veuillez vous référer aux règles supplémentaires fournies pour garantir un séjour agréable pour tous.',
    };
   default:
-   return {
-    avatar: null,
-    title: '',
-    description: '',
-   };
+   return { avatar: null, title: '' };
  }
 };
 function scrollToAnchor(anchorId) {
@@ -321,13 +216,64 @@ const PropertyDetails = () => {
  const location = useLocation();
  const { id } = location.state;
  const { property, loading } = useGetProperty(id);
+ const { user } = useAuthContext();
+ const User = user || JSON.parse(localStorage.getItem('user'));
+ const { userData, getUserData } = useUserData();
  const navigate = useNavigate();
+ const { getAllAmenities, getOneAmenity } = useAmenity();
+ const [amenities, setAmenities] = useState([]);
+ const [selectedAmenityDetails, setSelectedAmenityDetails] = useState(null);
+ const [isModalVisible, setIsModalVisible] = useState(false);
+ const [selectedAmenity, setSelectedAmenity] = useState(null);
 
+ useEffect(() => {
+  if (User && User.status !== 'EN ATTENTE') {
+   getUserData(User.email);
+  }
+ }, [User]);
+ useEffect(() => {
+  const fetchData = async (id) => {
+   const data = await getAllAmenities(id);
+   if (data) {
+    setAmenities(data);
+   }
+  };
+  if (property.id) {
+   fetchData(property.id);
+  }
+ }, [property.id]);
+ // Check if an amenity exists
+ const hasAmenity = (amenityName) => {
+  return amenities.some((amenity) => amenity.name === amenityName);
+ };
  const goBack = () => {
   navigate(-1); // This will navigate back to the previous page
  };
  const nearbyPlace = () => {
   navigate('/createnearbyplace');
+ };
+ const AddAmenity = (amenity) => {
+  navigate('/addamenity', { state: { amenity: amenity, id: property.id } });
+ };
+ const EditAmenity = (id) => {
+  navigate('/editamenity', { state: { id } });
+ };
+ const showModal = async (amenityName) => {
+  const amenity = amenities.find((a) => a.name === amenityName);
+  if (amenity) {
+   const amenityDetails = await getOneAmenity(amenity.id);
+   setSelectedAmenityDetails(amenityDetails);
+   setIsModalVisible(true);
+  }
+ };
+
+ const handleOk = () => {
+  setIsModalVisible(false);
+  setSelectedAmenityDetails(null);
+ };
+
+ const handleCancel = () => {
+  setIsModalVisible(false);
  };
  // Check if the photos property is a string
  if (typeof property.photos === 'string') {
@@ -410,7 +356,7 @@ const PropertyDetails = () => {
        ]}
       />
      </div>
-     <Content className="container-fluid">
+     <Content className="container">
       <Button
        type="default"
        shape="round"
@@ -419,12 +365,14 @@ const PropertyDetails = () => {
       >
        Retour
       </Button>
-      <FloatButton
-       icon={<i className="fa-light fa-location-plus"></i>}
-       tooltip={<div>Ajouter un lieu à proximité</div>}
-       type="primary"
-       onClick={nearbyPlace}
-      />
+      {(userData.role === 'manager' || userData.role === 'admin') && (
+       <FloatButton
+        icon={<i className="fa-light fa-location-plus"></i>}
+        tooltip={<div>Ajouter un lieu à proximité</div>}
+        type="primary"
+        onClick={nearbyPlace}
+       />
+      )}
       <Row gutter={[32, 32]}>
        <Col xs={24} sm={12} id="desc">
         <div
@@ -448,17 +396,17 @@ const PropertyDetails = () => {
          <Text> (107 avis)</Text>
         </div>
         <Title level={3}>{property.price} Dh / Nuit</Title>
-        <Space wrap>
-         <Tag>
-          <Text size={18}>{property.rooms} Chambres</Text>
+        <Flex gap="4px 0" wrap>
+         <Tag icon={<i className="tag-icon-style fa-light fa-bed-front"></i>}>
+          {property.rooms} Chambres
          </Tag>
-         <Tag>
-          <Text size={18}>{property.capacity} Capacité Personne</Text>
+         <Tag icon={<i className="tag-icon-style fa-light fa-users"></i>}>
+          {property.capacity} Voyageurs
          </Tag>
-         <Tag>
-          <Text size={18}>{property.beds} Lit</Text>
+         <Tag icon={<i className="tag-icon-style fa-light fa-bed"></i>}>
+          {property.beds} Lit
          </Tag>
-        </Space>
+        </Flex>
         <Divider />
         <Paragraph>{property.description}</Paragraph>
        </Col>
@@ -467,24 +415,117 @@ const PropertyDetails = () => {
         <Col xs={24} sm={24}>
          <Title level={3}>Commodités de base:</Title>
          <br />
-         <Row gutter={[0, 16]}>
+         <Row gutter={[16, 16]}>
           {property.basicAmenities.map((amenity, index) => {
-           const { avatar, title, description } =
-            getbasicAmenityDetails(amenity);
+           const { avatar, title } = getbasicAmenityDetails(amenity);
+           const amenityExists = hasAmenity(amenity); // Determine if the current amenity exists
            return (
-            <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
+            <Col
+             xs={12}
+             md={4}
+             key={index}
+             style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+             }}
+            >
              <Card
               bordered={false}
               hoverable={false}
-              cover={avatar}
-              style={{ width: '100%', textAlign: 'center' }}
+              cover={
+               <div
+                onClick={() => amenityExists && showModal(amenity)}
+                style={{ cursor: amenityExists ? 'pointer' : 'default' }}
+               >
+                {avatar}
+               </div>
+              }
+              style={{
+               textAlign: 'center',
+               width: '90%',
+               display: 'flex',
+               flexDirection: 'column',
+               alignItems: 'center',
+              }}
              >
-              <Meta title={title} />
+              <Meta
+               title={title}
+               description={
+                (userData.role === 'manager' || userData.role === 'admin') && (
+                 <>
+                  {!amenityExists && (
+                   <Button
+                    icon={<PlusOutlined />}
+                    onClick={() => AddAmenity(amenity)}
+                   >
+                    Ajouter une carte
+                   </Button>
+                  )}
+                  {amenityExists && (
+                   <Button
+                    icon={<EyeOutlined />}
+                    onClick={() => showModal(amenity)}
+                   >
+                    Voir la carte
+                   </Button>
+                  )}
+                 </>
+                )
+               }
+              />
              </Card>
             </Col>
            );
           })}
          </Row>
+         {selectedAmenityDetails && (
+          <Modal
+           title={selectedAmenityDetails.name.toUpperCase()}
+           open={isModalVisible}
+           onOk={handleOk}
+           onCancel={handleCancel}
+           footer={
+            (userData.role === 'manager' || userData.role === 'admin') && (
+             <Button
+              icon={<SettingOutlined />}
+              type="primary"
+              onClick={() => EditAmenity(selectedAmenityDetails.id)}
+             >
+              Modifier la carte
+             </Button>
+            )
+           }
+          >
+           <Flex vertical align="center">
+            {ReactPlayer.canPlay(selectedAmenityDetails.media) ? (
+             <ReactPlayer
+              url={selectedAmenityDetails.media}
+              controls
+              width="100%"
+              height={300}
+             />
+            ) : (
+             <Image
+              width={300}
+              src={selectedAmenityDetails.media}
+              preview={false}
+             />
+            )}
+            <br />
+            <Text>{selectedAmenityDetails.description}</Text>
+            {selectedAmenityDetails.name === 'wifi' && (
+             <>
+              <Divider>
+               <Text strong>Accéder au Wi-Fi</Text>
+              </Divider>
+              <Text>Nom de réseau : {selectedAmenityDetails.wifiName}</Text>
+              <Text>Mot de passe : {selectedAmenityDetails.wifiPassword}</Text>
+             </>
+            )}
+           </Flex>
+          </Modal>
+         )}
         </Col>
        )}
        <Divider id="map&nearbyplaces" />
@@ -509,7 +550,7 @@ const PropertyDetails = () => {
           <br />
           <Row gutter={[0, 16]}>
            {property.uncommonAmenities.map((uncommonAmenity, index) => {
-            const { avatar, title, description } =
+            const { avatar, title } =
              getuncommonAmenityDetails(uncommonAmenity);
             return (
              <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
@@ -535,8 +576,7 @@ const PropertyDetails = () => {
           <br />
           <Row gutter={[0, 16]}>
            {property.safetyFeatures.map((safetyFeature, index) => {
-            const { avatar, title, description } =
-             getSecurityEquipment(safetyFeature);
+            const { avatar, title } = getSecurityEquipment(safetyFeature);
             return (
              <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
               <Card
@@ -561,7 +601,7 @@ const PropertyDetails = () => {
           <br />
           <Row gutter={[0, 16]}>
            {property.elements.map((element, index) => {
-            const { avatar, title, description } = getElements(element);
+            const { avatar, title } = getElements(element);
             return (
              <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
               <Card
@@ -586,7 +626,7 @@ const PropertyDetails = () => {
          <br />
          <Row gutter={[0, 16]}>
           {property.houseRules.map((houseRule, index) => {
-           const { avatar, title, description } = getHouseRules(houseRule);
+           const { avatar, title } = getHouseRules(houseRule);
            return (
             <Col xs={24} md={4} key={index} style={{ maxWidth: '100%' }}>
              <Card

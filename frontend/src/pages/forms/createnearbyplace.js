@@ -42,7 +42,7 @@ const getBase64 = (file) =>
 
 const CreateNearbyPlace = () => {
  const { loading, error, success, createNearbyPlace } = useCreateNearbyPlace();
- const { uploadPhoto, uploading } = useUploadPhotos();
+ const { uploadPhoto } = useUploadPhotos();
  const [form] = Form.useForm();
  const [Latitude, setLatitude] = useState(null);
  const [Longitude, setLongitude] = useState(null);

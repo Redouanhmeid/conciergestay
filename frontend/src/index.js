@@ -20,6 +20,8 @@ import PropertyDetails from './pages/components/PropertyDetails';
 import CreateNearbyPlace from './pages/forms/createnearbyplace';
 import AddProperty from './pages/forms/propertypost/AddProperty';
 import EditProperty from './pages/forms/propertyedit/EditProperty';
+import AddAmenity from './pages/forms/amenity/AddAmenity';
+import EditAmenity from './pages/forms/amenity/EditAmenity';
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
  { path: '/dashboard', element: <PropertyManagerHome /> },
@@ -33,6 +35,8 @@ const router = createBrowserRouter([
  { path: '/propertydetails', element: <PropertyDetails /> },
  { path: '/createnearbyplace', element: <CreateNearbyPlace /> },
  { path: '/editproperty', element: <EditProperty /> },
+ { path: '/addamenity', element: <AddAmenity /> },
+ { path: '/editamenity', element: <EditAmenity /> },
 ]);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -56,6 +60,9 @@ root.render(
      siderBg: 'rgb(251, 251, 251)',
      triggerBg: 'rgb(241, 241, 241)',
      triggerColor: 'rgb(43, 44, 50)',
+     headerHeight: 80,
+     footerPadding: '24px 60px',
+     headerPadding: '0 40px',
     },
     Menu: {
      itemActiveBg: 'rgb(250, 246, 241)',
@@ -106,6 +113,17 @@ root.render(
      lineWidthBold: 4,
      paddingXS: 8,
      lineHeight: 2.2,
+    },
+    Tag: {
+     defaultColor: 'rgb(43, 44, 50)',
+     defaultBg: 'rgba(255, 255, 255, 0)',
+     fontSize: 16,
+     fontSizeIcon: 16,
+     fontSizeSM: 16,
+    },
+    Radio: {
+     buttonPaddingInline: 60,
+     fontSize: 16,
     },
    },
   }}

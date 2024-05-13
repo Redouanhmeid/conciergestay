@@ -47,6 +47,7 @@ const Login = () => {
        onFinish={handleSubmit}
        onFinishFailed={onFinishFailed}
        autoComplete="off"
+       size="large"
       >
        <Form.Item
         name="email"

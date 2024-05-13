@@ -64,7 +64,7 @@
 }
 
 .logoStyle {
-  height: 46px !important;
+  height: 54px !important;
 }
 .nearbyplacescarouselarrow{
   position: absolute;
@@ -120,7 +120,7 @@
 }
 @media only screen and (max-width: 576px) {
   .logoStyle {
-    height: 40px !important;
+    height: 44px !important;
   }
   .nearbyplacescarousel{
     height: 120px;
@@ -180,6 +180,9 @@
 
 .icon-style {
   font-size: 40px;
+  margin-right: 6px;
+}
+.tag-icon-style {
   margin-right: 6px;
 }
 

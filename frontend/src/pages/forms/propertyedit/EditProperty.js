@@ -61,6 +61,40 @@ const EditProperty = () => {
  const [upload, setUpload] = useState(false);
  let formData;
 
+ // Check if the photos property is a string
+ if (typeof property.photos === 'string') {
+  // Parse string representation of array to actual array
+  property.photos = JSON.parse(property.photos);
+ }
+ // Check if property items are a string and parse them accordingly
+ if (typeof property.basicAmenities === 'string') {
+  property.basicAmenities = JSON.parse(property.basicAmenities);
+ }
+ if (typeof property.uncommonAmenities === 'string') {
+  property.uncommonAmenities = JSON.parse(property.uncommonAmenities);
+ }
+ if (typeof property.safetyFeatures === 'string') {
+  property.safetyFeatures = JSON.parse(property.safetyFeatures);
+ }
+ if (typeof property.elements === 'string') {
+  property.elements = JSON.parse(property.elements);
+ }
+ if (typeof property.houseRules === 'string') {
+  property.houseRules = JSON.parse(property.houseRules);
+ }
+ if (typeof property.earlyCheckIn === 'string') {
+  property.earlyCheckIn = JSON.parse(property.earlyCheckIn);
+ }
+ if (typeof property.beforeCheckOut === 'string') {
+  property.beforeCheckOut = JSON.parse(property.beforeCheckOut);
+ }
+ if (typeof property.accessToProperty === 'string') {
+  property.accessToProperty = JSON.parse(property.accessToProperty);
+ }
+ if (typeof property.lateCheckOutPolicy === 'string') {
+  property.lateCheckOutPolicy = JSON.parse(property.lateCheckOutPolicy);
+ }
+
  useEffect(() => {
   if (!loading) {
    setFileList(

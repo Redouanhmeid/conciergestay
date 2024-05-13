@@ -104,13 +104,13 @@ const Head = () => {
 
      {Object.keys(userData).length > 0 && (
       <Col
-       xs={{ span: 1, offset: 15 }}
+       xs={{ span: 4, offset: 12 }}
        sm={{ span: 1, offset: 17 }}
        md={{ span: 1, offset: 19 }}
       >
        <Avatar
         onClick={showDrawer}
-        size={{ xs: 40, sm: 46, md: 46, lg: 46, xl: 50, xxl: 50 }}
+        size={{ xs: 46, sm: 50, md: 50, lg: 50, xl: 56, xxl: 56 }}
         src={userData.avatar}
         style={{ cursor: 'pointer' }}
        />
@@ -118,9 +118,9 @@ const Head = () => {
      )}
      {Object.keys(userData).length === 0 && (
       <Col
-       xs={{ span: 12, offset: 4 }}
-       sm={{ span: 4, offset: 14 }}
-       md={{ span: 4, offset: 16 }}
+       xs={{ span: 13, offset: 3 }}
+       sm={{ span: 3, offset: 10 }}
+       md={{ span: 3, offset: 17 }}
       >
        <Space>
         <Button

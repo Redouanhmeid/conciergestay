@@ -4,8 +4,8 @@ const db = require('../config/database');
 const PropertyManagerModel = require('./PropertyManagerModel');
 const PropertyManagerVerificationModel = require('./PropertyManagerVerificationModel');
 const PropertyModel = require('./PropertyModel');
-const GuestModel = require('./GuestModel');
 const NearbyPlaceModel = require('./NearbyPlaceModel');
+const AmenityModel = require('./AmenityModel');
 
 // create models
 const PropertyManager = PropertyManagerModel(db, Sequelize);
@@ -14,8 +14,8 @@ const PropertyManagerVerification = PropertyManagerVerificationModel(
  Sequelize
 );
 const Property = PropertyModel(db, Sequelize);
-const Guest = GuestModel(db, Sequelize);
 const NearbyPlace = NearbyPlaceModel(db, Sequelize);
+const Amenity = AmenityModel(db, Sequelize);
 
 // define relationships
 // Property & PropertyManager (one -> many)
@@ -28,8 +28,14 @@ Property.belongsTo(PropertyManager, {
  as: 'propertyManager',
 });
 // PropertyManager & Guest (one -> many)
-PropertyManager.hasMany(Guest);
-Guest.belongsTo(PropertyManager);
+Property.hasMany(Amenity, {
+ foreignKey: 'propertyId', // Specify the name of the foreign key in the Amenity model
+ allowNull: false, // Make the foreign key required
+ onDelete: 'CASCADE', // Delete associated amenities when a property is deleted
+});
+Amenity.belongsTo(Property, {
+ foreignKey: 'propertyId', // Specify the name of the foreign key in the Amenity model
+});
 
 // generate tables in DB
 db.sync({ force: false }).then(() => {
@@ -40,6 +46,6 @@ module.exports = {
  PropertyManager,
  PropertyManagerVerification,
  Property,
- Guest,
  NearbyPlace,
+ Amenity,
 };
