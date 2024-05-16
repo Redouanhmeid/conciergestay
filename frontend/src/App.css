@@ -166,12 +166,12 @@
 }
 
 .ant-carousel .slick-dots li {
-  margin: 0 4px; /* Adjust the space between dots */
+  margin: 0 2px; /* Adjust the space between dots */
 }
 
 .ant-carousel .slick-dots li button {
   height: 5px; /* Adjust the height of the dot */
-  background-color: #ebdecd; /* Change the background color of the dot */
+  background-color: #fbfbfb; /* Change the background color of the dot */
 }
 
 .ant-carousel .slick-dots li.slick-active button {
@@ -189,4 +189,111 @@
 .custom-anchor {
   background-color: #fff;
   padding: 8px 0 0 0;
+}
+
+.horizontal-scroll-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 8px; /* or your preferred spacing between buttons */
+  padding: 10px 0;
+  scrollbar-width: none; /* for Firefox */
+}
+
+.horizontal-scroll-container::-webkit-scrollbar {
+  display: none; /* for Chrome, Safari, and Opera */
+}
+.custom-switch {
+  position: fixed;
+  bottom: 50px;
+}
+
+.custom-switch span {
+  padding-inline-start: 10px !important;
+  padding-inline-end: 10px !important;
+}
+
+.ant-switch {
+  background-color: #2b2c32 !important;
+  border: none;
+}
+
+.ant-switch-checked {
+  background-color: #aa7e42 !important;
+}
+
+.custom-tag {
+  font-size: 14px;
+}
+
+.customCheckboxButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border: 1px solid #ebdecd;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s;
+  background-color: #fbfbfb;
+  color: #2b2c32;
+  width: 100px;
+  margin: 10px 0;
+}
+.customCheckboxButton:hover {
+  cursor: pointer;
+  border-color: #ebdecd;
+}
+/* Specific class for when the checkbox is checked */
+.customCheckboxChecked {
+  background-color: #aa7e42;
+  color: white;
+  border-color: #ebdecd;
+}
+.customCheckboxContainer .ant-checkbox-inner {
+  display: none;
+}
+.checkboxicon {
+  margin-top: 8px;
+  font-size: 24px;
+}
+
+.customRadioGroup {
+  display: flex;
+  flex-wrap: wrap;
+}
+.customRadioButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border: 1px solid #ebdecd;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s;
+  background-color: #fbfbfb;
+  color: #2b2c32;
+  width: 160px;
+  margin: 6px 0;
+}
+.customRadioButton:hover {
+  cursor: pointer;
+  background-color: #aa7e42;
+  border-color: #ebdecd;
+}
+
+.customRadioChecked {
+  background-color: #aa7e42;
+  color: white;
+  border-color: #ebdecd;
+}
+
+.customRadioContainer .ant-radio {
+  display: none;
+}
+.Radioicon {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  font-size: 24px;
 }

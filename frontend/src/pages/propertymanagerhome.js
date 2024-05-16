@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import SideMenu from '../components/sidemenu';
 import Head from '../components/common/header';
 import Foot from '../components/common/footer';
 import { Layout, Spin, Card, Col, Row, Carousel } from 'antd';
@@ -49,8 +48,7 @@ const PropertyManagerHome = () => {
   <Layout className="contentStyle">
    <Head />
    <Layout>
-    <SideMenu width="25%" className="siderStyle" />
-    <Content className="container-fluid">
+    <Content className="container">
      <Row gutter={[32, 32]}>
       {!loading && properties && (
        <>
@@ -62,18 +60,10 @@ const PropertyManagerHome = () => {
             <Carousel autoplay effect="fade" key={property.id}>
              {typeof property.photos === 'string'
               ? JSON.parse(property.photos).map((photo) => (
-                 <img
-                  key={photo}
-                  alt={property.name}
-                  src={`${ClientConfig.URI}${photo}`}
-                 />
+                 <img key={photo} alt={property.name} src={photo} />
                 ))
               : property.photos.map((photo, index) => (
-                 <img
-                  key={index}
-                  alt={property.name}
-                  src={`${ClientConfig.URI}${photo}`}
-                 />
+                 <img key={index} alt={property.name} src={photo} />
                 ))}
             </Carousel>
            }

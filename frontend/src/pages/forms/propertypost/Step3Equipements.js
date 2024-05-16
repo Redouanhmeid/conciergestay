@@ -68,13 +68,18 @@ const Step3Equipements = ({ next, prev, values }) => {
              Espace de travail dédié
             </Checkbox>
            </Col>
+           <Col span={24}>
+            <Checkbox value="fitnessEquipements">
+             Equipements de fitness
+            </Checkbox>
+           </Col>
           </Row>
          </Checkbox.Group>
         </Form.Item>
        </Col>
        <Col xs={24} md={12}>
         <Form.Item
-         label="Possédez-vous des équipements hors du commun ?"
+         label="Possédez-vous des commodités hors du commun ?"
          name="uncommonAmenities"
         >
          <Checkbox.Group onChange={onChangeUncommonAmenities}>
@@ -83,7 +88,7 @@ const Step3Equipements = ({ next, prev, values }) => {
             <Checkbox value="pool">Piscine</Checkbox>
            </Col>
            <Col span={24}>
-            <Checkbox value="outdoorDining">Espace repas en plein air</Checkbox>
+            <Checkbox value="outdoordining">Espace repas en plein air</Checkbox>
            </Col>
            <Col span={24}>
             <Checkbox value="fireplace">Cheminée</Checkbox>

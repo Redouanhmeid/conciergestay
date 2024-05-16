@@ -125,6 +125,21 @@ root.render(
      buttonPaddingInline: 60,
      fontSize: 16,
     },
+    Switch: {
+     algorithm: true,
+     handleSize: 0,
+     handleSizeSM: 0,
+     fontSize: 16,
+     fontSizeSM: 16,
+     fontSizeIcon: 0,
+     marginXXS: 6,
+     trackHeight: 36,
+     trackHeightSM: 30,
+    },
+    Slider: {
+     handleSizeHover: 18,
+     handleSize: 16,
+    },
    },
   }}
  >

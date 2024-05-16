@@ -17,41 +17,54 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
 
  const [position, setPosition] = useState({ lat: 34.0083637, lng: -6.8538748 });
 
- const [placeName, setPlaceName] = useState('');
+ const [placeName, setPlaceName] = useState('Rabat');
  const [placeURL, setPlaceURL] = useState('');
  const [placeAddress, setPlaceAddress] = useState('');
  const [placeRating, setPlaceRating] = useState(0);
  const [placePhoto, setPlacePhoto] = useState('');
  const [placeTypes, setPlaceTypes] = useState([]);
 
- const [markerKey, setMarkerKey] = useState(0);
  const autocompleteRef = useRef(null);
 
  const handlePlaceSelect = (place) => {
-  if (place && place.geometry && place.geometry.location) {
-   setPosition({
-    lat: place.geometry.location.lat(),
-    lng: place.geometry.location.lng(),
-   });
-   setMarkerKey(markerKey + 1); // Trigger re-render
-   setPlaceName(place.name); // Extract the place name
-   setPlaceURL(place.url);
-   setPlaceAddress(place.formatted_address);
-   setPlaceRating(place.rating);
-   setPlacePhoto(place.photos[0]?.getUrl());
-   setPlaceTypes(place.types);
-   const selectedPlace = {
-    latitude: place.geometry.location.lat() || null,
-    longitude: place.geometry.location.lng() || null,
-    placeName: place.name || null,
-    placeURL: place.url || null,
-    placeAddress: place.formatted_address || null,
-    placeRating: place.rating || null,
-    placePhoto: place.photos[0]?.getUrl() || null,
-    placeTypes: place.types || null,
-   };
-   onPlaceSelected(selectedPlace);
+  if (!place || !place.geometry || !place.geometry.location) {
+   console.error(
+    'Selected place is invalid or missing necessary location data.'
+   );
+   return; // Exit the function if no valid place data is available
   }
+
+  // Extract location coordinates
+  const latitude = place.geometry.location.lat();
+  const longitude = place.geometry.location.lng();
+
+  // Update the position and marker key
+  setPosition({ lat: latitude, lng: longitude });
+  // Extract additional place details, providing fallbacks where necessary
+  setPlaceName(place.name || 'Name not available');
+  setPlaceURL(place.url || '');
+  setPlaceAddress(place.formatted_address || 'Address not available');
+  setPlaceRating(place.rating || 0);
+  setPlacePhoto(
+   place.photos && place.photos.length > 0 ? place.photos[0].getUrl() : ''
+  );
+  setPlaceTypes(place.types || []);
+
+  // Prepare the selectedPlace object for callback
+  const selectedPlace = {
+   latitude: latitude,
+   longitude: longitude,
+   placeName: place.name || 'Name not available',
+   placeURL: place.url || '',
+   placeAddress: place.formatted_address || 'Address not available',
+   placeRating: place.rating || 0,
+   placePhoto:
+    place.photos && place.photos.length > 0 ? place.photos[0].getUrl() : '',
+   placeTypes: place.types || [],
+  };
+
+  // Trigger the callback with the selected place data
+  onPlaceSelected(selectedPlace);
  };
 
  const handleMarkerDragEnd = ({ latLng }) => {
@@ -119,15 +132,15 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
      />
     </Autocomplete>
     <Map
-     key={markerKey}
+     key={position.lat + position.lng}
      defaultZoom={14}
      defaultCenter={position}
      mapId={MapConfig.MAP_ID}
     >
      <AdvancedMarker
       position={position}
-      onDragEnd={({ latLng }) => handleMarkerDragEnd({ latLng })}
       draggable
+      onDragEnd={({ latLng }) => handleMarkerDragEnd({ latLng })}
      >
       <Pin
        background={'#aa7e42'}

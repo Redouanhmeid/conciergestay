@@ -13,6 +13,10 @@ module.exports = (db, type) => {
    type: type.TEXT,
    allowNull: false,
   },
+  type: {
+   type: type.STRING(50),
+   allowNull: false,
+  },
   basicAmenities: {
    type: type.JSON,
    allowNull: true,

@@ -23,46 +23,47 @@ const MapHome = React.memo(({ isLoaded, city }) => {
   center.lat,
   center.lng
  );
- const [markerRef, marker] = useAdvancedMarkerRef();
  const [infowindowShown, setInfowindowShown] = useState(false);
- const toggleInfoWindow = (place) => {
+ /*  const toggleInfoWindow = (place) => {
   setSelectedPlace(place);
   setInfowindowShown((previousState) => !previousState);
- };
+ }; */
+ const toggleInfoWindow = (place) =>
+  setSelectedPlace(
+   selectedPlace && selectedPlace.id === place.id ? null : place
+  );
  const closeInfoWindow = () => {
   setSelectedPlace(null);
   setInfowindowShown(false);
  };
 
- // Set center coordinates based on the city value
- const getCityCoordinates = async (city) => {
-  if (!city || !isLoaded || !window.google) return; // Do nothing if city is not provided
-
-  const placesService = new window.google.maps.places.PlacesService(
-   document.createElement('div')
-  );
-  placesService.textSearch({ query: city }, (results, status) => {
-   if (
-    status === window.google.maps.places.PlacesServiceStatus.OK &&
-    results.length > 0
-   ) {
-    const location = results[0].geometry.location;
-    setCenter({ lat: location.lat(), lng: location.lng() });
-   } else {
-    console.error('Error fetching city coordinates:', status);
-   }
-  });
- };
-
  const navigate = useNavigate();
+
  const display = (id) => {
   navigate('/propertydetails', { state: { id } });
  };
  // Set center coordinates when city prop changes
  useEffect(() => {
-  if (isLoaded) {
-   getCityCoordinates(city);
-  }
+  // Set center coordinates based on the city value
+  const getCityCoordinates = async (city) => {
+   if (!city || !isLoaded || !window.google) return; // Do nothing if city is not provided
+
+   const placesService = new window.google.maps.places.PlacesService(
+    document.createElement('div')
+   );
+   placesService.textSearch({ query: city }, (results, status) => {
+    if (
+     status === window.google.maps.places.PlacesServiceStatus.OK &&
+     results.length > 0
+    ) {
+     const location = results[0].geometry.location;
+     setCenter({ lat: location.lat(), lng: location.lng() });
+    } else {
+     console.error('Error fetching city coordinates:', status);
+    }
+   });
+  };
+  getCityCoordinates(city);
  }, [city, isLoaded]);
 
  // Get user's current position
@@ -95,6 +96,7 @@ const MapHome = React.memo(({ isLoaded, city }) => {
    </div>
   );
  }
+
  return (
   <div
    style={{
@@ -110,21 +112,19 @@ const MapHome = React.memo(({ isLoaded, city }) => {
     mapId={MapConfig.MAP_ID}
     defaultZoom={13}
     defaultCenter={center}
-    onDragend={(mapProps) => {
-     // Update center when the map is moved
-     if (mapProps && mapProps.center) {
-      setCenter({ lat: mapProps.center.lat(), lng: mapProps.center.lng() });
-     }
-    }}
+    onDragend={(mapProps) =>
+     mapProps &&
+     mapProps.center &&
+     setCenter({ lat: mapProps.center.lat(), lng: mapProps.center.lng() })
+    }
    >
     <AdvancedMarker position={currentPosition}>
-     <img src={pinIcon} alt="User's current position" />
+     <img src={pinIcon} alt="Position actuelle" />
     </AdvancedMarker>
 
     {data &&
      data.map((place, index) => (
       <AdvancedMarker
-       ref={markerRef}
        key={index}
        position={{ lat: place.latitude, lng: place.longitude }}
        onClick={() => toggleInfoWindow(place)}
@@ -134,8 +134,12 @@ const MapHome = React.memo(({ isLoaded, city }) => {
        </div>
       </AdvancedMarker>
      ))}
-    {infowindowShown && selectedPlace && (
-     <InfoWindow anchor={marker} onCloseClick={closeInfoWindow}>
+    {selectedPlace && (
+     <InfoWindow
+      position={{ lat: selectedPlace.latitude, lng: selectedPlace.longitude }}
+      pixelOffset={new window.google.maps.Size(0, -100)}
+      onCloseClick={closeInfoWindow}
+     >
       <Space direction="vertical" style={{ margin: 4 }}>
        <Text size={18}>
         {selectedPlace.name}

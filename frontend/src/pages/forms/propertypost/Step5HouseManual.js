@@ -82,7 +82,6 @@ const Step5HouseManual = ({ prev, values }) => {
   }
  };
 
- console.log(success, error);
  return (
   <Layout className="contentStyle">
    <Head />
@@ -209,6 +208,7 @@ const Step5HouseManual = ({ prev, values }) => {
           htmlType="submit"
           shape="circle"
           onClick={prev}
+          loading={loading}
           icon={<ArrowLeftOutlined />}
          />
         </Form.Item>
