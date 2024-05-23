@@ -21,7 +21,7 @@ import {
 import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
-import MapMarker1 from '../../components/MapMarker1';
+import MapMarker from '../../components/MapMarker';
 import dayjs from 'dayjs';
 import ImgCrop from 'antd-img-crop';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
@@ -48,6 +48,7 @@ const EditProperty = () => {
  const { isLoading, updateProperty, Property, success, error } =
   useUpdateProperty();
  const [showAdditionalRules, setShowAdditionalRules] = useState(false);
+ const [AdditionalRules, setAdditionalRules] = useState('');
  const [form] = Form.useForm();
  const [CheckInTime, setCheckInTime] = useState(
   form.getFieldValue('checkInTime')
@@ -202,6 +203,9 @@ const EditProperty = () => {
   formData.checkInTime = CheckInTime || property.checkInTime;
   formData.checkOutTime = CheckInTime || property.checkOutTime;
   formData.propertyManagerId = property.propertyManagerId;
+  if (showAdditionalRules) {
+   formData.houseRules.push(`additionalRules: ${AdditionalRules}`);
+  }
   for (const key in formData) {
    if (formData.hasOwnProperty(key) && formData[key] === undefined) {
     formData[key] = null;
@@ -314,7 +318,7 @@ const EditProperty = () => {
          </Col>
 
          <Col xs={24}>
-          <MapMarker1
+          <MapMarker
            latitude={property.latitude}
            longitude={property.longitude}
           />
@@ -480,12 +484,11 @@ const EditProperty = () => {
                <Checkbox value="noSmoking">Défense de fumer</Checkbox>
               </Col>
               <Col span={24}>
-               <Checkbox value="petsAllowed">
-                Pas d'animaux de compagnie
-               </Checkbox>
+               <Checkbox value="noPets">Pas d'animaux de compagnie</Checkbox>
               </Col>
               <Col span={24}>
                <Checkbox
+                value="additionalRules"
                 checked={showAdditionalRules}
                 onChange={(e) => setShowAdditionalRules(e.target.checked)}
                >
@@ -499,7 +502,11 @@ const EditProperty = () => {
           {showAdditionalRules && (
            <Col xs={24} md={24}>
             <Form.Item label="Règles supplémentaires" value="AdditionalRules">
-             <Input.TextArea rows={4} />
+             <Input.TextArea
+              rows={4}
+              value={AdditionalRules}
+              onChange={(e) => setAdditionalRules(e.target.value)}
+             />
             </Form.Item>
            </Col>
           )}

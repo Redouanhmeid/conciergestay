@@ -13,7 +13,7 @@ import useGetPropertiesByLatLon from '../../hooks/useGetPropertiesByLatLon';
 import { useNavigate } from 'react-router-dom';
 import pinIcon from '../../assets/position.gif';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const MapHome = React.memo(({ isLoaded, city }) => {
  const [center, setCenter] = useState({ lat: 34.0209, lng: -6.8416 });

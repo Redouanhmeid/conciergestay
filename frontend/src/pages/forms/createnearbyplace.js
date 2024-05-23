@@ -24,7 +24,7 @@ import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import SideMenu from '../../components/sidemenu';
 import MapPicker from './propertypost/MapPicker';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useCreateNearbyPlace from '../../hooks/useCreateNearbyPlace';
 import useUploadPhotos from '../../hooks/useUploadPhotos';
 import ImgCrop from 'antd-img-crop';
@@ -43,6 +43,7 @@ const getBase64 = (file) =>
 const CreateNearbyPlace = () => {
  const { loading, error, success, createNearbyPlace } = useCreateNearbyPlace();
  const { uploadPhoto } = useUploadPhotos();
+ const navigate = useNavigate();
  const [form] = Form.useForm();
  const [Latitude, setLatitude] = useState(null);
  const [Longitude, setLongitude] = useState(null);
@@ -184,16 +185,22 @@ const CreateNearbyPlace = () => {
  const handleOpenImage = () => {
   window.open(placePhoto, '_blank');
  };
-
+ const goBack = () => {
+  navigate(-1);
+ };
  return (
   <Layout className="contentStyle">
    <Head />
    <Layout>
-    <SideMenu width="25%" className="siderStyle" />
-    <Content className="container-fluid">
-     <Link to="/dashboard">
-      <ArrowLeftOutlined /> Retour
-     </Link>
+    <Content className="container">
+     <Button
+      type="default"
+      shape="round"
+      icon={<ArrowLeftOutlined />}
+      onClick={goBack}
+     >
+      Retour
+     </Button>
      <Row gutter={[24, 0]}>
       <Title level={2}>Ajouter un lieu à proximité</Title>
       <Col xs={24} md={24}>

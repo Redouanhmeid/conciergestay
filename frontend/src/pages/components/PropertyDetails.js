@@ -27,7 +27,7 @@ import {
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import { useNavigate, useLocation } from 'react-router-dom';
-import MapMarker1 from './MapMarker1';
+import MapMarker from './MapMarker';
 import NearbyPlacesCarousel from './nearbyplacescarousel';
 import { Helmet } from 'react-helmet';
 import useGetProperty from '../../hooks/useGetProperty';
@@ -40,197 +40,149 @@ const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
 const { Meta } = Card;
 
-const getbasicAmenityDetails = (item) => {
- switch (item) {
-  case 'wifi':
-   return {
+const getAmenityDetails = (type, item) => {
+ const details = {
+  basic: {
+   wifi: {
     avatar: <i className="icon-style fa-light fa-wifi"></i>,
     title: 'Wifi',
-   };
-  case 'television':
-   return {
+   },
+   television: {
     avatar: <i className="icon-style fa-light fa-tv"></i>,
     title: 'Télévision',
-   };
-  case 'kitchen':
-   return {
+   },
+   kitchen: {
     avatar: <i className="icon-style fa-light fa-microwave"></i>,
     title: 'Cuisine',
-   };
-  case 'washingMachine':
-   return {
+   },
+   washingMachine: {
     avatar: <i className="icon-style fa-light fa-washing-machine"></i>,
     title: 'Machine à laver',
-   };
-  case 'freeParking':
-   return {
+   },
+   freeParking: {
     avatar: <i className="icon-style fa-light fa-square-parking"></i>,
     title: 'Parking gratuit',
-   };
-  case 'airConditioning':
-   return {
+   },
+   airConditioning: {
     avatar: <i className="icon-style fa-light fa-snowflake"></i>,
     title: 'Climatisation',
-   };
-  case 'dedicatedWorkspace':
-   return {
+   },
+   dedicatedWorkspace: {
     avatar: <i className="icon-style fa-light fa-laptop"></i>,
     title: 'Espace de travail',
-   };
-  default:
-   return { avatar: null, title: '' };
- }
-};
-const getuncommonAmenityDetails = (item) => {
- switch (item) {
-  case 'pool':
-   return {
+   },
+  },
+  uncommon: {
+   pool: {
     avatar: <i className="icon-style fa-light fa-water-ladder"></i>,
     title: 'Piscine',
-   };
-  case 'outdoorDining':
-   return {
+   },
+   outdoorDining: {
     avatar: <i className="icon-style fa-light fa-plate-utensils"></i>,
     title: 'Espace repas en plein air',
-   };
-  case 'fireplace':
-   return {
+   },
+   fireplace: {
     avatar: <i className="icon-style fa-light fa-fireplace"></i>,
     title: 'Cheminée',
-   };
-  case 'fitnessEquipment':
-   return {
+   },
+   fitnessEquipment: {
     avatar: <i className="icon-style fa-light fa-dumbbell"></i>,
     title: 'Équipement de fitness',
-   };
-  case 'lakeAccess':
-   return {
+   },
+   lakeAccess: {
     avatar: <i className="icon-style fa-light fa-water"></i>,
     title: 'Accès au lac',
-   };
-  case 'beachAccess':
-   return {
+   },
+   beachAccess: {
     avatar: <i className="icon-style fa-light fa-umbrella-beach"></i>,
     title: 'Accès à la plage',
-   };
-  case 'skiAccess':
-   return {
+   },
+   skiAccess: {
     avatar: <i className="icon-style fa-light fa-person-skiing"></i>,
     title: 'Accès aux pistes de ski',
-   };
-  default:
-   return { avatar: null, title: '' };
- }
-};
-
-const getSecurityEquipment = (item) => {
- switch (item) {
-  case 'smokeDetector':
-   return {
+   },
+  },
+  security: {
+   smokeDetector: {
     avatar: <i className="icon-style fa-light fa-sensor-cloud"></i>,
     title: 'Détecteur de fumée',
-   };
-  case 'firstAidKit':
-   return {
+   },
+   firstAidKit: {
     avatar: <i className="icon-style fa-light fa-suitcase-medical"></i>,
     title: 'Kit de premiers secours',
-   };
-  case 'fireExtinguisher':
-   return {
+   },
+   fireExtinguisher: {
     avatar: <i className="icon-style fa-light fa-fire-extinguisher"></i>,
     title: 'Extincteur',
-   };
-  case 'carbonMonoxideDetector':
-   return {
+   },
+   carbonMonoxideDetector: {
     avatar: <i className="icon-style fa-light fa-sensor"></i>,
     title: 'Détecteur de monoxyde de carbone',
-   };
-  default:
-   return { avatar: null, title: '' };
- }
-};
-const getElements = (item) => {
- switch (item) {
-  case 'cameras':
-   return {
+   },
+  },
+  elements: {
+   cameras: {
     avatar: <i className="icon-style fa-light fa-camera-cctv"></i>,
     title: 'Caméras de surveillance extérieures',
-   };
-  case 'sonometers':
-   return {
+   },
+   sonometers: {
     avatar: <i className="icon-style fa-light fa-gauge-low"></i>,
     title: 'Sonomètres',
-   };
-  case 'weapons':
-   return {
+   },
+   weapons: {
     avatar: <i className="icon-style fa-light fa-crosshairs"></i>,
     title: 'Armes',
-   };
-  default:
-   return { avatar: null, title: '' };
- }
-};
-const getHouseRules = (item) => {
- switch (item) {
-  case 'noNoise':
-   return {
+   },
+  },
+  houseRules: {
+   noNoise: {
     avatar: <i className="icon-style fa-light fa-volume-slash"></i>,
     title: 'Pas de bruit après 23h',
-   };
-  case 'noFoodDrinks':
-   return {
+   },
+   noFoodDrinks: {
     avatar: <i className="icon-style fa-light fa-utensils-slash"></i>,
     title: 'Pas de nourriture ni de boissons dans les chambres à coucher',
-   };
-  case 'noParties':
-   return {
+   },
+   noParties: {
     avatar: <i className="icon-style fa-light fa-champagne-glasses"></i>,
     title: "Pas de fêtes ni d'événements",
-   };
-  case 'noSmoking':
-   return {
+   },
+   noSmoking: {
     avatar: <i className="icon-style fa-light fa-ban-smoking"></i>,
     title: 'Défense de fumer',
-   };
-  case 'petsAllowed':
-   return {
+   },
+   noPets: {
     avatar: <i className="icon-style fa-light fa-paw-simple"></i>,
     title: "Pas d'animaux de compagnie",
-   };
-  case 'additionalRules':
-   return {
+   },
+   additionalRules: {
     avatar: <i className="icon-style fa-light fa-circle-info"></i>,
     title: 'Règles supplémentaires',
-   };
-  default:
-   return { avatar: null, title: '' };
- }
+   },
+  },
+ };
+ return details[type]?.[item] || { avatar: null, title: '' };
 };
-function scrollToAnchor(anchorId) {
- const element = document.getElementById(anchorId);
- if (element) {
-  element.scrollIntoView({ behavior: 'smooth' });
- }
-}
+
 const PropertyDetails = () => {
  const location = useLocation();
  const { id } = location.state;
+ const navigate = useNavigate();
  const { property, loading } = useGetProperty(id);
  const { user } = useAuthContext();
  const User = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserData } = useUserData();
- const navigate = useNavigate();
  const { getAllAmenities, getOneAmenity } = useAmenity();
  const [amenities, setAmenities] = useState([]);
  const [selectedAmenityDetails, setSelectedAmenityDetails] = useState(null);
  const [isModalVisible, setIsModalVisible] = useState(false);
- const [selectedAmenity, setSelectedAmenity] = useState(null);
 
  useEffect(() => {
   if (User && User.status !== 'EN ATTENTE') {
    getUserData(User.email);
   }
  }, [User]);
+
  useEffect(() => {
   const fetchData = async (id) => {
    const data = await getAllAmenities(id);
@@ -242,22 +194,27 @@ const PropertyDetails = () => {
    fetchData(property.id);
   }
  }, [property.id]);
- // Check if an amenity exists
+
  const hasAmenity = (amenityName) => {
   return amenities.some((amenity) => amenity.name === amenityName);
  };
+
  const goBack = () => {
-  navigate(-1); // This will navigate back to the previous page
+  navigate(-1);
  };
+
  const nearbyPlace = () => {
   navigate('/createnearbyplace');
  };
+
  const AddAmenity = (amenity) => {
   navigate('/addamenity', { state: { amenity: amenity, id: property.id } });
  };
+
  const EditAmenity = (id) => {
   navigate('/editamenity', { state: { id } });
  };
+
  const showModal = async (amenityName) => {
   const amenity = amenities.find((a) => a.name === amenityName);
   if (amenity) {
@@ -275,27 +232,52 @@ const PropertyDetails = () => {
  const handleCancel = () => {
   setIsModalVisible(false);
  };
- // Check if the photos property is a string
- if (typeof property.photos === 'string') {
-  // Parse string representation of array to actual array
-  property.photos = JSON.parse(property.photos);
+
+ // Utility to parse JSON strings safely
+ const parseJSON = (str) => {
+  try {
+   return JSON.parse(str);
+  } catch (error) {
+   console.error('Failed to parse JSON:', error);
+   return [];
+  }
+ };
+ function scrollToAnchor(anchorId) {
+  const element = document.getElementById(anchorId);
+  if (element) {
+   element.scrollIntoView({ behavior: 'smooth' });
+  }
  }
- // Check if property items are a string and parse them accordingly
- if (typeof property.basicAmenities === 'string') {
-  property.basicAmenities = JSON.parse(property.basicAmenities);
- }
- if (typeof property.uncommonAmenities === 'string') {
-  property.uncommonAmenities = JSON.parse(property.uncommonAmenities);
- }
- if (typeof property.safetyFeatures === 'string') {
-  property.safetyFeatures = JSON.parse(property.safetyFeatures);
- }
- if (typeof property.elements === 'string') {
-  property.elements = JSON.parse(property.elements);
- }
- if (typeof property.houseRules === 'string') {
-  property.houseRules = JSON.parse(property.houseRules);
- }
+
+ // Parse properties if they are strings
+ const parsedProperty = {
+  ...property,
+  photos:
+   typeof property.photos === 'string'
+    ? parseJSON(property.photos)
+    : property.photos,
+  basicAmenities:
+   typeof property.basicAmenities === 'string'
+    ? parseJSON(property.basicAmenities)
+    : property.basicAmenities,
+  uncommonAmenities:
+   typeof property.uncommonAmenities === 'string'
+    ? parseJSON(property.uncommonAmenities)
+    : property.uncommonAmenities,
+  safetyFeatures:
+   typeof property.safetyFeatures === 'string'
+    ? parseJSON(property.safetyFeatures)
+    : property.safetyFeatures,
+  elements:
+   typeof property.elements === 'string'
+    ? parseJSON(property.elements)
+    : property.elements,
+  houseRules:
+   typeof property.houseRules === 'string'
+    ? parseJSON(property.houseRules)
+    : property.houseRules,
+ };
+
  if (loading) {
   return (
    <div className="loading">
@@ -303,6 +285,7 @@ const PropertyDetails = () => {
    </div>
   );
  }
+
  return (
   <>
    <Helmet>
@@ -315,11 +298,7 @@ const PropertyDetails = () => {
     <Head />
 
     <Layout>
-     <div
-      style={{
-       padding: '20px',
-      }}
-     >
+     <div style={{ padding: '20px' }}>
       <Anchor
        direction="horizontal"
        className="custom-anchor"
@@ -376,11 +355,11 @@ const PropertyDetails = () => {
       <Row gutter={[32, 32]}>
        <Col xs={24} sm={12} id="desc">
         <div
-         style={{ maxWidth: '600px', heidth: '400px', margin: '12px auto' }}
+         style={{ maxWidth: '600px', height: '400px', margin: '12px auto' }}
         >
          <Carousel autoplay effect="fade">
-          {Array.isArray(property.photos) &&
-           property.photos.map((photo, index) => (
+          {Array.isArray(parsedProperty.photos) &&
+           parsedProperty.photos.map((photo, index) => (
             <div key={index}>
              <Image src={photo} />
             </div>
@@ -389,36 +368,36 @@ const PropertyDetails = () => {
         </div>
        </Col>
        <Col xs={24} sm={12}>
-        <Title level={1}>{property.name}</Title>
+        <Title level={1}>{parsedProperty.name}</Title>
         <div>
          <Rate disabled defaultValue="4.7" />
          <Text> 4.7</Text>
          <Text> (107 avis)</Text>
         </div>
-        <Title level={3}>{property.price} Dh / Nuit</Title>
+        <Title level={3}>{parsedProperty.price} Dh / Nuit</Title>
         <Flex gap="4px 0" wrap>
          <Tag icon={<i className="tag-icon-style fa-light fa-bed-front"></i>}>
-          {property.rooms} Chambres
+          {parsedProperty.rooms} Chambres
          </Tag>
          <Tag icon={<i className="tag-icon-style fa-light fa-users"></i>}>
-          {property.capacity} Voyageurs
+          {parsedProperty.capacity} Voyageurs
          </Tag>
          <Tag icon={<i className="tag-icon-style fa-light fa-bed"></i>}>
-          {property.beds} Lit
+          {parsedProperty.beds} Lit
          </Tag>
         </Flex>
         <Divider />
-        <Paragraph>{property.description}</Paragraph>
+        <Paragraph>{parsedProperty.description}</Paragraph>
        </Col>
        <Divider id="basicamenities" />
-       {property.basicAmenities && (
+       {parsedProperty.basicAmenities && (
         <Col xs={24} sm={24}>
          <Title level={3}>Commodités de base:</Title>
          <br />
          <Row gutter={[16, 16]}>
-          {property.basicAmenities.map((amenity, index) => {
-           const { avatar, title } = getbasicAmenityDetails(amenity);
-           const amenityExists = hasAmenity(amenity); // Determine if the current amenity exists
+          {parsedProperty.basicAmenities.map((amenity, index) => {
+           const { avatar, title } = getAmenityDetails('basic', amenity);
+           const amenityExists = hasAmenity(amenity);
            return (
             <Col
              xs={12}
@@ -435,8 +414,18 @@ const PropertyDetails = () => {
               hoverable={false}
               cover={
                <div
-                onClick={() => amenityExists && showModal(amenity)}
-                style={{ cursor: amenityExists ? 'pointer' : 'default' }}
+                onClick={() =>
+                 amenityExists &&
+                 (userData.role === 'manager' || userData.role === 'admin') &&
+                 showModal(amenity)
+                }
+                style={{
+                 cursor:
+                  amenityExists &&
+                  (userData.role === 'manager' || userData.role === 'admin')
+                   ? 'pointer'
+                   : 'default',
+                }}
                >
                 {avatar}
                </div>
@@ -531,27 +520,29 @@ const PropertyDetails = () => {
        <Divider id="map&nearbyplaces" />
        <Col xs={24} sm={24}>
         <Title level={3}>Où se situe le logement</Title>
-        <MapMarker1
-         latitude={property.latitude}
-         longitude={property.longitude}
+        <MapMarker
+         latitude={parsedProperty.latitude}
+         longitude={parsedProperty.longitude}
         />
        </Col>
        <Col xs={24}>
         <NearbyPlacesCarousel
-         latitude={property.latitude}
-         longitude={property.longitude}
+         latitude={parsedProperty.latitude}
+         longitude={parsedProperty.longitude}
         />
        </Col>
        <Divider id="equipements" />
        <Col xs={24} sm={8}>
-        {property.uncommonAmenities && (
+        {parsedProperty.uncommonAmenities && (
          <Col xs={24} sm={24}>
           <Title level={3}>Équipement hors du commun:</Title>
           <br />
           <Row gutter={[0, 16]}>
-           {property.uncommonAmenities.map((uncommonAmenity, index) => {
-            const { avatar, title } =
-             getuncommonAmenityDetails(uncommonAmenity);
+           {parsedProperty.uncommonAmenities.map((uncommonAmenity, index) => {
+            const { avatar, title } = getAmenityDetails(
+             'uncommon',
+             uncommonAmenity
+            );
             return (
              <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
               <Card
@@ -570,13 +561,16 @@ const PropertyDetails = () => {
         )}
        </Col>
        <Col xs={24} sm={8}>
-        {property.safetyFeatures && (
+        {parsedProperty.safetyFeatures && (
          <Col xs={24} sm={24}>
           <Title level={3}>Équipement de sécurité:</Title>
           <br />
           <Row gutter={[0, 16]}>
-           {property.safetyFeatures.map((safetyFeature, index) => {
-            const { avatar, title } = getSecurityEquipment(safetyFeature);
+           {parsedProperty.safetyFeatures.map((safetyFeature, index) => {
+            const { avatar, title } = getAmenityDetails(
+             'security',
+             safetyFeature
+            );
             return (
              <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
               <Card
@@ -595,13 +589,13 @@ const PropertyDetails = () => {
         )}
        </Col>
        <Col xs={24} sm={8}>
-        {property.elements && (
+        {parsedProperty.elements && (
          <Col xs={24} sm={24}>
           <Title level={3}>Équipement supplémentaire:</Title>
           <br />
           <Row gutter={[0, 16]}>
-           {property.elements.map((element, index) => {
-            const { avatar, title } = getElements(element);
+           {parsedProperty.elements.map((element, index) => {
+            const { avatar, title } = getAmenityDetails('elements', element);
             return (
              <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
               <Card
@@ -620,13 +614,13 @@ const PropertyDetails = () => {
         )}
        </Col>
        <Divider id="rules" />
-       {property.houseRules && (
+       {parsedProperty.houseRules && (
         <Col xs={24} sm={24}>
          <Title level={3}>Règles de la maison:</Title>
          <br />
          <Row gutter={[0, 16]}>
-          {property.houseRules.map((houseRule, index) => {
-           const { avatar, title } = getHouseRules(houseRule);
+          {parsedProperty.houseRules.map((houseRule, index) => {
+           const { avatar, title } = getAmenityDetails('houseRules', houseRule);
            return (
             <Col xs={24} md={4} key={index} style={{ maxWidth: '100%' }}>
              <Card

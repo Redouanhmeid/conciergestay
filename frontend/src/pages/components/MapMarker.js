@@ -9,7 +9,7 @@ import { useGoogleMapsLoader } from '../../services/GoogleMapService';
 // Define libraries as a const variable outside of the component
 const libraries = ['places', 'geometry'];
 
-const MapMarker1 = React.memo(({ latitude, longitude }) => {
+const MapMarker = React.memo(({ latitude, longitude }) => {
  const isLoaded = useGoogleMapsLoader();
 
  const center = {
@@ -53,4 +53,4 @@ const MapMarker1 = React.memo(({ latitude, longitude }) => {
  );
 });
 
-export default MapMarker1;
+export default MapMarker;

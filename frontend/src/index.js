@@ -22,6 +22,7 @@ import AddProperty from './pages/forms/propertypost/AddProperty';
 import EditProperty from './pages/forms/propertyedit/EditProperty';
 import AddAmenity from './pages/forms/amenity/AddAmenity';
 import EditAmenity from './pages/forms/amenity/EditAmenity';
+import DigitalGuidebook from './pages/components/DigitalGuidebook';
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
  { path: '/dashboard', element: <PropertyManagerHome /> },
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
  { path: '/editproperty', element: <EditProperty /> },
  { path: '/addamenity', element: <AddAmenity /> },
  { path: '/editamenity', element: <EditAmenity /> },
+ { path: '/digitalguidebook', element: <DigitalGuidebook /> },
 ]);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

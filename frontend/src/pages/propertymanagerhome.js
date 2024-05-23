@@ -21,6 +21,9 @@ const PropertyManagerHome = () => {
  const display = (id) => {
   navigate('/propertydetails', { state: { id } });
  };
+ const displayPrivate = (id) => {
+  navigate(`/digitalguidebook?id=${id}`);
+ };
  const edit = (id) => {
   navigate('/editproperty', { state: { id } });
  };
@@ -70,7 +73,10 @@ const PropertyManagerHome = () => {
            actions={[
             <EyeOutlined key="display" onClick={() => display(property.id)} />,
             <EditOutlined key="edit" onClick={() => edit(property.id)} />,
-            <EllipsisOutlined key="ellipsis" />,
+            <EllipsisOutlined
+             key="ellipsis"
+             onClick={() => displayPrivate(property.id)}
+            />,
            ]}
           >
            <Card.Meta

@@ -68,7 +68,7 @@ const HouseManual = () => {
         <Checkbox value="noSmoking">Défense de fumer</Checkbox>
        </Col>
        <Col span={24}>
-        <Checkbox value="petsAllowed">Pas d'animaux de compagnie</Checkbox>
+        <Checkbox value="noPets">Pas d'animaux de compagnie</Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox

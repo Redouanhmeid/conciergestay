@@ -53,7 +53,7 @@ const Step5HouseManual = ({ prev, values }) => {
   values.elements = Elements;
   values.houseRules = HouseRules;
   if (showAdditionalRules) {
-   values.houseRules.additionalRules = AdditionalRules;
+   values.houseRules.push(`additionalRules: ${AdditionalRules}`);
   }
   values.propertyManagerId = userData.id;
   onFinish(values);
@@ -67,8 +67,8 @@ const Step5HouseManual = ({ prev, values }) => {
  const handleCheckboxChange = (checkedValues) => {
   setShowAdditionalRules(checkedValues.includes('additionalRules'));
  };
-
  const onFinish = async (values) => {
+  console.log(values);
   try {
    await createProperty(values);
    if (success) {
@@ -157,10 +157,11 @@ const Step5HouseManual = ({ prev, values }) => {
             <Checkbox value="noSmoking">Défense de fumer</Checkbox>
            </Col>
            <Col span={24}>
-            <Checkbox value="petsAllowed">Pas d'animaux de compagnie</Checkbox>
+            <Checkbox value="noPets">Pas d'animaux de compagnie</Checkbox>
            </Col>
            <Col span={24}>
             <Checkbox
+             value="additionalRules"
              checked={showAdditionalRules}
              onChange={(e) => setShowAdditionalRules(e.target.checked)}
             >
