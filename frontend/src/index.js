@@ -46,7 +46,7 @@ root.render(
   locale={frFR}
   theme={{
    token: {
-    fontFamily: '"Jost", sans-serif',
+    fontFamily: '"Finlandica", sans-serif',
     borderRadius: 12,
     colorPrimary: '#aa7e42',
     colorInfo: '#aa7e42',

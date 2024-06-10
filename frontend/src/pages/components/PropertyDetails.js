@@ -3,10 +3,8 @@ import {
  Anchor,
  Layout,
  Typography,
- List,
  Spin,
  Image,
- Rate,
  Divider,
  Flex,
  Tag,
@@ -17,6 +15,8 @@ import {
  Button,
  Card,
  Modal,
+ Avatar,
+ Tooltip,
 } from 'antd';
 import {
  ArrowLeftOutlined,
@@ -27,6 +27,7 @@ import {
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import { useNavigate, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import MapMarker from './MapMarker';
 import NearbyPlacesCarousel from './nearbyplacescarousel';
 import { Helmet } from 'react-helmet';
@@ -35,12 +36,14 @@ import { useAuthContext } from '../../hooks/useAuthContext';
 import { useUserData } from '../../hooks/useUserData';
 import useAmenity from '../../hooks/useAmenity';
 import ReactPlayer from 'react-player';
+import airbnb from '../../assets/airbnb.png';
+import booking from '../../assets/booking.png';
 
 const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
 const { Meta } = Card;
 
-const getAmenityDetails = (type, item) => {
+const getAmenityDetails = (type, item, showARulesModal) => {
  const details = {
   basic: {
    wifi: {
@@ -67,39 +70,9 @@ const getAmenityDetails = (type, item) => {
     avatar: <i className="icon-style fa-light fa-snowflake"></i>,
     title: 'Climatisation',
    },
-   dedicatedWorkspace: {
-    avatar: <i className="icon-style fa-light fa-laptop"></i>,
-    title: 'Espace de travail',
-   },
-  },
-  uncommon: {
    pool: {
     avatar: <i className="icon-style fa-light fa-water-ladder"></i>,
     title: 'Piscine',
-   },
-   outdoorDining: {
-    avatar: <i className="icon-style fa-light fa-plate-utensils"></i>,
-    title: 'Espace repas en plein air',
-   },
-   fireplace: {
-    avatar: <i className="icon-style fa-light fa-fireplace"></i>,
-    title: 'Cheminée',
-   },
-   fitnessEquipment: {
-    avatar: <i className="icon-style fa-light fa-dumbbell"></i>,
-    title: 'Équipement de fitness',
-   },
-   lakeAccess: {
-    avatar: <i className="icon-style fa-light fa-water"></i>,
-    title: 'Accès au lac',
-   },
-   beachAccess: {
-    avatar: <i className="icon-style fa-light fa-umbrella-beach"></i>,
-    title: 'Accès à la plage',
-   },
-   skiAccess: {
-    avatar: <i className="icon-style fa-light fa-person-skiing"></i>,
-    title: 'Accès aux pistes de ski',
    },
   },
   security: {
@@ -155,9 +128,26 @@ const getAmenityDetails = (type, item) => {
     avatar: <i className="icon-style fa-light fa-paw-simple"></i>,
     title: "Pas d'animaux de compagnie",
    },
+   noUnmarriedCouple: {
+    avatar: <i className="icon-style fa-light fa-ban"></i>,
+    title: 'Pas de couple non marié',
+   },
    additionalRules: {
-    avatar: <i className="icon-style fa-light fa-circle-info"></i>,
-    title: 'Règles supplémentaires',
+    avatar: (
+     <i
+      onClick={showARulesModal}
+      style={{ color: '#aa7e42', cursor: 'pointer' }}
+      className="icon-style fa-light fa-circle-info"
+     ></i>
+    ),
+    title: (
+     <span
+      style={{ color: '#aa7e42', cursor: 'pointer' }}
+      onClick={showARulesModal}
+     >
+      Règles supplémentaires
+     </span>
+    ),
    },
   },
  };
@@ -166,7 +156,7 @@ const getAmenityDetails = (type, item) => {
 
 const PropertyDetails = () => {
  const location = useLocation();
- const { id } = location.state;
+ const { id } = queryString.parse(location.search);
  const navigate = useNavigate();
  const { property, loading } = useGetProperty(id);
  const { user } = useAuthContext();
@@ -176,7 +166,14 @@ const PropertyDetails = () => {
  const [amenities, setAmenities] = useState([]);
  const [selectedAmenityDetails, setSelectedAmenityDetails] = useState(null);
  const [isModalVisible, setIsModalVisible] = useState(false);
+ const [isARulesModalOpen, setIsARulesModalOpen] = useState(false);
 
+ const showARulesModal = () => {
+  setIsARulesModalOpen(true);
+ };
+ const handleARulesCancel = () => {
+  setIsARulesModalOpen(false);
+ };
  useEffect(() => {
   if (User && User.status !== 'EN ATTENTE') {
    getUserData(User.email);
@@ -260,10 +257,6 @@ const PropertyDetails = () => {
    typeof property.basicAmenities === 'string'
     ? parseJSON(property.basicAmenities)
     : property.basicAmenities,
-  uncommonAmenities:
-   typeof property.uncommonAmenities === 'string'
-    ? parseJSON(property.uncommonAmenities)
-    : property.uncommonAmenities,
   safetyFeatures:
    typeof property.safetyFeatures === 'string'
     ? parseJSON(property.safetyFeatures)
@@ -296,7 +289,6 @@ const PropertyDetails = () => {
    </Helmet>
    <Layout className="contentStyle">
     <Head />
-
     <Layout>
      <div style={{ padding: '20px' }}>
       <Anchor
@@ -352,11 +344,9 @@ const PropertyDetails = () => {
         onClick={nearbyPlace}
        />
       )}
-      <Row gutter={[32, 32]}>
+      <Row gutter={[16, 4]}>
        <Col xs={24} sm={12} id="desc">
-        <div
-         style={{ maxWidth: '600px', height: '400px', margin: '12px auto' }}
-        >
+        <div style={{ maxWidth: '100%', margin: '12px 0 0 0' }}>
          <Carousel autoplay effect="fade">
           {Array.isArray(parsedProperty.photos) &&
            parsedProperty.photos.map((photo, index) => (
@@ -369,11 +359,6 @@ const PropertyDetails = () => {
        </Col>
        <Col xs={24} sm={12}>
         <Title level={1}>{parsedProperty.name}</Title>
-        <div>
-         <Rate disabled defaultValue="4.7" />
-         <Text> 4.7</Text>
-         <Text> (107 avis)</Text>
-        </div>
         <Title level={3}>{parsedProperty.price} Dh / Nuit</Title>
         <Flex gap="4px 0" wrap>
          <Tag icon={<i className="tag-icon-style fa-light fa-bed-front"></i>}>
@@ -388,6 +373,36 @@ const PropertyDetails = () => {
         </Flex>
         <Divider />
         <Paragraph>{parsedProperty.description}</Paragraph>
+        <Card
+         style={{ width: '100%', marginTop: 16 }}
+         loading={loading}
+         actions={[
+          <Tooltip title={`+${userData.phone}`}>
+           <i
+            key="Phone"
+            className="Hosticon fa-light fa-mobile"
+            onClick={() => window.open(`tel:+${userData.phone}`)}
+           />
+          </Tooltip>,
+          <Image width={36} src={airbnb} preview={false} />,
+          <Image width={36} src={booking} preview={false} />,
+         ]}
+        >
+         <Meta
+          avatar={
+           <Avatar
+            size={{ xs: 54, md: 56, lg: 56, xl: 56, xxl: 56 }}
+            src={userData.avatar}
+           />
+          }
+          title={`${userData.firstname} ${userData.lastname}`}
+          description={
+           <>
+            <i className="fa-light fa-envelope"></i> {userData.email}
+           </>
+          }
+         />
+        </Card>
        </Col>
        <Divider id="basicamenities" />
        {parsedProperty.basicAmenities && (
@@ -470,7 +485,7 @@ const PropertyDetails = () => {
          </Row>
          {selectedAmenityDetails && (
           <Modal
-           title={selectedAmenityDetails.name.toUpperCase()}
+           title="Commodité"
            open={isModalVisible}
            onOk={handleOk}
            onCancel={handleCancel}
@@ -532,35 +547,7 @@ const PropertyDetails = () => {
         />
        </Col>
        <Divider id="equipements" />
-       <Col xs={24} sm={8}>
-        {parsedProperty.uncommonAmenities && (
-         <Col xs={24} sm={24}>
-          <Title level={3}>Équipement hors du commun:</Title>
-          <br />
-          <Row gutter={[0, 16]}>
-           {parsedProperty.uncommonAmenities.map((uncommonAmenity, index) => {
-            const { avatar, title } = getAmenityDetails(
-             'uncommon',
-             uncommonAmenity
-            );
-            return (
-             <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
-              <Card
-               bordered={false}
-               hoverable={false}
-               cover={avatar}
-               style={{ width: '100%', textAlign: 'center' }}
-              >
-               <Meta title={title} />
-              </Card>
-             </Col>
-            );
-           })}
-          </Row>
-         </Col>
-        )}
-       </Col>
-       <Col xs={24} sm={8}>
+       <Col xs={24} sm={16}>
         {parsedProperty.safetyFeatures && (
          <Col xs={24} sm={24}>
           <Title level={3}>Équipement de sécurité:</Title>
@@ -620,7 +607,11 @@ const PropertyDetails = () => {
          <br />
          <Row gutter={[0, 16]}>
           {parsedProperty.houseRules.map((houseRule, index) => {
-           const { avatar, title } = getAmenityDetails('houseRules', houseRule);
+           const { avatar, title } = getAmenityDetails(
+            'houseRules',
+            houseRule,
+            showARulesModal
+           );
            return (
             <Col xs={24} md={4} key={index} style={{ maxWidth: '100%' }}>
              <Card
@@ -642,6 +633,19 @@ const PropertyDetails = () => {
     </Layout>
     <Foot />
    </Layout>
+   <Modal
+    title="Règles supplémentaires"
+    open={isARulesModalOpen}
+    onCancel={handleARulesCancel}
+    footer={null}
+   >
+    <p>
+     {property.houseRules
+      .find((rule) => rule.startsWith('additionalRules:'))
+      .substring(16)
+      .trim()}
+    </p>
+   </Modal>
   </>
  );
 };

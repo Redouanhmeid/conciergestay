@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
+const request = require('request');
 
 // create our App
 const app = express();
@@ -40,14 +41,25 @@ app.use(bodyParser.json());
 
 // Enable CORS for only frontend
 const corsOptions = {
- origin: 'http://localhost:3000', // Replace with your frontend server's URL
- // origin: 'https://csapp.nextbedesign.com', // Replace with your frontend server's URL
+ origin: 'http://localhost:3000',
+ // origin: 'https://csapp.nextbedesign.com',
 };
 app.use(cors(corsOptions));
 
 // Home Page
 app.get('/', (req, res) => {
  return res.send('Hello Backend Side');
+});
+
+// Proxy route for handling cross-origin images
+app.get('/proxy', (req, res) => {
+ const imageUrl = req.query.url;
+ request
+  .get(imageUrl)
+  .on('response', (response) => {
+   res.set('Content-Type', response.headers['content-type']);
+  })
+  .pipe(res);
 });
 // Start the server
 app.listen(port, () => console.log(`server running on port ${port}`));

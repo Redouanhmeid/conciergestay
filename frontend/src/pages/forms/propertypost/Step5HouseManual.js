@@ -160,6 +160,11 @@ const Step5HouseManual = ({ prev, values }) => {
             <Checkbox value="noPets">Pas d'animaux de compagnie</Checkbox>
            </Col>
            <Col span={24}>
+            <Checkbox value="noUnmarriedCouple">
+             Pas de couple non marié
+            </Checkbox>
+           </Col>
+           <Col span={24}>
             <Checkbox
              value="additionalRules"
              checked={showAdditionalRules}

@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
  Spin,
  Layout,
  Row,
  Col,
  Typography,
- Button,
- Collapse,
  Tabs,
  Grid,
  Divider,
@@ -14,7 +12,6 @@ import {
  Flex,
  Card,
 } from 'antd';
-import { UnorderedListOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import Head from '../../components/common/header';
@@ -25,188 +22,22 @@ import MapMarker from './MapMarker';
 import ReactPlayer from 'react-player';
 import NearbyPlacesCarouselByType from './nearbyplacescarouselbytype';
 import MapNearbyPlaces from './MapNearbyPlaces';
+import { formatTimeFromDatetime, getAdditionalRules } from '../../utils/utils';
+import {
+ getHouseRuleDetails,
+ getElementsDetails,
+ getSafetyFeaturesDetails,
+ getEarlyCheckInDetails,
+ getAccessToPropertyDetails,
+ getLateCheckOutPolicyDetails,
+ getBeforeCheckOutDetails,
+} from '../../utils/iconMappings';
+import Print from './print';
 
 const { Content } = Layout;
-const { Title, Text, Paragraph } = Typography;
-const { Panel } = Collapse;
-const { TabPane } = Tabs;
+const { Text, Paragraph } = Typography;
 const { useBreakpoint } = Grid;
 const { Meta } = Card;
-
-const formatTimeFromDatetime = (datetimeString) => {
- const date = new Date(datetimeString);
- const hours = date.getHours();
- const minutes = date.getMinutes().toString().padStart(2, '0');
- return `${hours}:${minutes}`;
-};
-
-const getHouseRuleDetails = (rule) => {
- switch (rule) {
-  case 'noNoise':
-   return {
-    icon: <i className="icon-style-dg fa-light fa-volume-slash"></i>,
-    title: 'Pas de bruit après 23h',
-   };
-  case 'noFoodDrinks':
-   return {
-    icon: <i className="icon-style-dg fa-light fa-utensils-slash"></i>,
-    title: 'Pas de nourriture ni de boissons dans les chambres à coucher',
-   };
-  case 'noParties':
-   return {
-    icon: <i className="icon-style-dg fa-light fa-champagne-glasses"></i>,
-    title: "Pas de fêtes ni d'événements",
-   };
-  case 'noSmoking':
-   return {
-    icon: <i className="icon-style-dg fa-light fa-ban-smoking"></i>,
-    title: 'Défense de fumer',
-   };
-  case 'noPets':
-   return {
-    icon: <i className="icon-style-dg fa-light fa-paw-simple"></i>,
-    title: 'Animaux de compagnie autorisés',
-   };
-  case 'additionalRules':
-   return {
-    icon: <i className="icon-style-dg fa-light fa-circle-info"></i>,
-    title: 'Règles supplémentaires',
-   };
-  default:
-   return { icon: null, title: '' };
- }
-};
-const getElementsDetails = (element) => {
- switch (element) {
-  case 'cameras':
-   return {
-    icon: <i className="icon-style-dg fa-light fa-camera-cctv"></i>,
-    title: 'Caméras de surveillance extérieures',
-   };
-  case 'sonometers':
-   return {
-    icon: <i className="icon-style-dg fa-light fa-gauge-low"></i>,
-    title: 'Sonomètres',
-   };
-  default:
-   return { icon: null, title: '' };
- }
-};
-const getSafetyFeaturesDetails = (feature) => {
- switch (feature) {
-  case 'smokeDetector':
-   return {
-    icon: <i className="icon-style-dg fa-light fa-sensor-cloud"></i>,
-    title: 'Détecteur de fumée',
-   };
-  case 'firstAidKit':
-   return {
-    icon: <i className="icon-style-dg fa-light fa-suitcase-medical"></i>,
-    title: 'Kit de premiers secours',
-   };
-  case 'fireExtinguisher':
-   return {
-    icon: <i className="icon-style-dg fa-light fa-fire-extinguisher"></i>,
-    title: 'Extincteur',
-   };
-  case 'carbonMonoxideDetector':
-   return {
-    icon: <i className="icon-style-dg fa-light fa-sensor"></i>,
-    title: 'Détecteur de monoxyde de carbone',
-   };
-  default:
-   return { icon: null, title: '' };
- }
-};
-const getAdditionalRules = (houseRules) => {
- const additionalRuleEntry = houseRules.find((rule) =>
-  rule.startsWith('additionalRules:')
- );
- if (additionalRuleEntry) {
-  return additionalRuleEntry.split('additionalRules: ')[1];
- }
- return null;
-};
-const getEarlyCheckInDetails = (earlyCheckIn) => {
- switch (earlyCheckIn) {
-  case 'heureNonFlexible':
-   return "Malheureusement l'heure d'arrivée n'est pas flexible.";
-  case 'ajustementHeure':
-   return "À l'occasion il est possible d'ajuster votre heure d'arrivée si vous nous contactez.";
-  case 'autreHeureArrivee':
-   return 'Lorsque que cela est possible, nous pouvons vous arranger en vous proposant une autre heure d’arrivée qui vous conviendrait mieux. Contactez nous à l’avance si vous souhaitez modifier votre heure d’arrivée.';
-  case 'laissezBagages':
-   return 'Vous pouvez laissez vos bagages pendant la journée.';
-  default:
-   return '';
- }
-};
-const getAccessToPropertyDetails = (accessToProperty) => {
- switch (accessToProperty) {
-  case 'acceuilContactezMoi':
-   return 'La clé de la maison se trouve dans la boîte à clé';
-  case 'cleDansBoite':
-   return 'On sera là pour vous accueillir, sinon, contactez moi quand vous arrivez.';
-  case 'codesAccesCourriel':
-   return 'Nous vous enverrons vos codes d’accès par courriel avant votre arrivée.';
-  case 'verifiezCourriel':
-   return 'Vérifiez votre courriel pour les instructions relatives à votre arrivée.';
-  case 'serrureNumero':
-   return 'Nous avons une serrure à numéro.';
-  default:
-   return '';
- }
-};
-const getLateCheckOutPolicyDetails = (lateCheckOutPolicy) => {
- switch (lateCheckOutPolicy) {
-  case 'heureNonFlexible':
-   return 'Malheureusement l’heure de départ n’est pas flexible.';
-  case 'heureDepartAlternative':
-   return 'Lorsque l’horaire le permet, il nous fait plaisir d’accommoder une heure de départ alternative. Contactez-nous à l’avance si vous souhaitez prendre un arrangement à cet effet.';
-  case 'codesAccesCourriel':
-   return 'Nous vous enverrons vos codes d’accès par courriel avant votre arrivée.';
-  case 'contactezNous':
-   return 'Communiquez avec nous si vous aimeriez quitter plus tard.';
-  case 'optionDepartTardif':
-   return 'Montrer l’option du départ tardif (si ce n’est pas coché on ne va pas le mentionner)';
-  default:
-   return '';
- }
-};
-const getBeforeCheckOutDetails = (beforeCheckOut) => {
- switch (beforeCheckOut) {
-  case 'vaisselleLaveVaisselle':
-   return 'Mettez la vaisselle de dernière minute dans le lave-vaisselle.';
-  case 'eteindreAppareilsElectriques':
-   return 'Merci de vous assurer que vous avez bien éteint la cuisinière, lumières et autres appareils électriques.';
-  case 'porteNonVerrouillee':
-   return 'Assurez-vous que les portes sont verrouillées.';
-  case 'laissezBagages':
-   return 'Vous pouvez laissez vos bagages dans la propriété après l’heure du départ.';
-  case 'signezLivreOr':
-   return 'S’il vous plait, signez notre livre d’or avant de partir.';
-  case 'litsNonFaits':
-   return 'Laissez les lits que vous avez utilisés défaits.';
-  case 'laverVaisselle':
-   return 'Merci de laver et ranger vaisselle et plats utilisés.';
-  case 'replacezMeubles':
-   return 'Replacez les meubles à leur endroit original.';
-  case 'deposePoubelles':
-   return 'Merci de déposer poubelles et déchets dans les containers appropriés.';
-  case 'serviettesDansBaignoire':
-   return 'Mettez vos serviettes utilisées dans la baignoire.';
-  case 'serviettesParTerre':
-   return 'Laissez les serviettes utilisées par terre.';
-  case 'portesVerrouillees':
-   return 'Laissez la porte déverrouillée.';
-  case 'laissezCleMaison':
-   return ' Laissez la clé dans la maison.';
-  case 'laissezCleBoiteCle':
-   return 'Laissez la clé dans la boîte à clef.';
-  default:
-   return '';
- }
-};
 
 const DigitalGuidebook = () => {
  const screens = useBreakpoint();
@@ -215,43 +46,13 @@ const DigitalGuidebook = () => {
  const { property, loading } = useGetProperty(id);
  const { getAllAmenities } = useAmenity();
  const [amenities, setAmenities] = useState([]);
- const [wifiAmenity, setWifiAmenity] = useState(null);
- const [parkingAmenity, setParkingAmenity] = useState(null);
- const [tvAmenity, setTvAmenity] = useState(null);
- const [kitchenAmenity, setKitchenAmenity] = useState(null);
- const [rows, setRows] = useState(4);
- const [airConditioningAmenity, setAirConditioningAmenity] = useState(null);
- const [washingMachineAmenity, setWashingMachineAmenity] = useState(null);
- const [dedicatedWorkspaceAmenity, setDedicatedWorkspaceAmenity] =
-  useState(null);
+ const rows = 4;
 
  useEffect(() => {
   const fetchData = async (ID) => {
    const data = await getAllAmenities(ID);
    if (data) {
     setAmenities(data);
-    const wifiAmenity = data.find((amenity) => amenity.name === 'wifi');
-    setWifiAmenity(wifiAmenity);
-    const parkingAmenity = data.find(
-     (amenity) => amenity.name === 'freeParking'
-    );
-    setParkingAmenity(parkingAmenity);
-    const tvAmenity = data.find((amenity) => amenity.name === 'television');
-    setTvAmenity(tvAmenity);
-    const kitchenAmenity = data.find((amenity) => amenity.name === 'kitchen');
-    setKitchenAmenity(kitchenAmenity);
-    const airConditioningAmenity = data.find(
-     (amenity) => amenity.name === 'airConditioning'
-    );
-    setAirConditioningAmenity(airConditioningAmenity);
-    const washingMachineAmenity = data.find(
-     (amenity) => amenity.name === 'washingMachine'
-    );
-    setWashingMachineAmenity(washingMachineAmenity);
-    const dedicatedWorkspaceAmenity = data.find(
-     (amenity) => amenity.name === 'dedicatedWorkspace'
-    );
-    setDedicatedWorkspaceAmenity(dedicatedWorkspaceAmenity);
    }
   };
   if (id) {
@@ -259,26 +60,64 @@ const DigitalGuidebook = () => {
   }
  }, [id, loading]);
 
- const additionalRules =
-  property && property.houseRules
-   ? getAdditionalRules(property.houseRules)
-   : null;
- const earlyCheckInParagraphs =
-  property && property.earlyCheckIn
-   ? property.earlyCheckIn.map(getEarlyCheckInDetails)
-   : [];
- const accessToPropertyParagraphs =
-  property && property.accessToProperty
-   ? property.accessToProperty.map(getAccessToPropertyDetails)
-   : [];
- const lateCheckOutPolicyParagraphs =
-  property && property.lateCheckOutPolicy
-   ? property.lateCheckOutPolicy.map(getLateCheckOutPolicyDetails)
-   : [];
- const beforeCheckOutParagraphs =
-  property && property.beforeCheckOut
-   ? property.beforeCheckOut.map(getBeforeCheckOutDetails)
-   : [];
+ const wifiAmenity = useMemo(
+  () => amenities?.find((amenity) => amenity.name === 'wifi'),
+  [amenities]
+ );
+ const parkingAmenity = useMemo(
+  () => amenities?.find((amenity) => amenity.name === 'freeParking'),
+  [amenities]
+ );
+ const tvAmenity = useMemo(
+  () => amenities?.find((amenity) => amenity.name === 'television'),
+  [amenities]
+ );
+ const kitchenAmenity = useMemo(
+  () => amenities?.find((amenity) => amenity.name === 'kitchen'),
+  [amenities]
+ );
+ const airConditioningAmenity = useMemo(
+  () => amenities?.find((amenity) => amenity.name === 'airConditioning'),
+  [amenities]
+ );
+ const washingMachineAmenity = useMemo(
+  () => amenities?.find((amenity) => amenity.name === 'washingMachine'),
+  [amenities]
+ );
+ const poolAmenity = useMemo(
+  () => amenities?.find((amenity) => amenity.name === 'pool'),
+  [amenities]
+ );
+
+ const additionalRules = getAdditionalRules(property?.houseRules);
+ const earlyCheckInParagraphs = useMemo(
+  () =>
+   Array.isArray(property?.earlyCheckIn)
+    ? property.earlyCheckIn.map(getEarlyCheckInDetails)
+    : [],
+  [property]
+ );
+ const accessToPropertyParagraphs = useMemo(
+  () =>
+   Array.isArray(property?.accessToProperty)
+    ? property.accessToProperty.map(getAccessToPropertyDetails)
+    : [],
+  [property]
+ );
+ const lateCheckOutPolicyParagraphs = useMemo(
+  () =>
+   Array.isArray(property?.lateCheckOutPolicy)
+    ? property.lateCheckOutPolicy.map(getLateCheckOutPolicyDetails)
+    : [],
+  [property]
+ );
+ const beforeCheckOutParagraphs = useMemo(
+  () =>
+   Array.isArray(property?.beforeCheckOut)
+    ? property.beforeCheckOut.map(getBeforeCheckOutDetails)
+    : [],
+  [property]
+ );
 
  const innerTabs = [
   {
@@ -293,6 +132,10 @@ const DigitalGuidebook = () => {
         <i className="fa-light fa-key"></i>
         <Text strong> Arrivée</Text>
        </Divider>
+       <Paragraph>
+        L'heure d'enregistrement s'effectue à tout moment après{' '}
+        {formatTimeFromDatetime(property.checkInTime)}
+       </Paragraph>
        {earlyCheckInParagraphs.map((paragraph, index) => (
         <Paragraph key={index}>{paragraph}</Paragraph>
        ))}
@@ -369,7 +212,7 @@ const DigitalGuidebook = () => {
    content: (
     <Row gutter={[16, 16]}>
      {wifiAmenity && (
-      <Col xs={24} md={6}>
+      <Col xs={24} md={8}>
        <Divider>
         <i className="fa-light fa-wifi"></i>
         <Text strong> Accès Wi-Fi</Text>
@@ -412,7 +255,7 @@ const DigitalGuidebook = () => {
      )}
 
      {tvAmenity && (
-      <Col xs={24} md={10}>
+      <Col xs={24} md={8}>
        <Divider>
         <i className="fa-light fa-tv"></i>
         <Text strong> Télévision</Text>
@@ -549,7 +392,7 @@ const DigitalGuidebook = () => {
         }
        >
         <Meta
-         title="Climatisation"
+         title="Machine à laver"
          description={
           <Paragraph
            ellipsis={{
@@ -566,11 +409,11 @@ const DigitalGuidebook = () => {
       </Col>
      )}
 
-     {dedicatedWorkspaceAmenity && (
+     {poolAmenity && (
       <Col xs={24} md={8}>
        <Divider>
-        <i className="fa-light fa-laptop"></i>
-        <Text strong> Espace de travail</Text>
+        <i className="fa-light fa-water-ladder"></i>
+        <Text strong> Piscine</Text>
        </Divider>
        <Card
         hoverable={false}
@@ -578,20 +421,20 @@ const DigitalGuidebook = () => {
          width: '100%',
         }}
         cover={
-         ReactPlayer.canPlay(dedicatedWorkspaceAmenity.media) ? (
+         ReactPlayer.canPlay(poolAmenity.media) ? (
           <ReactPlayer
-           url={dedicatedWorkspaceAmenity.media}
+           url={poolAmenity.media}
            controls
            width={'100%'}
            height={240}
           />
          ) : (
-          <Image src={dedicatedWorkspaceAmenity.media} />
+          <Image src={poolAmenity.media} />
          )
         }
        >
         <Meta
-         title="Climatisation"
+         title="Piscine"
          description={
           <Paragraph
            ellipsis={{
@@ -600,7 +443,7 @@ const DigitalGuidebook = () => {
             symbol: 'lire plus',
            }}
           >
-           {dedicatedWorkspaceAmenity.description}
+           {poolAmenity.description}
           </Paragraph>
          }
         />
@@ -686,8 +529,12 @@ const DigitalGuidebook = () => {
       <div>
        <Divider>
         <i className="fa-light fa-lock-keyhole"></i>
-        <Text strong> Departure</Text>
+        <Text strong> Départ</Text>
        </Divider>
+       <Paragraph>
+        L'heure de départ s'effectue à tout moment avant{' '}
+        {formatTimeFromDatetime(property.checkOutTime)}
+       </Paragraph>
        {lateCheckOutPolicyParagraphs.map((paragraph, index) => (
         <Paragraph key={index}>{paragraph}</Paragraph>
        ))}
@@ -717,8 +564,8 @@ const DigitalGuidebook = () => {
   },
   {
    key: '4',
-   icon: <i className="fa-light fa-utensils"></i>,
-   tab: 'Endroits où manger',
+   icon: <i className="fa-light fa-plate-utensils"></i>,
+   tab: 'Restaurants & Cafés',
    content: (
     <div>
      <MapNearbyPlaces
@@ -777,58 +624,9 @@ const DigitalGuidebook = () => {
   },
   {
    key: '7',
-   icon: <i className="fa-light fa-grid-2"></i>,
-   tab: 'Tous',
-   content: (
-    <div>
-     <MapNearbyPlaces
-      latitude={property.latitude}
-      longitude={property.longitude}
-     />
-     <Divider />
-     <NearbyPlacesCarouselByType
-      latitude={property.latitude}
-      longitude={property.longitude}
-     />
-    </div>
-   ),
-  },
-  {
-   key: '8',
    icon: <i className="fa-light fa-print"></i>,
    tab: 'Imprimer',
-   content: <div>{/* Content for "Départ" */}</div>,
-  },
- ];
-
- const outerTabs = [
-  {
-   key: '1',
-   icon: <UnorderedListOutlined />,
-   tab: 'List',
-   content: (
-    <Col xs={24} md={24}>
-     <Tabs
-      tabPosition={screens.md ? 'left' : 'top'}
-      items={innerTabs.map((tab) => ({
-       label: tab.tab,
-       icon: tab.icon,
-       key: tab.key,
-       children: tab.content,
-      }))}
-     />
-    </Col>
-   ),
-  },
-  {
-   key: '2',
-   icon: <EnvironmentOutlined />,
-   tab: 'Map',
-   content: (
-    <Col xd={24} md={24}>
-     <p>Map</p>
-    </Col>
-   ),
+   content: <Print property={property} amenities={amenities} />,
   },
  ];
 
@@ -844,29 +642,20 @@ const DigitalGuidebook = () => {
    <Head />
    <Layout className="container-fluid">
     <Content>
-     <Row gutter={[0, 16]}>
-      <Tabs
-       defaultActiveKey="1"
-       centered
-       tabPosition="bottom"
-       className="bottom-tabs"
-       size="large"
-       tabBarStyle={{
-        width: '100%',
-        backgroundColor: '#fbfbfb', // Grey background
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontWeight: 600,
-       }}
-       tabBarGutter={96}
-       items={outerTabs.map((tab) => ({
-        label: tab.tab,
-        icon: tab.icon,
-        key: tab.key,
-        children: tab.content,
-       }))}
-      />
+     <Row gutter={[16, 16]}>
+      <Col xs={24}>
+       <Tabs
+        defaultActiveKey="1"
+        tabPosition={screens.md ? 'left' : 'top'}
+        size="large"
+        items={innerTabs.map((tab) => ({
+         label: tab.tab,
+         icon: tab.icon,
+         key: tab.key,
+         children: tab.content,
+        }))}
+       />
+      </Col>
      </Row>
     </Content>
    </Layout>

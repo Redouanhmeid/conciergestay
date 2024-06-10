@@ -9,19 +9,14 @@ const { Title } = Typography;
 
 const Step3Equipements = ({ next, prev, values }) => {
  const [BasicAmenities, setBasicAmenities] = useState([]);
- const [UncommonAmenities, setUncommonAmenities] = useState([]);
  const [SafetyFeatures, setSafetyFeatures] = useState([]);
  const submitFormData = () => {
   values.basicAmenities = BasicAmenities;
-  values.uncommonAmenities = UncommonAmenities;
   values.safetyFeatures = SafetyFeatures;
   next();
  };
  const onChangeBasicAmenities = (checkedvalues) => {
   setBasicAmenities(checkedvalues);
- };
- const onChangeUncommonAmenities = (checkedvalues) => {
-  setUncommonAmenities(checkedvalues);
  };
  const onChangeSafetyFeatures = (checkedvalues) => {
   setSafetyFeatures(checkedvalues);
@@ -64,48 +59,13 @@ const Step3Equipements = ({ next, prev, values }) => {
             <Checkbox value="airConditioning">Climatisation</Checkbox>
            </Col>
            <Col span={24}>
-            <Checkbox value="dedicatedWorkspace">
-             Espace de travail dédié
-            </Checkbox>
-           </Col>
-           <Col span={24}>
-            <Checkbox value="fitnessEquipements">
-             Equipements de fitness
-            </Checkbox>
-           </Col>
-          </Row>
-         </Checkbox.Group>
-        </Form.Item>
-       </Col>
-       <Col xs={24} md={12}>
-        <Form.Item
-         label="Possédez-vous des commodités hors du commun ?"
-         name="uncommonAmenities"
-        >
-         <Checkbox.Group onChange={onChangeUncommonAmenities}>
-          <Row>
-           <Col span={24}>
             <Checkbox value="pool">Piscine</Checkbox>
            </Col>
-           <Col span={24}>
-            <Checkbox value="outdoordining">Espace repas en plein air</Checkbox>
-           </Col>
-           <Col span={24}>
-            <Checkbox value="fireplace">Cheminée</Checkbox>
-           </Col>
-           <Col span={24}>
-            <Checkbox value="lakeAccess">Accès au lac</Checkbox>
-           </Col>
-           <Col span={24}>
-            <Checkbox value="beachAccess">Accès à la plage</Checkbox>
-           </Col>
-           <Col span={24}>
-            <Checkbox value="skiAccess">Accessible à skis</Checkbox>
-           </Col>
           </Row>
          </Checkbox.Group>
         </Form.Item>
        </Col>
+
        <Col xs={24} md={12}>
         <Form.Item
          label="Possédez-vous ces équipements de sécurité ?"

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Spin, Space, Image, Typography, Button } from 'antd';
-import { RightOutlined } from '@ant-design/icons';
 import MapConfig from '../../mapconfig';
 import {
  APIProvider,
@@ -8,8 +7,6 @@ import {
  AdvancedMarker,
  InfoWindow,
 } from '@vis.gl/react-google-maps';
-import { useJsApiLoader } from '@react-google-maps/api';
-import pinIcon from '../../assets/pin.gif';
 import { useGoogleMapsLoader } from '../../services/GoogleMapService';
 import useNearbyPlaces from '../../hooks/useNearbyPlaces';
 
@@ -21,43 +18,42 @@ const MapNearbyPlaces = React.memo(({ latitude, longitude, type }) => {
  const isLoaded = useGoogleMapsLoader();
  const { data: places = [], loading } = useNearbyPlaces(latitude, longitude);
  const [selectedPlace, setSelectedPlace] = useState(null);
- const [infowindowShown, setInfowindowShown] = useState(false);
  const [filteredPlaces, setFilteredPlaces] = useState([]);
 
  const center = {
   lat: latitude,
   lng: longitude,
  };
- const toggleInfoWindow = (place) =>
-  setSelectedPlace(
-   selectedPlace && selectedPlace.id === place.id ? null : place
+ const toggleInfoWindow = (place) => {
+  setSelectedPlace((prevPlace) =>
+   prevPlace && prevPlace.id === place.id ? null : place
   );
+ };
  const closeInfoWindow = () => {
   setSelectedPlace(null);
-  setInfowindowShown(false);
  };
  const display = (url) => {
   window.open(url, '_blank');
  };
 
  useEffect(() => {
-  if (places && type) {
-   if (type === 'food') {
-    setFilteredPlaces(
-     places.filter(
-      (place) =>
-       place.types.includes('restaurant') || place.types.includes('food')
-     )
-    );
+  if (places && places.length > 0) {
+   if (type && type !== 'Tous') {
+    if (type === 'food') {
+     setFilteredPlaces(
+      places.filter(
+       (place) =>
+        place.types.includes('restaurant') || place.types.includes('food')
+      )
+     );
+    } else {
+     setFilteredPlaces(places.filter((place) => place.types.includes(type)));
+    }
    } else {
-    setFilteredPlaces(places.filter((place) => place.types.includes(type)));
+    setFilteredPlaces(places);
    }
   }
-  if (places && !type) {
-   setFilteredPlaces(places);
-  }
  }, [places, type]);
-
  if (!isLoaded || loading) {
   return (
    <div className="loading">

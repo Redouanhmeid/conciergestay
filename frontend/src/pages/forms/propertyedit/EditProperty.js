@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import useGetProperty from '../../../hooks/useGetProperty';
 import {
  Layout,
@@ -41,12 +42,11 @@ const getBase64 = (file) =>
 
 const EditProperty = () => {
  const location = useLocation();
- const { id } = location.state;
+ const { id } = queryString.parse(location.search);
  const { property, loading } = useGetProperty(id);
  const navigate = useNavigate();
- const { uploadPhotos, uploading } = useUploadPhotos();
- const { isLoading, updateProperty, Property, success, error } =
-  useUpdateProperty();
+ const { uploadPhotos } = useUploadPhotos();
+ const { updateProperty } = useUpdateProperty();
  const [showAdditionalRules, setShowAdditionalRules] = useState(false);
  const [AdditionalRules, setAdditionalRules] = useState('');
  const [form] = Form.useForm();
@@ -70,9 +70,6 @@ const EditProperty = () => {
  // Check if property items are a string and parse them accordingly
  if (typeof property.basicAmenities === 'string') {
   property.basicAmenities = JSON.parse(property.basicAmenities);
- }
- if (typeof property.uncommonAmenities === 'string') {
-  property.uncommonAmenities = JSON.parse(property.uncommonAmenities);
  }
  if (typeof property.safetyFeatures === 'string') {
   property.safetyFeatures = JSON.parse(property.safetyFeatures);
@@ -184,7 +181,6 @@ const EditProperty = () => {
    rooms,
    beds,
    basicAmenities,
-   uncommonAmenities,
    safetyFeatures,
    elements,
    houseRules,
@@ -278,7 +274,6 @@ const EditProperty = () => {
        beforeCheckOut: property.beforeCheckOut,
        additionalCheckOutInfo: property.additionalCheckOutInfo,
        basicAmenities: property.basicAmenities,
-       uncommonAmenities: property.uncommonAmenities,
        safetyFeatures: property.safetyFeatures,
       }}
      >
@@ -374,41 +369,7 @@ const EditProperty = () => {
                <Checkbox value="airConditioning">Climatisation</Checkbox>
               </Col>
               <Col span={24}>
-               <Checkbox value="dedicatedWorkspace">
-                Espace de travail dédié
-               </Checkbox>
-              </Col>
-             </Row>
-            </Checkbox.Group>
-           </Form.Item>
-          </Col>
-
-          <Col xs={24}>
-           <Form.Item
-            label="Possédez-vous des équipements hors du commun?"
-            name="uncommonAmenities"
-           >
-            <Checkbox.Group>
-             <Row>
-              <Col span={24}>
                <Checkbox value="pool">Piscine</Checkbox>
-              </Col>
-              <Col span={24}>
-               <Checkbox value="outdoorDining">
-                Espace repas en plein air
-               </Checkbox>
-              </Col>
-              <Col span={24}>
-               <Checkbox value="fireplace">Cheminée</Checkbox>
-              </Col>
-              <Col span={24}>
-               <Checkbox value="lakeAccess">Accès au lac</Checkbox>
-              </Col>
-              <Col span={24}>
-               <Checkbox value="beachAccess">Accès à la plage</Checkbox>
-              </Col>
-              <Col span={24}>
-               <Checkbox value="skiAccess">Accessible à skis</Checkbox>
               </Col>
              </Row>
             </Checkbox.Group>
@@ -485,6 +446,11 @@ const EditProperty = () => {
               </Col>
               <Col span={24}>
                <Checkbox value="noPets">Pas d'animaux de compagnie</Checkbox>
+              </Col>
+              <Col span={24}>
+               <Checkbox value="noUnmarriedCouple">
+                Pas de couple non marié
+               </Checkbox>
               </Col>
               <Col span={24}>
                <Checkbox

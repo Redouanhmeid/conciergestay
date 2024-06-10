@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
  Carousel,
  Card,
  Spin,
  Image,
  Button,
- Flex,
  Typography,
- Tag,
  Rate,
  Grid,
 } from 'antd';
@@ -19,29 +17,34 @@ const { useBreakpoint } = Grid;
 
 const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
  const slider = useRef(null);
- const slider3 = useRef(null);
  const { loading, error, data } = useNearbyPlaces(latitude, longitude);
- const dataArray = data ? Object.values(data) : [];
  const screens = useBreakpoint();
  const [filteredPlaces, setFilteredPlaces] = useState([]);
 
- useEffect(() => {
-  if (dataArray && dataArray.length > 0 && type) {
-   if (type === 'food') {
-    setFilteredPlaces(
-     dataArray.filter(
-      (place) =>
-       place.types.includes('restaurant') || place.types.includes('food')
-     )
-    );
+ const filterPlaces = useCallback(() => {
+  if (Array.isArray(data) && data.length > 0) {
+   if (type && type !== 'Tous') {
+    if (type === 'food') {
+     setFilteredPlaces(
+      data.filter(
+       (place) =>
+        place.types.includes('restaurant') || place.types.includes('food')
+      )
+     );
+    } else {
+     setFilteredPlaces(data.filter((place) => place.types.includes(type)));
+    }
    } else {
-    setFilteredPlaces(dataArray.filter((place) => place.types.includes(type)));
+    setFilteredPlaces(data);
    }
+  } else {
+   setFilteredPlaces([]); // Ensure it is always an array
   }
-  if (!type) {
-   setFilteredPlaces(dataArray);
-  }
- }, [dataArray, type]);
+ }, [data, type]);
+
+ useEffect(() => {
+  filterPlaces();
+ }, [filterPlaces]);
 
  if (loading) {
   return (
@@ -50,22 +53,17 @@ const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
    </div>
   );
  }
- if (error) return <div>Error: {error.message}</div>;
 
- const Activities = dataArray.filter((place) =>
-  place.types.includes('natural_feature')
- );
+ if (error) {
+  return <div>Error: {error.message}</div>;
+ }
 
- const getSlidesToShow = (dataArray) => {
-  if (!dataArray || !Array.isArray(dataArray)) {
-   return 0; // Return 0 if data is undefined or not an array
+ const getSlidesToShow = () => {
+  if (!Array.isArray(filteredPlaces) || filteredPlaces.length === 0) {
+   return 1;
   }
-  const totalSlides = dataArray.length;
-  if (screens.xs) {
-   return Math.min(1, totalSlides);
-  } else {
-   return Math.min(5, totalSlides);
-  }
+  const totalSlides = filteredPlaces.length;
+  return screens.xs ? Math.min(1, totalSlides) : Math.min(5, totalSlides);
  };
 
  return (
@@ -76,12 +74,12 @@ const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
 
    <Carousel
     ref={slider}
-    slidesToShow={getSlidesToShow(dataArray)}
+    slidesToShow={getSlidesToShow()}
     dots={false}
     autoplay
     style={{ padding: '0 28px' }}
    >
-    {dataArray.map((place, index) => (
+    {filteredPlaces.map((place, index) => (
      <div key={index} style={{ margin: '0 12px' }}>
       <Place place={place} />
      </div>
@@ -97,7 +95,7 @@ const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
 
 export default NearbyPlacesCarouselByType;
 
-const Place = ({ place }) => {
+const Place = React.memo(({ place }) => {
  return (
   <Card
    cover={
@@ -121,7 +119,13 @@ const Place = ({ place }) => {
    <Card.Meta
     title={place.name}
     description={
-     <Flex justify="space-between" align="center">
+     <div
+      style={{
+       display: 'flex',
+       justifyContent: 'space-between',
+       alignItems: 'center',
+      }}
+     >
       <div>
        <Rate
         allowHalf
@@ -135,12 +139,11 @@ const Place = ({ place }) => {
        href={place.url}
        target="_blank"
        type="link"
-       size={40}
        icon={<i className="fa-lg fa-light fa-map-location-dot"></i>}
       />
-     </Flex>
+     </div>
     }
    />
   </Card>
  );
-};
+});

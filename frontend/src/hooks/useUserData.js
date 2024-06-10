@@ -25,7 +25,23 @@ export const useUserData = () => {
   }
   setIsLoading(false);
  };
-
+ const getUserDataById = async (id) => {
+  setIsLoading(true);
+  try {
+   const params = {
+    url: `/api/v1/propertymanagers/${id}`,
+    method: 'get',
+    rejectUnauthorized: false, //add when working with https sites
+    requestCert: false, //add when working with https sites
+    agent: false, //add when working with https sites
+   };
+   const json = await axios(params);
+   setUserData(json.data);
+  } catch (error) {
+   console.error('Error fetching user data:', error);
+  }
+  setIsLoading(false);
+ };
  const updatePropertyManager = async (id, firstname, lastname, phone) => {
   setIsLoading(true);
   try {
@@ -99,6 +115,7 @@ export const useUserData = () => {
   isLoading,
   userData,
   getUserData,
+  getUserDataById,
   updatePropertyManager,
   updateAvatar,
   updatePassword,

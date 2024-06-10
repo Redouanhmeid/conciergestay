@@ -21,10 +21,6 @@ module.exports = (db, type) => {
    type: type.JSON,
    allowNull: true,
   },
-  uncommonAmenities: {
-   type: type.JSON,
-   allowNull: true,
-  },
   safetyFeatures: {
    type: type.JSON,
    allowNull: true,

@@ -36,14 +36,10 @@ const Home = () => {
  const [openFilter, setOpenFilter] = useState(false);
  const [range, setRange] = useState([300, 600]);
  const [roomValue, setRoomValue] = useState(0);
- const [litValue, setLitValue] = useState(0);
  const [paxValue, setPaxValue] = useState(0);
  const [checkedTypes, setCheckedTypes] = useState([]);
  const [showAllbasicAmenities, setShowAllBasicAmenities] = useState(false);
  const [checkedbasicAmenities, setCheckedbasicAmenities] = useState([]);
- const [showAllUncommonAmenities, setShowAllUncommonAmenities] =
-  useState(false);
- const [checkedUncommonAmenities, setCheckedUncommonAmenities] = useState([]);
 
  const propertyTypes = [
   {
@@ -69,16 +65,7 @@ const Home = () => {
   { value: 'airConditioning', label: 'Climatisation' },
   { value: 'television', label: 'Télévision' },
   { value: 'washingMachine', label: 'Lave-linge' },
-  { value: 'dedicatedWorkspace', label: 'Espace de travail' },
-  { value: 'fitnessEquipements', label: 'Fitness' },
- ];
- const UncommonAmenities = [
   { value: 'pool', label: 'Piscine' },
-  { value: 'outdoordining', label: 'Espace repas en plein air' },
-  { value: 'fireplace', label: 'Cheminée' },
-  { value: 'lakeAccess', label: 'Accès au lac' },
-  { value: 'beachAccess', label: 'Accès à la plage' },
-  { value: 'skiAccess', label: 'Accessible à skis' },
  ];
 
  const handleCityChange = (city) => {
@@ -101,11 +88,9 @@ const Home = () => {
  const onClear = () => {
   setRange([300, 600]);
   setRoomValue(0);
-  setLitValue(0);
   setPaxValue(0);
   setCheckedTypes([]);
   setCheckedbasicAmenities([]);
-  setCheckedUncommonAmenities([]);
  };
  const onSliderChange = (newRange) => {
   setRange(newRange);
@@ -118,9 +103,6 @@ const Home = () => {
  };
  const onChangeRoom = (newValue) => {
   setRoomValue(newValue);
- };
- const onChangeLit = (newValue) => {
-  setLitValue(newValue);
  };
  const onChangePax = (newValue) => {
   setPaxValue(newValue);
@@ -142,22 +124,6 @@ const Home = () => {
   } else {
    setCheckedbasicAmenities(
     checkedbasicAmenities.filter((item) => item !== value)
-   );
-  }
- };
- const visibleUncommonAmenitie = showAllUncommonAmenities
-  ? UncommonAmenities
-  : UncommonAmenities.slice(0, 3);
-
- const toggleShowAllUncommonAmenities = () => {
-  setShowAllUncommonAmenities(!showAllUncommonAmenities);
- };
- const handleCheckboxChangeUncommonAmenities = (e, value) => {
-  if (e.target.checked) {
-   setCheckedUncommonAmenities([...checkedUncommonAmenities, value]);
-  } else {
-   setCheckedUncommonAmenities(
-    checkedUncommonAmenities.filter((item) => item !== value)
    );
   }
  };
@@ -253,10 +219,8 @@ const Home = () => {
          checkedTypes={checkedTypes}
          range={range}
          roomValue={roomValue}
-         litValue={litValue}
          paxValue={paxValue}
          checkedbasicAmenities={checkedbasicAmenities}
-         checkedUncommonAmenities={checkedUncommonAmenities}
         />
        )}
       </Col>
@@ -412,40 +376,6 @@ const Home = () => {
       </Col>
 
       <Col xs={24}>
-       <Text>Lits</Text>
-       <Row gutter={[16, 16]}>
-        <Col span={18}>
-         <Slider
-          min={0}
-          max={5}
-          onChange={onChangeLit}
-          value={typeof litValue === 'number' ? litValue : 0}
-         />
-        </Col>
-        <Col xs={6}>
-         {litValue > 0 ? (
-          <InputNumber
-           min={1}
-           max={5}
-           value={litValue}
-           onChange={onChangeLit}
-           style={{ width: '100%' }}
-          />
-         ) : (
-          <InputNumber
-           min={0}
-           max={5}
-           placeholder="Tous"
-           variant="filled"
-           style={{ width: '100%' }}
-           onFocus={() => setLitValue(1)} // Set a default minimum value when focused
-          />
-         )}
-        </Col>
-       </Row>
-      </Col>
-
-      <Col xs={24}>
        <Text>Max Personnes</Text>
        <Row gutter={[16, 16]}>
         <Col span={18}>
@@ -500,29 +430,6 @@ const Home = () => {
        style={{ marginTop: '20px' }}
       >
        {showAllbasicAmenities ? 'Afficher moins' : 'Afficher plus'}
-      </Button>
-     </Col>
-
-     <Col xs={24}>
-      <Title level={4}>Commodités hors du commun</Title>
-      <Row gutter={[16, 16]}>
-       {visibleUncommonAmenitie.map((item, index) => (
-        <Col xs={24} md={8} key={index}>
-         <Checkbox
-          value={item.value}
-          checked={checkedUncommonAmenities.includes(item.value)}
-          onChange={(e) => handleCheckboxChangeUncommonAmenities(e, item.value)}
-         >
-          {item.label}
-         </Checkbox>
-        </Col>
-       ))}
-      </Row>
-      <Button
-       onClick={toggleShowAllUncommonAmenities}
-       style={{ marginTop: '20px' }}
-      >
-       {showAllUncommonAmenities ? 'Afficher moins' : 'Afficher plus'}
       </Button>
      </Col>
     </Row>

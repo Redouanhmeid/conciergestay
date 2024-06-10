@@ -2,13 +2,11 @@ import React, { useEffect } from 'react';
 import Head from '../components/common/header';
 import Foot from '../components/common/footer';
 import { Layout, Spin, Card, Col, Row, Carousel } from 'antd';
-import { EditOutlined, EllipsisOutlined, EyeOutlined } from '@ant-design/icons';
 import '../App.css';
 import AddPropertyCard from './components/AddPropertyCard';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useUserData } from '../hooks/useUserData';
 import useGetProperties from '../hooks/useGetProperties';
-import ClientConfig from '../ClientConfig';
 import { useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
@@ -19,13 +17,13 @@ const PropertyManagerHome = () => {
  const { properties, loading, fetchProperties } = useGetProperties();
  const navigate = useNavigate();
  const display = (id) => {
-  navigate('/propertydetails', { state: { id } });
+  navigate(`/propertydetails?id=${id}`);
  };
  const displayPrivate = (id) => {
   navigate(`/digitalguidebook?id=${id}`);
  };
  const edit = (id) => {
-  navigate('/editproperty', { state: { id } });
+  navigate(`/editproperty?id=${id}`);
  };
 
  useEffect(() => {
@@ -71,9 +69,18 @@ const PropertyManagerHome = () => {
             </Carousel>
            }
            actions={[
-            <EyeOutlined key="display" onClick={() => display(property.id)} />,
-            <EditOutlined key="edit" onClick={() => edit(property.id)} />,
-            <EllipsisOutlined
+            <i
+             className="Dashicon fa-light fa-eye"
+             key="display"
+             onClick={() => display(property.id)}
+            />,
+            <i
+             className="Dashicon fa-light fa-pen-to-square"
+             key="edit"
+             onClick={() => edit(property.id)}
+            />,
+            <i
+             className="Dashicon fa-light fa-house-lock"
              key="ellipsis"
              onClick={() => displayPrivate(property.id)}
             />,

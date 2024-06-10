@@ -56,7 +56,9 @@
   /* margin: 0 auto; */
   padding: 4em 12em;
 }
-
+.layout {
+  width: 1200px;
+}
 .headerStyle {
   position: sticky;
   top: 0;
@@ -65,6 +67,7 @@
 
 .logoStyle {
   height: 54px !important;
+  border-radius: 0 !important;
 }
 .nearbyplacescarouselarrow{
   position: absolute;
@@ -89,16 +92,16 @@
 .pin {
   cursor: 'pointer';
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   overflow: visible;
 }
 
 .pin img {
   position: relative;
-  border: 6px solid #aa7e42;
+  border: 4px solid #aa7e42;
   border-radius: 50%;
-  top: -28px;
+  top: -16px;
   width: 100%;
   height: 100%;
   border-radius: 50%;
@@ -113,9 +116,9 @@
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 28px solid transparent;
-  border-right: 28px solid transparent;
-  border-top: 40px solid #aa7e42;
+  border-left: 23px solid transparent;
+  border-right: 23px solid transparent;
+  border-top: 26px solid #aa7e42;
   z-index: 999;
 }
 @media only screen and (max-width: 576px) {
@@ -302,6 +305,23 @@
   font-size: 24px;
 }
 
-.bottom-tabs {
-  width: 100%;
+.ant-image .ant-image-img {
+  border-radius: 12px;
+}
+
+.Hosticon {
+  color: #2b2c32;
+  font-size: 36px;
+}
+
+.Dashicon {
+  color: #aa7e42;
+  font-size: 18px;
+}
+
+.dgImg {
+  border: solid 8px #fbfbfb;
+  position: relative;
+  z-index: 1;
+  top: 50px;
 }

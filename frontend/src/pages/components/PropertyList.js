@@ -20,10 +20,8 @@ const PropertyList = ({
  checkedTypes,
  range,
  roomValue,
- litValue,
  paxValue,
  checkedbasicAmenities,
- checkedUncommonAmenities,
 }) => {
  const navigate = useNavigate();
  const { properties, fetchAllProperties, loading, error } = useGetProperties();
@@ -60,12 +58,6 @@ const PropertyList = ({
    );
   }
 
-  if (litValue !== 0) {
-   filtered = filtered.filter(
-    (property) => property.beds !== undefined && property.beds === litValue
-   );
-  }
-
   if (paxValue !== 0) {
    filtered = filtered.filter(
     (property) =>
@@ -77,14 +69,6 @@ const PropertyList = ({
    filtered = filtered.filter((property) =>
     checkedbasicAmenities.every((amenity) =>
      property.basicAmenities.includes(amenity)
-    )
-   );
-  }
-
-  if (checkedUncommonAmenities.length > 0) {
-   filtered = filtered.filter((property) =>
-    checkedUncommonAmenities.every((amenity) =>
-     property.uncommonAmenities.includes(amenity)
     )
    );
   }
@@ -109,10 +93,8 @@ const PropertyList = ({
   checkedTypes,
   range,
   roomValue,
-  litValue,
   paxValue,
   checkedbasicAmenities,
-  checkedUncommonAmenities,
  ]);
 
  useEffect(() => {
@@ -120,7 +102,7 @@ const PropertyList = ({
  }, [loading]);
 
  const display = (id) => {
-  navigate('/propertydetails', { state: { id } });
+  navigate(`/propertydetails?id=${id}`);
  };
 
  if (loading)

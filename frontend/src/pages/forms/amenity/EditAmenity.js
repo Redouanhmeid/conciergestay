@@ -252,12 +252,6 @@ const EditAmenity = () => {
          <Form.Item
           label="Que souhaitez-vous dire à vos invités sur ce sujet ?"
           name="description"
-          rules={[
-           {
-            required: true,
-            message: 'Veuillez saisir une description!',
-           },
-          ]}
          >
           <Input.TextArea rows={6} />
          </Form.Item>

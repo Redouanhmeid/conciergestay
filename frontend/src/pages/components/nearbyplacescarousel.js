@@ -7,7 +7,6 @@ import {
  Button,
  Flex,
  Typography,
- Tag,
  Rate,
  Grid,
 } from 'antd';
@@ -38,10 +37,10 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
   (place) => place.types.includes('restaurant') || place.types.includes('food')
  );
  const Activities = dataArray.filter((place) =>
-  place.types.includes('natural_feature')
- );
- const pointsOfInterest = dataArray.filter((place) =>
   place.types.includes('point_of_interest')
+ );
+ const Attractions = dataArray.filter((place) =>
+  place.types.includes('natural_feature')
  );
 
  const getSlidesToShow = (dataArray) => {
@@ -58,6 +57,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
 
  return (
   <>
+   <Title level={3}>Endroits où manger</Title>
    <div style={{ position: 'relative' }}>
     <div className="nearbyplacescarouselarrow left">
      <LeftOutlined onClick={() => slider1.current.prev()} />
@@ -65,31 +65,6 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
 
     <Carousel
      ref={slider1}
-     slidesToShow={getSlidesToShow(dataArray)}
-     dots={false}
-     autoplay
-     style={{ padding: '0 28px' }}
-    >
-     {dataArray.map((place, index) => (
-      <div key={index} style={{ margin: '0 12px' }}>
-       <Place place={place} />
-      </div>
-     ))}
-    </Carousel>
-
-    <div className="nearbyplacescarouselarrow right">
-     <RightOutlined onClick={() => slider1.current.next()} />
-    </div>
-   </div>
-
-   <Title level={2}>Endroits où manger</Title>
-   <div style={{ position: 'relative' }}>
-    <div className="nearbyplacescarouselarrow left">
-     <LeftOutlined onClick={() => slider2.current.prev()} />
-    </div>
-
-    <Carousel
-     ref={slider2}
      slidesToShow={getSlidesToShow(PlacesToEat)}
      dots={false}
      autoplay
@@ -103,23 +78,46 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
     </Carousel>
 
     <div className="nearbyplacescarouselarrow right">
-     <RightOutlined onClick={() => slider2.current.next()} />
+     <RightOutlined onClick={() => slider1.current.next()} />
     </div>
    </div>
    <br />
-   <Title level={2}>Activités</Title>
+   <Title level={3}>Activités</Title>
    <div style={{ position: 'relative' }}>
     <div className="nearbyplacescarouselarrow left">
-     <LeftOutlined onClick={() => slider3.current.prev()} />
+     <LeftOutlined onClick={() => slider2.current.prev()} />
     </div>
     <Carousel
-     ref={slider3}
+     ref={slider2}
      slidesToShow={getSlidesToShow(Activities)}
      dots={false}
      autoplay
      style={{ padding: '0 28px' }}
     >
      {Activities.map((place, index) => (
+      <div key={index} style={{ margin: '0 12px' }}>
+       <Place place={place} />
+      </div>
+     ))}
+    </Carousel>
+    <div className="nearbyplacescarouselarrow right">
+     <RightOutlined onClick={() => slider2.current.next()} />
+    </div>
+   </div>
+   <br />
+   <Title level={3}>Attractions</Title>
+   <div style={{ position: 'relative' }}>
+    <div className="nearbyplacescarouselarrow left">
+     <LeftOutlined onClick={() => slider3.current.prev()} />
+    </div>
+    <Carousel
+     ref={slider3}
+     slidesToShow={getSlidesToShow(Attractions)}
+     dots={false}
+     autoplay
+     style={{ padding: '0 28px' }}
+    >
+     {Attractions.map((place, index) => (
       <div key={index} style={{ margin: '0 12px' }}>
        <Place place={place} />
       </div>
