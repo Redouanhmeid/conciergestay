@@ -12,3 +12,4 @@ frontend/build
 backend/0.env.development
 backend/0.env.production
 backend/avatars
+frontend/src/mapconfig.js

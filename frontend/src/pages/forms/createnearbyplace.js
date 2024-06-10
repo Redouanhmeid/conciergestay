@@ -60,11 +60,10 @@ const CreateNearbyPlace = () => {
  const [disabled, setDisabled] = useState(false);
  const [selectedItems, setSelectedItems] = useState([]);
  const [OPTIONS, setOPTIONS] = useState([
-  'Restaurant',
-  'Bar',
+  'Restaurant & Café',
+  'Activité',
+  'Attraction',
   'Centre commercial',
-  'Magasin',
-  'Parc',
  ]);
  const filteredOptions = OPTIONS.filter((o) => !selectedItems.includes(o));
  const [submitted, setSubmitted] = useState(false);
@@ -88,7 +87,6 @@ const CreateNearbyPlace = () => {
   setPlaceAddress(placeAddress);
   setPlaceRating(placeRating);
   setPlacePhoto(placePhoto);
-  setPlaceTypes(placeTypes);
 
   setDisabled(placeName || placeAddress || placeURL);
   setFileList([]);
@@ -96,18 +94,6 @@ const CreateNearbyPlace = () => {
    setPlaceRating(placeRating);
   } else {
    setPlaceRating(0);
-  }
-
-  if (placeTypes) {
-   setOPTIONS(placeTypes);
-   form.setFieldsValue({
-    types: placeTypes,
-   });
-  } else {
-   setOPTIONS(['Restaurant', 'Bar', 'Centre commercial', 'Magasin', 'Parc']);
-   form.setFieldsValue({
-    types: null,
-   });
   }
 
   // Update form fields with the new place values
@@ -204,7 +190,14 @@ const CreateNearbyPlace = () => {
      <Row gutter={[24, 0]}>
       <Title level={2}>Ajouter un lieu à proximité</Title>
       <Col xs={24} md={24}>
-       <Form form={form} layout="vertical" onFinish={onFinish}>
+       <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        onFinishFailed={(errorInfo) => {
+         message.error('Veuillez remplir tous les champs requis!');
+        }}
+       >
         <Row gutter={[24, 0]}>
          <Col xs={24} md={24}>
           <Form.Item>
@@ -257,10 +250,17 @@ const CreateNearbyPlace = () => {
           </Form.Item>
          </Col>
          <Col xs={24} md={16}>
-          <Form.Item name="types" label="Types">
+          <Form.Item
+           name="types"
+           label="Types"
+           rules={[
+            {
+             required: true,
+             message: 'Please select at least one type!',
+            },
+           ]}
+          >
            <Select
-            mode="multiple"
-            disabled={disabled}
             value={selectedItems}
             onChange={setSelectedItems}
             style={{
@@ -274,7 +274,22 @@ const CreateNearbyPlace = () => {
           </Form.Item>
          </Col>
          <Col xs={24} md={4}>
-          <Form.Item name="photo" label="Photo">
+          <Form.Item
+           name="photo"
+           label="Photo"
+           valuePropName="fileList"
+           getValueFromEvent={(e) => e.fileList}
+           rules={[
+            {
+             required: true,
+             message: 'Veuillez charger une photo!',
+             validator: (_, value) =>
+              value && value.length > 0
+               ? Promise.resolve()
+               : Promise.reject('Veuillez charger une photo!'),
+            },
+           ]}
+          >
            <div>
             <ImgCrop rotationSlider>
              <Upload
