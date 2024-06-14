@@ -36,6 +36,7 @@ import {
  getBeforeCheckOutDetails,
 } from '../../utils/iconMappings';
 import ReactPlayer from 'react-player';
+import ReactToPrint from 'react-to-print';
 import useNearbyPlaces from '../../hooks/useNearbyPlaces';
 
 const { Header, Content, Footer } = Layout;
@@ -894,7 +895,7 @@ const Activities = React.memo(({ nearbyPlaces }) => {
     <Col xs={24}>
      <Divider>
       <Title level={2}>
-       <i className="fa-light fa-plate-utensils"></i> Activités
+       <i className="fa-light fa-sun-cloud"></i> Activités
       </Title>
      </Divider>
      <Row gutter={[16, 16]}>

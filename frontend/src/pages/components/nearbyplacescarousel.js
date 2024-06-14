@@ -57,7 +57,9 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
 
  return (
   <>
-   <Title level={3}>Endroits où manger</Title>
+   <Title level={3}>
+    <i className="fa-light fa-plate-utensils"></i> Restaurants & Cafés
+   </Title>
    <div style={{ position: 'relative' }}>
     <div className="nearbyplacescarouselarrow left">
      <LeftOutlined onClick={() => slider1.current.prev()} />
@@ -82,7 +84,9 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
     </div>
    </div>
    <br />
-   <Title level={3}>Activités</Title>
+   <Title level={3}>
+    <i className="fa-light fa-sun-cloud"></i> Activités
+   </Title>
    <div style={{ position: 'relative' }}>
     <div className="nearbyplacescarouselarrow left">
      <LeftOutlined onClick={() => slider2.current.prev()} />
@@ -105,7 +109,9 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
     </div>
    </div>
    <br />
-   <Title level={3}>Attractions</Title>
+   <Title level={3}>
+    <i className="fa-light fa-camera"></i> Attractions
+   </Title>
    <div style={{ position: 'relative' }}>
     <div className="nearbyplacescarouselarrow left">
      <LeftOutlined onClick={() => slider3.current.prev()} />

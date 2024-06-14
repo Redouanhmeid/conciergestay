@@ -167,6 +167,27 @@ const PropertyDetails = () => {
  const [selectedAmenityDetails, setSelectedAmenityDetails] = useState(null);
  const [isModalVisible, setIsModalVisible] = useState(false);
  const [isARulesModalOpen, setIsARulesModalOpen] = useState(false);
+ const [isFixed, setIsFixed] = useState(false);
+
+ useEffect(() => {
+  const handleScroll = () => {
+   const scrollTop = window.scrollY;
+   const windowHeight = window.innerHeight;
+   const bodyHeight = document.body.scrollHeight;
+   const offset = 100; // The offset from the bottom before fixing the card
+
+   if (scrollTop + windowHeight < bodyHeight - offset) {
+    setIsFixed(true);
+   } else {
+    setIsFixed(false);
+   }
+  };
+
+  window.addEventListener('scroll', handleScroll);
+  return () => {
+   window.removeEventListener('scroll', handleScroll);
+  };
+ }, []);
 
  const showARulesModal = () => {
   setIsARulesModalOpen(true);
@@ -288,6 +309,39 @@ const PropertyDetails = () => {
     />
    </Helmet>
    <Layout className="contentStyle">
+    <Card
+     className={
+      isFixed ? 'fixed-bottom-card host-card-mobile' : 'host-card-mobile'
+     }
+     style={{ width: '100%', marginTop: 16 }}
+     loading={loading}
+     actions={[
+      <Tooltip title={`+${userData.phone}`}>
+       <i
+        key="Phone"
+        className="Hosticon fa-light fa-mobile"
+        onClick={() => window.open(`tel:+${userData.phone}`)}
+       />
+      </Tooltip>,
+      <Image width={32} src={airbnb} preview={false} />,
+      <Image width={32} src={booking} preview={false} />,
+     ]}
+    >
+     <Meta
+      avatar={
+       <Avatar
+        size={{ xs: 54, md: 56, lg: 56, xl: 56, xxl: 56 }}
+        src={userData.avatar}
+       />
+      }
+      title={`${userData.firstname} ${userData.lastname}`}
+      description={
+       <>
+        <i className="fa-light fa-envelope"></i> {userData.email}
+       </>
+      }
+     />
+    </Card>
     <Head />
     <Layout>
      <div style={{ padding: '20px' }}>
@@ -302,32 +356,87 @@ const PropertyDetails = () => {
         {
          key: '1',
          href: '#desc',
-         title: 'Informations de base',
+         title: (
+          <div
+           style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+           }}
+          >
+           <i className="Anchoricon fa-light fa-square-info"></i>
+           <span>Informations</span>
+          </div>
+         ),
         },
         {
          key: '2',
          href: '#basicamenities',
-         title: 'Commodités de base',
+         title: (
+          <div
+           style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+           }}
+          >
+           <i className="Anchoricon fa-light fa-wifi"></i>
+           <span>Commodités</span>
+          </div>
+         ),
         },
         {
          key: '3',
          href: '#map&nearbyplaces',
-         title: 'Où se situe',
+         title: (
+          <div
+           style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+           }}
+          >
+           <i className="Anchoricon fa-light fa-map-marker-alt"></i>
+           <span>Lieux</span>
+          </div>
+         ),
         },
         {
          key: '4',
          href: '#equipements',
-         title: 'Équipements',
+         title: (
+          <div
+           style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+           }}
+          >
+           <i className="Anchoricon fa-light fa-tools"></i>
+           <span>Équipements</span>
+          </div>
+         ),
         },
         {
          key: '5',
          href: '#rules',
-         title: 'Règles',
+         title: (
+          <div
+           style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+           }}
+          >
+           <i className="Anchoricon fa-light fa-ban-smoking"></i>
+           <span>Règles</span>
+          </div>
+         ),
         },
        ]}
       />
      </div>
-     <Content className="container">
+     <Content className="container-poperty-details">
       <Button
        type="default"
        shape="round"
@@ -374,6 +483,7 @@ const PropertyDetails = () => {
         <Divider />
         <Paragraph>{parsedProperty.description}</Paragraph>
         <Card
+         className="host-card"
          style={{ width: '100%', marginTop: 16 }}
          loading={loading}
          actions={[
@@ -384,8 +494,8 @@ const PropertyDetails = () => {
             onClick={() => window.open(`tel:+${userData.phone}`)}
            />
           </Tooltip>,
-          <Image width={36} src={airbnb} preview={false} />,
-          <Image width={36} src={booking} preview={false} />,
+          <Image width={32} src={airbnb} preview={false} />,
+          <Image width={32} src={booking} preview={false} />,
          ]}
         >
          <Meta
@@ -458,20 +568,19 @@ const PropertyDetails = () => {
                description={
                 (userData.role === 'manager' || userData.role === 'admin') && (
                  <>
-                  {!amenityExists && (
-                   <Button
-                    icon={<PlusOutlined />}
-                    onClick={() => AddAmenity(amenity)}
-                   >
-                    Ajouter une carte
-                   </Button>
-                  )}
-                  {amenityExists && (
+                  {amenityExists ? (
                    <Button
                     icon={<EyeOutlined />}
                     onClick={() => showModal(amenity)}
                    >
                     Voir la carte
+                   </Button>
+                  ) : (
+                   <Button
+                    icon={<PlusOutlined />}
+                    onClick={() => AddAmenity(amenity)}
+                   >
+                    Ajouter une carte
                    </Button>
                   )}
                  </>
@@ -640,10 +749,14 @@ const PropertyDetails = () => {
     footer={null}
    >
     <p>
-     {property.houseRules
-      .find((rule) => rule.startsWith('additionalRules:'))
-      .substring(16)
-      .trim()}
+     {(() => {
+      const rule = property.houseRules.find((rule) =>
+       rule.startsWith('additionalRules:')
+      );
+      return rule
+       ? rule.substring(16).trim()
+       : 'Aucune règle supplémentaire trouvée';
+     })()}
     </p>
    </Modal>
   </>
