@@ -6,10 +6,12 @@ const useAmenity = () => {
  const [error, setError] = useState(null);
 
  const getAllAmenities = async (propertyId) => {
+  console.log(propertyId);
   setLoading(true);
   try {
    const response = await axios.get(`/api/v1/amenities/${propertyId}`);
    setLoading(false);
+   console.log(response.data);
    return response.data;
   } catch (error) {
    setLoading(false);

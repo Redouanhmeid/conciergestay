@@ -750,7 +750,7 @@ const PropertyDetails = () => {
    >
     <p>
      {(() => {
-      const rule = property.houseRules.find((rule) =>
+      const rule = parsedProperty.houseRules.find((rule) =>
        rule.startsWith('additionalRules:')
       );
       return rule

@@ -23,6 +23,7 @@ import EditProperty from './pages/forms/propertyedit/EditProperty';
 import AddAmenity from './pages/forms/amenity/AddAmenity';
 import EditAmenity from './pages/forms/amenity/EditAmenity';
 import DigitalGuidebook from './pages/components/DigitalGuidebook';
+
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
  { path: '/dashboard', element: <PropertyManagerHome /> },

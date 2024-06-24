@@ -43,6 +43,25 @@ const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
 const { Meta } = Card;
 
+const parseJSON = (str) => {
+ try {
+  return JSON.parse(str);
+ } catch (error) {
+  console.error('Failed to parse JSON:', error);
+  return [];
+ }
+};
+
+const ensureArray = (value) => {
+ if (typeof value === 'string') {
+  return parseJSON(value);
+ }
+ if (Array.isArray(value)) {
+  return value;
+ }
+ return [];
+};
+
 const getProxiedImageUrl = (url) => {
  const youtubeThumbnailUrl =
   url.replace(
@@ -740,13 +759,13 @@ const HouseManual = React.memo(({ property, amenities }) => {
       )}
 
       {property.houseRules && (
-       <Col xs={8}>
+       <Col xs={12}>
         <Divider>
          <i className="fa-light fa-ban"></i>
          <Text strong> Règles de la maison</Text>
         </Divider>
         <Flex gap="middle" vertical>
-         {property.houseRules.map((rule, index) => {
+         {ensureArray(property.houseRules).map((rule, index) => {
           const { icon, title } = getHouseRuleDetails(rule);
           return (
            <Col key={index} xs={24}>
@@ -773,7 +792,7 @@ const HouseManual = React.memo(({ property, amenities }) => {
           <Text strong> Équipement supplémentaire</Text>
          </Divider>
          <Flex gap="middle" vertical>
-          {property.elements.map((element, index) => {
+          {ensureArray(property.elements).map((element, index) => {
            const { icon, title } = getElementsDetails(element);
            return (
             <Col key={index} xs={24}>
@@ -792,7 +811,7 @@ const HouseManual = React.memo(({ property, amenities }) => {
           <Text strong> Équipement de sécurité</Text>
          </Divider>
          <Flex gap="middle" vertical>
-          {property.safetyFeatures.map((feature, index) => {
+          {ensureArray(property.safetyFeatures).map((feature, index) => {
            const { icon, title } = getSafetyFeaturesDetails(feature);
            return (
             <Col key={index} xs={24}>

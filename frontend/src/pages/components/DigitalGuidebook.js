@@ -39,6 +39,27 @@ const { Text, Paragraph } = Typography;
 const { useBreakpoint } = Grid;
 const { Meta } = Card;
 
+const parseJSON = (str) => {
+ try {
+  return JSON.parse(str);
+ } catch (error) {
+  console.error('Failed to parse JSON:', error);
+  return [];
+ }
+};
+
+const ensureArray = (value) => {
+ if (typeof value === 'string') {
+  return parseJSON(value);
+ }
+ if (Array.isArray(value)) {
+  return value;
+ }
+ return [];
+};
+
+const isValidCoordinate = (coord) => typeof coord === 'number' && !isNaN(coord);
+
 const DigitalGuidebook = () => {
  const screens = useBreakpoint();
  const location = useLocation();
@@ -50,74 +71,89 @@ const DigitalGuidebook = () => {
 
  useEffect(() => {
   const fetchData = async (ID) => {
-   const data = await getAllAmenities(ID);
-   if (data) {
+   try {
+    const response = await getAllAmenities(ID);
+    if (!response) {
+     throw new Error('No response received');
+    }
+
+    let data;
+
+    // Check if the response is an HTTP response object
+    if (response.headers && response.headers.get) {
+     if (response.headers.get('content-type').includes('application/json')) {
+      data = await response.json();
+     } else {
+      const errorText = await response.text();
+      throw new Error(`Unexpected response format: ${errorText}`);
+     }
+    } else {
+     // Assume response is already JSON if headers are not present
+     data = response;
+    }
+
     setAmenities(data);
+   } catch (error) {
+    console.error('Failed to fetch amenities:', error);
    }
   };
+
   if (id) {
    fetchData(id);
   }
  }, [id, loading]);
 
+ const parsedAmenities = useMemo(() => ensureArray(amenities), [amenities]);
  const wifiAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'wifi'),
-  [amenities]
+  () => parsedAmenities.find((amenity) => amenity.name === 'wifi'),
+  [parsedAmenities]
  );
  const parkingAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'freeParking'),
-  [amenities]
+  () => parsedAmenities.find((amenity) => amenity.name === 'freeParking'),
+  [parsedAmenities]
  );
  const tvAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'television'),
-  [amenities]
+  () => parsedAmenities.find((amenity) => amenity.name === 'television'),
+  [parsedAmenities]
  );
  const kitchenAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'kitchen'),
-  [amenities]
+  () => parsedAmenities.find((amenity) => amenity.name === 'kitchen'),
+  [parsedAmenities]
  );
  const airConditioningAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'airConditioning'),
-  [amenities]
+  () => parsedAmenities.find((amenity) => amenity.name === 'airConditioning'),
+  [parsedAmenities]
  );
  const washingMachineAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'washingMachine'),
-  [amenities]
+  () => parsedAmenities.find((amenity) => amenity.name === 'washingMachine'),
+  [parsedAmenities]
  );
  const poolAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'pool'),
-  [amenities]
+  () => parsedAmenities.find((amenity) => amenity.name === 'pool'),
+  [parsedAmenities]
  );
 
  const additionalRules = getAdditionalRules(property?.houseRules);
  const earlyCheckInParagraphs = useMemo(
-  () =>
-   Array.isArray(property?.earlyCheckIn)
-    ? property.earlyCheckIn.map(getEarlyCheckInDetails)
-    : [],
+  () => ensureArray(property?.earlyCheckIn).map(getEarlyCheckInDetails),
   [property]
  );
  const accessToPropertyParagraphs = useMemo(
-  () =>
-   Array.isArray(property?.accessToProperty)
-    ? property.accessToProperty.map(getAccessToPropertyDetails)
-    : [],
+  () => ensureArray(property?.accessToProperty).map(getAccessToPropertyDetails),
   [property]
  );
  const lateCheckOutPolicyParagraphs = useMemo(
   () =>
-   Array.isArray(property?.lateCheckOutPolicy)
-    ? property.lateCheckOutPolicy.map(getLateCheckOutPolicyDetails)
-    : [],
+   ensureArray(property?.lateCheckOutPolicy).map(getLateCheckOutPolicyDetails),
   [property]
  );
  const beforeCheckOutParagraphs = useMemo(
-  () =>
-   Array.isArray(property?.beforeCheckOut)
-    ? property.beforeCheckOut.map(getBeforeCheckOutDetails)
-    : [],
+  () => ensureArray(property?.beforeCheckOut).map(getBeforeCheckOutDetails),
   [property]
  );
+
+ const validLatitude = isValidCoordinate(property?.latitude);
+ const validLongitude = isValidCoordinate(property?.longitude);
 
  const innerTabs = [
   {
@@ -184,24 +220,33 @@ const DigitalGuidebook = () => {
       </>
      )}
 
-     <Divider>
-      <i className="fa-light fa-map-location-dot"></i>
-      <Text strong> Arriver ici</Text>
-     </Divider>
-     <Row gutter={[16, 16]}>
-      <Col xs={24} md={16}>
-       <MapMarker latitude={property.latitude} longitude={property.longitude} />
-      </Col>
-      <Col xs={24} md={8}>
-       {parkingAmenity && (
-        <>
-         <Image width={'100%'} src={parkingAmenity.media} />
-         <br />
-         <Paragraph>{parkingAmenity.description}</Paragraph>
-        </>
-       )}
-      </Col>
-     </Row>
+     {validLatitude && validLongitude ? (
+      <Divider>
+       <i className="fa-light fa-map-location-dot"></i>
+       <Text strong> Arriver ici</Text>
+      </Divider>
+     ) : (
+      <div>Invalid coordinates provided.</div>
+     )}
+     {validLatitude && validLongitude && (
+      <Row gutter={[16, 16]}>
+       <Col xs={24} md={16}>
+        <MapMarker
+         latitude={property.latitude}
+         longitude={property.longitude}
+        />
+       </Col>
+       <Col xs={24} md={8}>
+        {parkingAmenity && (
+         <>
+          <Image width={'100%'} src={parkingAmenity.media} />
+          <br />
+          <Paragraph>{parkingAmenity.description}</Paragraph>
+         </>
+        )}
+       </Col>
+      </Row>
+     )}
     </div>
    ),
   },
@@ -458,7 +503,7 @@ const DigitalGuidebook = () => {
         <Text strong> Règles de la maison</Text>
        </Divider>
        <Flex gap="middle" vertical>
-        {property.houseRules.map((rule, index) => {
+        {ensureArray(property.houseRules).map((rule, index) => {
          const { icon, title } = getHouseRuleDetails(rule);
          return (
           <Col key={index} xs={24}>
@@ -484,7 +529,7 @@ const DigitalGuidebook = () => {
          <Text strong> Équipement supplémentaire</Text>
         </Divider>
         <Flex gap="middle" vertical>
-         {property.elements.map((element, index) => {
+         {ensureArray(property.elements).map((element, index) => {
           const { icon, title } = getElementsDetails(element);
           return (
            <Col key={index} xs={24}>
@@ -503,7 +548,7 @@ const DigitalGuidebook = () => {
          <Text strong> Équipement de sécurité</Text>
         </Divider>
         <Flex gap="middle" vertical>
-         {property.safetyFeatures.map((feature, index) => {
+         {ensureArray(property.safetyFeatures).map((feature, index) => {
           const { icon, title } = getSafetyFeaturesDetails(feature);
           return (
            <Col key={index} xs={24}>
@@ -652,7 +697,12 @@ const DigitalGuidebook = () => {
          label: tab.tab,
          icon: tab.icon,
          key: tab.key,
-         children: tab.content,
+         children:
+          tab.key === '1' && (!validLatitude || !validLongitude) ? (
+           <div>Invalid coordinates provided.</div>
+          ) : (
+           tab.content
+          ),
         }))}
        />
       </Col>

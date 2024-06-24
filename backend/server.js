@@ -1,4 +1,3 @@
-// require important modules
 require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
@@ -6,11 +5,13 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
-const request = require('request');
+const axios = require('axios');
 
-// create our App
+// Create our App
 const app = express();
 const port = process.env.PORT || 4000;
+
+console.log('Starting server setup...');
 
 // Use helmet middleware to set the Content Security Policy (CSP) header
 app.use(
@@ -23,132 +24,63 @@ app.use(
  })
 );
 
-// Other middleware and route handlers
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(cors());
-
-// require routes
-const PropertyManagerRouter = require('./routes/propertymanager');
-const PropertyRouter = require('./routes/property');
-const NearbyPlaceRouter = require('./routes/nearbyplace');
-const AmenityRouter = require('./routes/amenity');
-
-// configure app to use bodyParser()
-// this will let us get the data from a POST
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-// Enable CORS for only frontend
+// Enable CORS for both local and production frontend
 const corsOptions = {
- origin: 'http://localhost:3000',
- // origin: 'https://csapp.nextbedesign.com',
+ origin: ['http://localhost:3000', 'https://csapp.nextbedesign.com'],
 };
 app.use(cors(corsOptions));
 
-// Home Page
-app.get('/', (req, res) => {
- return res.send('Hello Backend Side');
-});
+console.log('CORS setup complete.');
 
-// Proxy route for handling cross-origin images
-app.get('/proxy', (req, res) => {
- const imageUrl = req.query.url;
- request
-  .get(imageUrl)
-  .on('response', (response) => {
-   res.set('Content-Type', response.headers['content-type']);
-  })
-  .pipe(res);
-});
-// Start the server
-app.listen(port, () => console.log(`server running on port ${port}`));
-
-// require the connection (DB)
-const db = require('./config/database');
-// Testing the connection
-db
- .authenticate()
- .then(() => {
-  console.log('Connection has been established successfully.');
- })
- .catch((err) => {
-  console.error('Unable to connect to the database:', err);
- });
-
-// routes
-// all of our routes will be prefixed with /api/v1/
-app.use('/api/v1/propertymanagers', PropertyManagerRouter);
-app.use('/api/v1/properties', PropertyRouter);
-app.use('/api/v1/nearbyplaces', NearbyPlaceRouter);
-app.use('/api/v1/amenities', AmenityRouter);
+// Other middleware and route handlers
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // Configure multer to store files in the 'uploads' directory
 let counter = 1;
-// Create a new Express app for the /upload route
+const storage = (directory) =>
+ multer.diskStorage({
+  destination: (req, file, cb) => {
+   cb(null, directory);
+  },
+  filename: (req, file, cb) => {
+   const ext = path.extname(file.originalname);
+   const name = path.basename(file.originalname, ext);
+   const newName = `${name.replace(/\s+/g, '-')}-${counter}${ext}`;
+   counter++;
+   cb(null, newName);
+  },
+ });
+
+// Configure multer instances
 const upload = multer({
- storage: multer.diskStorage({
-  destination: (req, file, cb) => {
-   cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-   const ext = path.extname(file.originalname);
-   const name = path.basename(file.originalname, ext);
-   const newName = `${name.replace(/\s+/g, '-')}-${counter}${ext}`;
-   counter++;
-   cb(null, newName);
-  },
- }),
- limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+ storage: storage('uploads/'),
+ limits: { fileSize: 10 * 1024 * 1024 },
  fileFilter: function (req, file, cb) {
   checkFileType(file, cb);
  },
 });
-// Configure multer to store single file in the 'places' directory
 const singleUpload = multer({
- storage: multer.diskStorage({
-  destination: (req, file, cb) => {
-   cb(null, 'places/');
-  },
-  filename: (req, file, cb) => {
-   const ext = path.extname(file.originalname);
-   const name = path.basename(file.originalname, ext);
-   const newName = `${name.replace(/\s+/g, '-')}-${counter}${ext}`;
-   counter++;
-   cb(null, newName);
-  },
- }),
- limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+ storage: storage('places/'),
+ limits: { fileSize: 10 * 1024 * 1024 },
  fileFilter: function (req, file, cb) {
   checkFileType(file, cb);
  },
 });
-// Configure multer to store single file in the 'avatars' directory
 const avatars = multer({
- storage: multer.diskStorage({
-  destination: (req, file, cb) => {
-   cb(null, 'avatars/');
-  },
-  filename: (req, file, cb) => {
-   const ext = path.extname(file.originalname);
-   const name = path.basename(file.originalname, ext);
-   const newName = `${name.replace(/\s+/g, '-')}-${counter}${ext}`;
-   counter++;
-   cb(null, newName);
-  },
- }),
- limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+ storage: storage('avatars/'),
+ limits: { fileSize: 10 * 1024 * 1024 },
  fileFilter: function (req, file, cb) {
   checkFileType(file, cb);
  },
 });
+
+console.log('Multer configuration complete.');
+
 // Check file type
 function checkFileType(file, cb) {
- // Allowed extensions
  const filetypes = /jpeg|jpg|png|gif/;
- // Check the extension
  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
- // Check the MIME type
  const mimetype = filetypes.test(file.mimetype);
 
  if (mimetype && extname) {
@@ -157,18 +89,20 @@ function checkFileType(file, cb) {
   cb('Error: Images only!');
  }
 }
+
+console.log('File type check setup complete.');
+
 // Handle file upload
 app.post('/upload', upload.array('photos', 8), (req, res) => {
- const files = req.files.map((file) => {
-  return {
-   filename: file.filename,
-   url: `/uploads/${file.filename}`,
-  };
- });
+ const files = req.files.map((file) => ({
+  filename: file.filename,
+  url: `/uploads/${file.filename}`,
+ }));
 
  res.json({ files: files });
 });
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Handle file upload for a single photo
 app.post('/upload/single', singleUpload.single('photo'), (req, res) => {
  if (!req.file) {
@@ -184,6 +118,7 @@ app.post('/upload/single', singleUpload.single('photo'), (req, res) => {
 });
 app.use('/places', express.static(path.join(__dirname, 'places')));
 
+// Handle file upload for avatars
 app.post('/upload/avatars', avatars.single('avatar'), (req, res) => {
  if (!req.file) {
   return res.status(400).json({ error: 'No file uploaded' });
@@ -197,3 +132,64 @@ app.post('/upload/avatars', avatars.single('avatar'), (req, res) => {
  res.json({ file: file });
 });
 app.use('/avatars', express.static(path.join(__dirname, 'avatars')));
+
+console.log('Server setup complete.');
+
+// require routes
+const PropertyManagerRouter = require('./routes/propertymanager');
+const PropertyRouter = require('./routes/property');
+const NearbyPlaceRouter = require('./routes/nearbyplace');
+const AmenityRouter = require('./routes/amenity');
+
+// Routes
+// All of our routes will be prefixed with /api/v1/
+app.use('/api/v1/propertymanagers', PropertyManagerRouter);
+app.use('/api/v1/properties', PropertyRouter);
+app.use('/api/v1/nearbyplaces', NearbyPlaceRouter);
+app.use('/api/v1/amenities', AmenityRouter);
+
+console.log('Routes setup complete.');
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+console.log('Middleware setup complete.');
+
+// Proxy route for handling cross-origin images
+app.get('/proxy', async (req, res) => {
+ const imageUrl = req.query.url;
+ try {
+  const response = await axios.get(imageUrl, { responseType: 'stream' });
+  res.set('Content-Type', response.headers['content-type']);
+  response.data.pipe(res);
+ } catch (error) {
+  console.error('Error fetching image:', error);
+  res.status(500).send('Error fetching image');
+ }
+});
+
+console.log('Proxy route setup complete.');
+
+// Catch-all handler to serve index.html for any other routes
+app.get('*', (req, res) => {
+ res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
+
+console.log('Home route setup complete.');
+
+// Start the server
+app.listen(port, () => console.log(`Server running on port ${port}`));
+
+// require the connection (DB)
+const db = require('./config/database');
+// Testing the connection
+db
+ .authenticate()
+ .then(() => {
+  console.log('Connection has been established successfully.');
+ })
+ .catch((err) => {
+  console.error('Unable to connect to the database:', err);
+ });
+
+console.log('Database connection setup complete.');
