@@ -111,6 +111,79 @@ export const useUserData = () => {
   setIsLoading(false);
  };
 
+ const requestPasswordReset = async (email) => {
+  setIsLoading(true);
+  setError(false);
+  setSuccess(false);
+  setErrorMsg('');
+  try {
+   const response = await fetch(
+    '/api/v1/propertymanagers/reset-password-request',
+    {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({ email }),
+    }
+   );
+   if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+     errorData.message ||
+      'Échec de la demande de réinitialisation de mot de passe'
+    );
+   }
+   setSuccess(true);
+   setErrorMsg('');
+  } catch (err) {
+   setError(true);
+   setErrorMsg(err.message);
+  } finally {
+   setIsLoading(false);
+  }
+ };
+
+ const verifyResetCode = async (email, code) => {
+  setIsLoading(true);
+  try {
+   const response = await fetch('/api/v1/propertymanagers/verify-reset-code', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, code }),
+   });
+   if (!response.ok)
+    throw new Error('Échec de la vérification du code de réinitialisation');
+   setSuccess(true);
+   setErrorMsg('');
+   return true;
+  } catch (err) {
+   setError(true);
+   setErrorMsg(err.message);
+   return false;
+  } finally {
+   setIsLoading(false);
+  }
+ };
+
+ const resetPassword = async (email, code, newPassword) => {
+  setIsLoading(true);
+  try {
+   const response = await fetch('/api/v1/propertymanagers/reset-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, code, newPassword }),
+   });
+   if (!response.ok)
+    throw new Error('Échec de la réinitialisation du mot de passe');
+   setSuccess(true);
+   setErrorMsg('');
+  } catch (err) {
+   setError(true);
+   setErrorMsg(err.message);
+  } finally {
+   setIsLoading(false);
+  }
+ };
+
  return {
   isLoading,
   userData,
@@ -119,6 +192,9 @@ export const useUserData = () => {
   updatePropertyManager,
   updateAvatar,
   updatePassword,
+  requestPasswordReset,
+  verifyResetCode,
+  resetPassword,
   success,
   error,
   errorMsg,

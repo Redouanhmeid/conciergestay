@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Input, Button, Row, Col, Alert } from 'antd';
-import { useUserData } from '../../hooks/useUserData';
+import { useUserData } from '../../../hooks/useUserData';
 
 const Changepassword = ({ Id }) => {
  const { isLoading, updatePassword, success, errorMsg } = useUserData();

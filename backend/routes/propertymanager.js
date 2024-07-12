@@ -10,6 +10,9 @@ const {
  updatePropertyManagerDetails,
  updatePropertyManagerAvatar,
  updatePassword,
+ resetPasswordRequest,
+ verifyResetCode,
+ resetPassword,
 } = require('../controllers/PropertyManagerController');
 
 router.get('/:idpropertymanager', getPropertyManager);
@@ -21,5 +24,10 @@ router.get('/verify/:uniqueString', verifyEmail);
 router.put('/:id', updatePropertyManagerDetails);
 router.put('/avatar/:id', updatePropertyManagerAvatar);
 router.put('/password/:id', updatePassword);
+
+// New routes for password reset functionality
+router.post('/reset-password-request', resetPasswordRequest);
+router.post('/verify-reset-code', verifyResetCode);
+router.post('/reset-password', resetPassword);
 
 module.exports = router;

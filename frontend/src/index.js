@@ -8,8 +8,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import NotFoundPage from './pages/notfoundpage';
-import Login from './pages/forms/login';
-import Signup from './pages/forms/signup';
+import Login from './pages/forms/sign/login';
+import Signup from './pages/forms/sign/signup';
 import Account from './pages/forms/account';
 import { ConfigProvider } from 'antd';
 import Guestform from './pages/forms/guestform';
@@ -23,6 +23,9 @@ import EditProperty from './pages/forms/propertyedit/EditProperty';
 import AddAmenity from './pages/forms/amenity/AddAmenity';
 import EditAmenity from './pages/forms/amenity/EditAmenity';
 import DigitalGuidebook from './pages/components/DigitalGuidebook';
+import ResetPasswordRequest from './pages/forms/sign/ResetPasswordRequest';
+import VerifyResetCode from './pages/forms/sign/VerifyResetCode';
+import NewPassword from './pages/forms/sign/NewPassword';
 
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
@@ -30,6 +33,9 @@ const router = createBrowserRouter([
  { path: '/login', element: <Login /> },
  { path: '/signup', element: <Signup /> },
  { path: '/account', element: <Account /> },
+ { path: '/reset-password-request', element: <ResetPasswordRequest /> },
+ { path: '/verify-reset-code', element: <VerifyResetCode /> },
+ { path: '/new-password', element: <NewPassword /> },
  { path: '/guestform', element: <Guestform /> },
  { path: '/postproperty', element: <PropertyPost /> },
  { path: '/addproperty', element: <AddProperty /> },
@@ -47,7 +53,7 @@ root.render(
   locale={frFR}
   theme={{
    token: {
-    fontFamily: '"Finlandica", sans-serif',
+    fontFamily: '"Jost", sans-serif',
     borderRadius: 12,
     colorPrimary: '#aa7e42',
     colorInfo: '#aa7e42',

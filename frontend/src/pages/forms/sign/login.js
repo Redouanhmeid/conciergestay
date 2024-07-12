@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLogin } from '../../hooks/useLogin';
+import { useLogin } from '../../../hooks/useLogin';
 import {
  Button,
  Checkbox,
@@ -15,9 +15,9 @@ import {
 } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import MapImg from '../../assets/hostfully-5-star-hospitality-sign-up.jpg';
-import Head from '../../components/common/header';
-import Foot from '../../components/common/footer';
+import MapImg from '../../../assets/hostfully-5-star-hospitality-sign-up.jpg';
+import Head from '../../../components/common/header';
+import Foot from '../../../components/common/footer';
 const { Title, Text } = Typography;
 
 const onFinishFailed = (errorInfo) => {
@@ -94,7 +94,7 @@ const Login = () => {
        </Form.Item>
        <Form.Item>
         <Text>Mot de passe oublié? </Text>
-        <Link to="/">Réinitialisez-le ici.</Link>
+        <Link to="/reset-password-request">Réinitialisez-le ici.</Link>
        </Form.Item>
       </Form>
      </div>

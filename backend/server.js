@@ -9,7 +9,7 @@ const axios = require('axios');
 
 // Create our App
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
 
 console.log('Starting server setup...');
 
@@ -26,7 +26,7 @@ app.use(
 
 // Enable CORS for both local and production frontend
 const corsOptions = {
- origin: ['http://localhost:3000', 'https://csapp.nextbedesign.com'],
+ origin: ['http://localhost:3000', 'https://conciergestay.pro'],
 };
 app.use(cors(corsOptions));
 
@@ -52,24 +52,31 @@ const storage = (directory) =>
   },
  });
 
+// Determine the correct path based on the environment
+const UPLOADS_PATH =
+ process.env.UPLOADS_PATH || path.join(__dirname, 'uploads');
+const PLACES_PATH = process.env.PLACES_PATH || path.join(__dirname, 'places');
+const AVATARS_PATH =
+ process.env.AVATARS_PATH || path.join(__dirname, 'avatars');
+
 // Configure multer instances
 const upload = multer({
- storage: storage('uploads/'),
- limits: { fileSize: 10 * 1024 * 1024 },
+ storage: storage(UPLOADS_PATH),
+ limits: { fileSize: 15 * 1024 * 1024 },
  fileFilter: function (req, file, cb) {
   checkFileType(file, cb);
  },
 });
 const singleUpload = multer({
- storage: storage('places/'),
- limits: { fileSize: 10 * 1024 * 1024 },
+ storage: storage(PLACES_PATH),
+ limits: { fileSize: 15 * 1024 * 1024 },
  fileFilter: function (req, file, cb) {
   checkFileType(file, cb);
  },
 });
 const avatars = multer({
- storage: storage('avatars/'),
- limits: { fileSize: 10 * 1024 * 1024 },
+ storage: storage(AVATARS_PATH),
+ limits: { fileSize: 15 * 1024 * 1024 },
  fileFilter: function (req, file, cb) {
   checkFileType(file, cb);
  },
@@ -101,7 +108,7 @@ app.post('/upload', upload.array('photos', 8), (req, res) => {
 
  res.json({ files: files });
 });
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(UPLOADS_PATH));
 
 // Handle file upload for a single photo
 app.post('/upload/single', singleUpload.single('photo'), (req, res) => {
@@ -116,7 +123,7 @@ app.post('/upload/single', singleUpload.single('photo'), (req, res) => {
 
  res.json({ file: file });
 });
-app.use('/places', express.static(path.join(__dirname, 'places')));
+app.use('/places', express.static(PLACES_PATH));
 
 // Handle file upload for avatars
 app.post('/upload/avatars', avatars.single('avatar'), (req, res) => {
@@ -131,7 +138,7 @@ app.post('/upload/avatars', avatars.single('avatar'), (req, res) => {
 
  res.json({ file: file });
 });
-app.use('/avatars', express.static(path.join(__dirname, 'avatars')));
+app.use('/avatars', express.static(AVATARS_PATH));
 
 console.log('Server setup complete.');
 
@@ -151,7 +158,9 @@ app.use('/api/v1/amenities', AmenityRouter);
 console.log('Routes setup complete.');
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
+const REACT_APP_PATH =
+ process.env.REACT_APP_PATH || path.join(__dirname, 'client/build');
+app.use(express.static(REACT_APP_PATH));
 
 console.log('Middleware setup complete.');
 
@@ -172,7 +181,7 @@ console.log('Proxy route setup complete.');
 
 // Catch-all handler to serve index.html for any other routes
 app.get('*', (req, res) => {
- res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+ res.sendFile(path.join(REACT_APP_PATH, 'index.html'));
 });
 
 console.log('Home route setup complete.');

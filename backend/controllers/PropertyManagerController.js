@@ -1,6 +1,10 @@
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
-const { PropertyManager, PropertyManagerVerification } = require('../models');
+const {
+ PropertyManager,
+ PropertyManagerVerification,
+ PasswordReset,
+} = require('../models');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const sendMail = require('../helpers/sendMail');
@@ -260,6 +264,107 @@ const updatePassword = async (req, res) => {
  }
 };
 
+// Function to generate a random code
+const generateCode = () => {
+ return Math.floor(100000 + Math.random() * 900000).toString(); // 6 digit code
+};
+
+// Request password reset
+const resetPasswordRequest = async (req, res) => {
+ const { email } = req.body;
+
+ try {
+  const user = await PropertyManager.findOne({ where: { email } });
+  if (!user) {
+   return res.status(404).json({ message: 'Email not found' });
+  }
+
+  const resetCode = generateCode();
+  const expiresAt = Date.now() + 3600000; // 1 hour expiry
+
+  await PasswordReset.create({ email, code: resetCode, expiresAt });
+
+  const transporter = nodemailer.createTransport({
+   host: process.env.HOST,
+   port: process.env.MAIL_PORT,
+   secure: true,
+   auth: {
+    user: process.env.AUTH_EMAIL,
+    pass: process.env.AUTH_PASS,
+   },
+  });
+
+  const mailOptions = {
+   from: process.env.AUTH_EMAIL,
+   to: email,
+   subject: 'Password Reset Code',
+   html: `<p>Your password reset code is: <b>${resetCode}</b></p>`,
+  };
+
+  await transporter.sendMail(mailOptions);
+
+  res.status(200).json({ message: 'Password reset code sent' });
+ } catch (error) {
+  console.error('Error requesting password reset:', error);
+  res.status(500).json({ message: 'Internal server error' });
+ }
+};
+
+// Verify reset code
+const verifyResetCode = async (req, res) => {
+ const { email, code } = req.body;
+
+ try {
+  const resetRecord = await PasswordReset.findOne({ where: { email, code } });
+  if (!resetRecord) {
+   return res.status(400).json({ message: 'Invalid code' });
+  }
+
+  if (resetRecord.expiresAt < Date.now()) {
+   return res.status(400).json({ message: 'Code has expired' });
+  }
+
+  res.status(200).json({ message: 'Code verified' });
+ } catch (error) {
+  console.error('Error verifying reset code:', error);
+  res.status(500).json({ message: 'Internal server error' });
+ }
+};
+
+// Reset password
+const resetPassword = async (req, res) => {
+ const { email, code, newPassword } = req.body;
+
+ try {
+  const resetRecord = await PasswordReset.findOne({ where: { email, code } });
+  if (!resetRecord) {
+   return res.status(400).json({ message: 'Invalid code' });
+  }
+
+  if (resetRecord.expiresAt < Date.now()) {
+   return res.status(400).json({ message: 'Code has expired' });
+  }
+
+  const user = await PropertyManager.findOne({ where: { email } });
+  if (!user) {
+   return res.status(404).json({ message: 'User not found' });
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(newPassword, salt);
+
+  user.password = hash;
+  await user.save();
+
+  await PasswordReset.destroy({ where: { email, code } });
+
+  res.status(200).json({ message: 'Password reset successful' });
+ } catch (error) {
+  console.error('Error resetting password:', error);
+  res.status(500).json({ message: 'Internal server error' });
+ }
+};
+
 module.exports = {
  getPropertyManager,
  getPropertyManagerByEmail,
@@ -270,4 +375,7 @@ module.exports = {
  updatePropertyManagerDetails,
  updatePropertyManagerAvatar,
  updatePassword,
+ resetPasswordRequest,
+ verifyResetCode,
+ resetPassword,
 };

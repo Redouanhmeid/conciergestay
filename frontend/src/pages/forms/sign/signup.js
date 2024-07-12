@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSignup } from '../../hooks/useSignup';
+import { useSignup } from '../../../hooks/useSignup';
 import {
  Button,
  Form,
@@ -15,9 +15,9 @@ import {
 } from 'antd';
 import { LockOutlined, PhoneOutlined, MailOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import MapImg from '../../assets/hostfully-5-star-hospitality-sign-up.jpg';
-import Head from '../../components/common/header';
-import Foot from '../../components/common/footer';
+import MapImg from '../../../assets/hostfully-5-star-hospitality-sign-up.jpg';
+import Head from '../../../components/common/header';
+import Foot from '../../../components/common/footer';
 const { Title, Text } = Typography;
 
 const onFinishFailed = (errorInfo) => {

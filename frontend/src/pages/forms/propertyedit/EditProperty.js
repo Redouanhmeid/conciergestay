@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import useGetProperty from '../../../hooks/useGetProperty';
+import useUploadPhotos from '../../../hooks/useUploadPhotos';
+import useUpdateProperty from '../../../hooks/useUpdateProperty';
 import {
  Layout,
  Button,
@@ -25,8 +27,7 @@ import Foot from '../../../components/common/footer';
 import MapMarker from '../../components/MapMarker';
 import dayjs from 'dayjs';
 import ImgCrop from 'antd-img-crop';
-import useUploadPhotos from '../../../hooks/useUploadPhotos';
-import useUpdateProperty from '../../../hooks/useUpdateProperty';
+
 const { Content } = Layout;
 const { Title } = Typography;
 const format = 'HH:mm';
@@ -48,53 +49,44 @@ const EditProperty = () => {
  const { uploadPhotos } = useUploadPhotos();
  const { updateProperty } = useUpdateProperty();
  const [showAdditionalRules, setShowAdditionalRules] = useState(false);
- const [AdditionalRules, setAdditionalRules] = useState('');
+ const [additionalRules, setAdditionalRules] = useState('');
  const [form] = Form.useForm();
- const [CheckInTime, setCheckInTime] = useState(
-  form.getFieldValue('checkInTime')
- );
- const [CheckOutTime, setCheckOutTime] = useState(
-  form.getFieldValue('checkOutTime')
- );
+ const [checkInTime, setCheckInTime] = useState(dayjs());
+ const [checkOutTime, setCheckOutTime] = useState(dayjs());
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
  const [fileList, setFileList] = useState([]);
- const [upload, setUpload] = useState(false);
- let formData;
+ const [uploading, setUploading] = useState(false);
+ const [successMessage, setSuccessMessage] = useState('');
+ const [errorMessage, setErrorMessage] = useState('');
 
- // Check if the photos property is a string
- if (typeof property.photos === 'string') {
-  // Parse string representation of array to actual array
-  property.photos = JSON.parse(property.photos);
- }
- // Check if property items are a string and parse them accordingly
- if (typeof property.basicAmenities === 'string') {
-  property.basicAmenities = JSON.parse(property.basicAmenities);
- }
- if (typeof property.safetyFeatures === 'string') {
-  property.safetyFeatures = JSON.parse(property.safetyFeatures);
- }
- if (typeof property.elements === 'string') {
-  property.elements = JSON.parse(property.elements);
- }
- if (typeof property.houseRules === 'string') {
-  property.houseRules = JSON.parse(property.houseRules);
- }
- if (typeof property.earlyCheckIn === 'string') {
-  property.earlyCheckIn = JSON.parse(property.earlyCheckIn);
- }
- if (typeof property.beforeCheckOut === 'string') {
-  property.beforeCheckOut = JSON.parse(property.beforeCheckOut);
- }
- if (typeof property.accessToProperty === 'string') {
-  property.accessToProperty = JSON.parse(property.accessToProperty);
- }
- if (typeof property.lateCheckOutPolicy === 'string') {
-  property.lateCheckOutPolicy = JSON.parse(property.lateCheckOutPolicy);
- }
+ const parseJSONFields = (property) => {
+  const fields = [
+   'photos',
+   'basicAmenities',
+   'safetyFeatures',
+   'elements',
+   'houseRules',
+   'earlyCheckIn',
+   'beforeCheckOut',
+   'accessToProperty',
+   'lateCheckOutPolicy',
+  ];
+  fields.forEach((field) => {
+   if (typeof property[field] === 'string') {
+    property[field] = JSON.parse(property[field]);
+   }
+  });
+ };
 
  useEffect(() => {
-  if (!loading) {
+  if (!loading && property) {
+   parseJSONFields(property);
+   form.setFieldsValue({
+    ...property,
+    checkInTime: dayjs(property.checkInTime),
+    checkOutTime: dayjs(property.checkOutTime),
+   });
    setFileList(
     property.photos.map((url, index) => ({
      uid: index,
@@ -104,72 +96,28 @@ const EditProperty = () => {
     }))
    );
   }
- }, [loading]);
+ }, [loading, property]);
 
  const goBack = () => {
   navigate(-1); // This will navigate back to the previous page
  };
 
- const onChangeCheckIn = (time) => {
-  setCheckInTime(time);
- };
- const onChangeCheckOut = (time) => {
-  setCheckOutTime(time);
- };
  const handlePreview = async (file) => {
   if (!file.url && !file.preview) {
    file.preview = await getBase64(file.originFileObj);
   }
-  file.error = false;
   setPreviewImage(file.url || file.preview);
   setPreviewOpen(true);
  };
 
- const handleChange = async ({ fileList: newFileList }) => {
+ const handleChange = ({ fileList: newFileList }) => {
   setFileList(newFileList);
-
-  if (newFileList.length === 0) {
-   setUpload(false);
-  }
-
-  // Upload files
-  if (newFileList.length > fileList.length) {
-   setUpload(true);
-   // Simulate uploading
-   setTimeout(() => {
-    setUpload(false);
-   }, 2000);
-  }
+  setUploading(newFileList.some((file) => file.status === 'uploading'));
  };
 
  const handleRemove = (file) => {
-  const newFileList = fileList.filter((item) => item !== file);
-  setFileList(newFileList);
+  setFileList(fileList.filter((item) => item.uid !== file.uid));
  };
- const uploadButton = (
-  <div>
-   {upload ? (
-    <div style={{ marginTop: 8 }}>Téléchargement en cours...</div>
-   ) : (
-    <button
-     style={{
-      border: 0,
-      background: 'none',
-     }}
-     type="button"
-    >
-     <PlusOutlined />
-     <div
-      style={{
-       marginTop: 8,
-      }}
-     >
-      Ajouter des Photos
-     </div>
-    </button>
-   )}
-  </div>
- );
 
  const submitFormData = async () => {
   const formData = form.getFieldsValue();
@@ -196,11 +144,13 @@ const EditProperty = () => {
   formData.longitude = property.longitude;
   formData.placeName = property.placeName;
 
-  formData.checkInTime = CheckInTime || property.checkInTime;
-  formData.checkOutTime = CheckInTime || property.checkOutTime;
+  formData.checkInTime =
+   checkInTime.format('YYYY-MM-DD HH:mm:ss') || property.checkInTime;
+  formData.checkOutTime =
+   checkOutTime.format('YYYY-MM-DD HH:mm:ss') || property.checkOutTime;
   formData.propertyManagerId = property.propertyManagerId;
   if (showAdditionalRules) {
-   formData.houseRules.push(`additionalRules: ${AdditionalRules}`);
+   formData.houseRules.push(`additionalRules: ${additionalRules}`);
   }
   for (const key in formData) {
    if (formData.hasOwnProperty(key) && formData[key] === undefined) {
@@ -217,16 +167,26 @@ const EditProperty = () => {
    .filter((file) => !file.originFileObj)
    .map((file) => file.url);
   try {
+   console.log(newFileList);
+   console.log(typeof newFileList);
    const photoUrls = await uploadPhotos(newFileList);
    photoUrls.unshift(...urlsArray);
    formData.photos = photoUrls;
-
+   console.log(photoUrls);
+   console.log(formData);
    await updateProperty(id, formData);
-   /* console.log(Property, success, error, isLoading); */
+   setSuccessMessage('Property updated successfully');
+   setErrorMessage('');
+   setTimeout(() => {
+    navigate(`/propertydetails?id=${id}`);
+   }, 2000);
   } catch (error) {
    console.error('Error updating property:', error);
+   setErrorMessage('Failed to update property');
+   setSuccessMessage('');
   }
  };
+
  if (loading) {
   return (
    <div className="loading">
@@ -234,6 +194,7 @@ const EditProperty = () => {
    </div>
   );
  }
+
  return (
   <Layout className="contentStyle">
    <Head />
@@ -253,65 +214,31 @@ const EditProperty = () => {
       onFinish={submitFormData}
       form={form}
       size="large"
-      initialValues={{
-       name: property.name,
-       description: property.description,
-       price: property.price,
-       capacity: property.capacity,
-       rooms: property.rooms,
-       beds: property.beds,
-       elements: property.elements,
-       houseRules: property.houseRules,
-       ['checkInTime']: dayjs()
-        .hour(dayjs(property.checkInTime).hour())
-        .minute(dayjs(property.checkInTime).minute()),
-       earlyCheckIn: property.earlyCheckIn,
-       accessToProperty: property.accessToProperty,
-       guestAccessInfo: property.guestAccessInfo,
-       ['checkOutTime']: dayjs()
-        .hour(dayjs(property.checkOutTime).hour())
-        .minute(dayjs(property.checkOutTime).minute()),
-       beforeCheckOut: property.beforeCheckOut,
-       additionalCheckOutInfo: property.additionalCheckOutInfo,
-       basicAmenities: property.basicAmenities,
-       safetyFeatures: property.safetyFeatures,
-      }}
      >
       <Title level={3}>Modifier les informations de votre propriété</Title>
       <Row gutter={[32, 32]}>
-       {/* Name Description & Map */}
        <Col xs={24} sm={12}>
         <Row gutter={[24, 0]}>
          <Col xs={24}>
           <Form.Item
            label="Nom"
            name="name"
-           rules={[
-            {
-             required: true,
-             message: 'Veuillez saisir votre nom!',
-            },
-           ]}
+           rules={[{ required: true, message: 'Veuillez saisir votre nom!' }]}
           >
            <Input />
           </Form.Item>
          </Col>
-
          <Col xs={24}>
           <Form.Item
            label="Description"
            name="description"
            rules={[
-            {
-             required: true,
-             message: 'Veuillez saisir une description!',
-            },
+            { required: true, message: 'Veuillez saisir une description!' },
            ]}
           >
-           <Input.TextArea />
+           <TextArea />
           </Form.Item>
          </Col>
-
          <Col xs={24}>
           <MapMarker
            latitude={property.latitude}
@@ -320,7 +247,6 @@ const EditProperty = () => {
          </Col>
         </Row>
        </Col>
-       {/* Manuel & Equipements */}
        <Col xs={24} sm={12}>
         <Row gutter={[24, 0]}>
          <Col xs={24} md={9}>
@@ -375,7 +301,6 @@ const EditProperty = () => {
             </Checkbox.Group>
            </Form.Item>
           </Col>
-
           <Col xs={24}>
            <Form.Item
             label="Possédez-vous ces équipements de sécurité?"
@@ -402,7 +327,6 @@ const EditProperty = () => {
            </Form.Item>
           </Col>
          </Col>
-
          <Col xs={24} md={12}>
           <Col xs={24}>
            <Form.Item
@@ -423,7 +347,6 @@ const EditProperty = () => {
             </Checkbox.Group>
            </Form.Item>
           </Col>
-
           <Col xs={24}>
            <Form.Item label="Règles de la maison:" name="houseRules">
             <Checkbox.Group>
@@ -468,9 +391,9 @@ const EditProperty = () => {
           {showAdditionalRules && (
            <Col xs={24} md={24}>
             <Form.Item label="Règles supplémentaires" value="AdditionalRules">
-             <Input.TextArea
+             <TextArea
               rows={4}
-              value={AdditionalRules}
+              value={additionalRules}
               onChange={(e) => setAdditionalRules(e.target.value)}
              />
             </Form.Item>
@@ -479,7 +402,6 @@ const EditProperty = () => {
          </Col>
         </Row>
        </Col>
-       {/* Photos */}
        <Col xs={24}>
         <Row gutter={[24, 0]}>
          <Col xs={24}>
@@ -493,16 +415,25 @@ const EditProperty = () => {
             onPreview={handlePreview}
             onChange={handleChange}
             onRemove={handleRemove}
-            disabled={upload}
+            disabled={uploading}
            >
-            {fileList.length >= 8 ? null : uploadButton}
+            {fileList.length >= 8 ? null : (
+             <div>
+              {uploading ? (
+               <div style={{ marginTop: 8 }}>Téléchargement en cours...</div>
+              ) : (
+               <button style={{ border: 0, background: 'none' }} type="button">
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Ajouter des Photos</div>
+               </button>
+              )}
+             </div>
+            )}
            </Upload>
           </ImgCrop>
           {previewOpen && (
            <Image
-            wrapperStyle={{
-             display: 'none',
-            }}
+            wrapperStyle={{ display: 'none' }}
             preview={{
              visible: previewOpen,
              onVisibleChange: (visible) => setPreviewOpen(visible),
@@ -523,7 +454,6 @@ const EditProperty = () => {
          )}
         </Row>
        </Col>
-       {/* Check In */}
        <Col xs={24} sm={12}>
         <Row gutter={[24, 0]}>
          <Col xs={24}>
@@ -538,11 +468,10 @@ const EditProperty = () => {
             format={format}
             showNow={false}
             size="large"
-            onChange={onChangeCheckIn}
+            onChange={setCheckInTime}
            />
           </Form.Item>
          </Col>
-
          <Col xs={24}>
           <Form.Item
            label="Sélectionnez les déclarations qui décrivent le mieux votre politique en matière de check-in anticipé."
@@ -578,7 +507,6 @@ const EditProperty = () => {
            </Checkbox.Group>
           </Form.Item>
          </Col>
-
          <Col xs={24}>
           <Form.Item
            label="Sélectionnez les déclarations qui décrivent le mieux la manière dont vos invités accéderont à la propriété."
@@ -618,7 +546,6 @@ const EditProperty = () => {
            </Checkbox.Group>
           </Form.Item>
          </Col>
-
          <Col xs={24}>
           <Form.Item
            label="Quelles informations vos invités doivent-ils connaître pour accéder à la propriété ?"
@@ -629,7 +556,6 @@ const EditProperty = () => {
          </Col>
         </Row>
        </Col>
-       {/* Check Out */}
        <Col xs={24} sm={12}>
         <Row gutter={[24, 0]}>
          <Col xs={24}>
@@ -644,11 +570,10 @@ const EditProperty = () => {
             format={format}
             showNow={false}
             size="large"
-            onChange={onChangeCheckOut}
+            onChange={setCheckOutTime}
            />
           </Form.Item>
          </Col>
-
          <Col xs={24}>
           <Form.Item
            label="Sélectionnez les déclarations qui décrivent le mieux votre politique de départ tardif :"
@@ -683,7 +608,6 @@ const EditProperty = () => {
            </Checkbox.Group>
           </Form.Item>
          </Col>
-
          <Col xs={24}>
           <Form.Item
            label="Que doivent faire les invités avant de partir ?"
@@ -768,7 +692,6 @@ const EditProperty = () => {
            </Checkbox.Group>
           </Form.Item>
          </Col>
-
          <Col sm={24}>
           <Form.Item
            label="Informations supplémentaires sur le départ :"
@@ -780,6 +703,17 @@ const EditProperty = () => {
         </Row>
        </Col>
       </Row>
+      <Row>
+       <Col xs={24} md={24}>
+        {successMessage && (
+         <Alert message={successMessage} type="success" showIcon closable />
+        )}
+        {errorMessage && (
+         <Alert message={errorMessage} type="error" showIcon closable />
+        )}
+       </Col>
+      </Row>
+      <br />
       <Row>
        <Col xs={24} md={24}>
         <Form.Item>

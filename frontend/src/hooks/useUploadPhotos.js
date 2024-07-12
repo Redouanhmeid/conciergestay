@@ -4,7 +4,6 @@ const useUploadPhotos = () => {
  const [uploading, setUploading] = useState(false);
 
  const uploadAvatar = async (avatar) => {
-  console.log(avatar);
   const formData = new FormData();
   formData.append('avatar', avatar[0].originFileObj);
   try {

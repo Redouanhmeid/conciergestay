@@ -6,6 +6,7 @@ const PropertyManagerVerificationModel = require('./PropertyManagerVerificationM
 const PropertyModel = require('./PropertyModel');
 const NearbyPlaceModel = require('./NearbyPlaceModel');
 const AmenityModel = require('./AmenityModel');
+const PasswordResetModel = require('./PasswordResetModel');
 
 // create models
 const PropertyManager = PropertyManagerModel(db, Sequelize);
@@ -16,6 +17,7 @@ const PropertyManagerVerification = PropertyManagerVerificationModel(
 const Property = PropertyModel(db, Sequelize);
 const NearbyPlace = NearbyPlaceModel(db, Sequelize);
 const Amenity = AmenityModel(db, Sequelize);
+const PasswordReset = PasswordResetModel(db, Sequelize);
 
 // define relationships
 // Property & PropertyManager (one -> many)
@@ -48,4 +50,5 @@ module.exports = {
  Property,
  NearbyPlace,
  Amenity,
+ PasswordReset,
 };

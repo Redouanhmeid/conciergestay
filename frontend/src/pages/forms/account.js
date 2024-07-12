@@ -29,7 +29,7 @@ import {
 import { Link } from 'react-router-dom';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
-import Changepassword from './changepassword';
+import Changepassword from './sign/changepassword';
 import Logo from '../../assets/logo-icon.png';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useUserData } from '../../hooks/useUserData';
