@@ -34,7 +34,7 @@ const Home = () => {
  const autocomplete = useRef(null);
  const [viewMode, setViewMode] = useState('list');
  const [openFilter, setOpenFilter] = useState(false);
- const [range, setRange] = useState([300, 600]);
+ const [range, setRange] = useState([0, 10000]);
  const [roomValue, setRoomValue] = useState(0);
  const [paxValue, setPaxValue] = useState(0);
  const [checkedTypes, setCheckedTypes] = useState([]);
@@ -86,7 +86,7 @@ const Home = () => {
   setOpenFilter(false);
  };
  const onClear = () => {
-  setRange([300, 600]);
+  setRange([0, 10000]);
   setRoomValue(0);
   setPaxValue(0);
   setCheckedTypes([]);
@@ -211,7 +211,15 @@ const Home = () => {
       <Col xs={24}>
        {viewMode === 'map' ? (
         <APIProvider>
-         <MapHome city={searchCity} isLoaded={isLoaded} />
+         <MapHome
+          isLoaded={isLoaded}
+          city={searchCity}
+          checkedTypes={checkedTypes}
+          range={range}
+          roomValue={roomValue}
+          paxValue={paxValue}
+          checkedbasicAmenities={checkedbasicAmenities}
+         />
         </APIProvider>
        ) : (
         <PropertyList
@@ -292,14 +300,14 @@ const Home = () => {
      </Col>
 
      <Col xs={24}>
-      <Title level={4}>Fourchette de prix</Title>
+      <Title level={4}>Fourchette de prix (Dh)</Title>
       <Row align="middle" gutter={16}>
        <Col xs={24}>
         <Slider
          range
          step={100}
          min={0}
-         max={2000}
+         max={10000}
          onChange={onSliderChange}
          value={range}
         />
@@ -308,7 +316,7 @@ const Home = () => {
         <InputNumber
          step={100}
          min={0}
-         max={2000}
+         max={10000}
          value={range[0]}
          onChange={onMinChange}
          formatter={(value) =>
@@ -325,7 +333,7 @@ const Home = () => {
         <InputNumber
          step={100}
          min={0}
-         max={2000}
+         max={10000}
          value={range[1]}
          formatter={(value) =>
           `Max ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')

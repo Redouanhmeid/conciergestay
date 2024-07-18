@@ -100,7 +100,7 @@ function checkFileType(file, cb) {
 console.log('File type check setup complete.');
 
 // Handle file upload
-app.post('/upload', upload.array('photos', 8), (req, res) => {
+app.post('/upload', upload.array('photos', 16), (req, res) => {
  const files = req.files.map((file) => ({
   filename: file.filename,
   url: `/uploads/${file.filename}`,

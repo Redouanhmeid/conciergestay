@@ -119,7 +119,7 @@ const Step4Photos = ({ next, prev, values }) => {
         <Title level={2}>Ajouter des Photos de votre logement</Title>
        </Col>
        <Col xs={24} md={24}>
-        <ImgCrop rotationSlider>
+        <ImgCrop aspect={640 / 426} rotationSlider>
          <Upload
           listType="picture-card"
           fileList={fileList}
@@ -128,7 +128,7 @@ const Step4Photos = ({ next, prev, values }) => {
           onRemove={handleRemove}
           disabled={upload}
          >
-          {fileList.length >= 8 ? null : uploadButton}
+          {fileList.length >= 16 ? null : uploadButton}
          </Upload>
         </ImgCrop>
         {previewOpen && (
@@ -147,7 +147,7 @@ const Step4Photos = ({ next, prev, values }) => {
        </Col>
       </Row>
       <br />
-      {fileList.length === 8 && (
+      {fileList.length === 16 && (
        <>
         <Alert
          message="Vous avez atteint le nombre maximum de photos."

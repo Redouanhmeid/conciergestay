@@ -13,7 +13,6 @@ import Signup from './pages/forms/sign/signup';
 import Account from './pages/forms/account';
 import { ConfigProvider } from 'antd';
 import Guestform from './pages/forms/guestform';
-import PropertyPost from './pages/forms/propertypost/propertypost';
 import MapPicker from './pages/forms/propertypost/MapPicker';
 import PropertyManagerHome from './pages/propertymanagerhome';
 import PropertyDetails from './pages/components/PropertyDetails';
@@ -37,7 +36,6 @@ const router = createBrowserRouter([
  { path: '/verify-reset-code', element: <VerifyResetCode /> },
  { path: '/new-password', element: <NewPassword /> },
  { path: '/guestform', element: <Guestform /> },
- { path: '/postproperty', element: <PropertyPost /> },
  { path: '/addproperty', element: <AddProperty /> },
  { path: '/mappicker', element: <MapPicker /> },
  { path: '/propertydetails', element: <PropertyDetails /> },

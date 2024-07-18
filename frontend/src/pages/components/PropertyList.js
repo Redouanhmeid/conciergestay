@@ -12,6 +12,7 @@ import {
  Carousel,
 } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { filterProperties } from '../../utils/filterProperties';
 
 const { Text } = Typography;
 
@@ -27,66 +28,21 @@ const PropertyList = ({
  const { properties, fetchAllProperties, loading, error } = useGetProperties();
  const [filteredProperties, setFilteredProperties] = useState([]);
 
- // Function to filter properties
- const filterProperties = () => {
-  if (!Array.isArray(properties)) return [];
-  let filtered = properties;
-
-  if (city.trim()) {
-   filtered = filtered.filter(
-    (property) =>
-     property.placeName &&
-     city.toLowerCase().includes(property.placeName.toLowerCase())
-   );
-  }
-
-  if (checkedTypes.length > 0) {
-   filtered = filtered.filter((property) =>
-    checkedTypes.includes(property.type)
-   );
-  }
-
-  if (range[0] !== 0 || range[1] !== 2000) {
-   filtered = filtered.filter(
-    (property) => property.price >= range[0] && property.price <= range[1]
-   );
-  }
-
-  if (roomValue !== 0) {
-   filtered = filtered.filter(
-    (property) => property.rooms !== undefined && property.rooms === roomValue
-   );
-  }
-
-  if (paxValue !== 0) {
-   filtered = filtered.filter(
-    (property) =>
-     property.capacity !== undefined && property.capacity === paxValue
-   );
-  }
-
-  if (checkedbasicAmenities.length > 0) {
-   filtered = filtered.filter((property) =>
-    checkedbasicAmenities.every((amenity) =>
-     property.basicAmenities.includes(amenity)
+ // Effect to filter properties when properties or filter criteria change
+ useEffect(() => {
+  if (properties) {
+   setFilteredProperties(
+    filterProperties(
+     properties,
+     city,
+     checkedTypes,
+     range,
+     roomValue,
+     paxValue,
+     checkedbasicAmenities
     )
    );
   }
-
-  return filtered;
- };
-
- // Effect to filter properties when properties or filter criteria change
- useEffect(() => {
-  if (typeof properties === 'string') {
-   try {
-    properties = JSON.parse(properties);
-   } catch (error) {
-    console.error('Failed to parse properties:', error);
-    properties = [];
-   }
-  }
-  setFilteredProperties(filterProperties());
  }, [
   properties,
   city,
