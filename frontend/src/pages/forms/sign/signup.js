@@ -9,61 +9,80 @@ import {
  Typography,
  Divider,
  Layout,
- Flex,
  InputNumber,
  Alert,
 } from 'antd';
-import { LockOutlined, PhoneOutlined, MailOutlined } from '@ant-design/icons';
+import {
+ LockOutlined,
+ PhoneOutlined,
+ MailOutlined,
+ GoogleOutlined,
+} from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import MapImg from '../../../assets/hostfully-5-star-hospitality-sign-up.jpg';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
+
 const { Title, Text } = Typography;
 
 const onFinishFailed = (errorInfo) => {
  console.log('Failed:', errorInfo);
 };
+
 const Signup = () => {
- const { signup, error, isLoading, message } = useSignup();
+ const { signup, googleSignup, error, isLoading, message } = useSignup();
  const [email, setEmail] = useState('');
  const [password, setPassword] = useState('');
  const [firstname, setFirstName] = useState('');
  const [lastname, setLastName] = useState('');
  const [phone, setPhone] = useState('');
+
  const handleSubmit = async (e) => {
   await signup(email, password, firstname, lastname, phone);
  };
- return (
-  <Layout className="contentStyle">
-   <Head />
-   <Row>
-    <Col xs={24} sm={8}>
-     <div className="container-fluid">
-      <Title level={3}>Commencez avec un compte gratuit</Title>
 
-      <Text>
+ const handleGoogleSignup = async () => {
+  await googleSignup();
+ };
+
+ return (
+  <Layout className="sign-layout">
+   <Head />
+   <Row justify="center" align="middle" className="login-row">
+    <Col xs={24} sm={12} md={8}>
+     <div className="sign-container">
+      <Title level={3} className="sign-title">
+       Commencez avec un compte gratuit
+      </Title>
+      <Text className="sign-subtitle">
        Créez un compte Concierge Stay gratuit pour partager de magnifiques
        guides avec vos invités. Vous avez déjà un compte?{' '}
+       <Link to="/login">Connectez-vous ici.</Link>
       </Text>
-      <Link to="/login">Connectez-vous ici.</Link>
       <Divider />
+      <Button
+       type="default"
+       icon={<GoogleOutlined />}
+       onClick={handleGoogleSignup}
+       disabled={isLoading}
+       className="sign-google-button"
+      >
+       Inscrivez-vous avec Google
+      </Button>
+      <Divider>Ou utilisez E-mail</Divider>
       <Form
        name="signup"
        initialValues={{ remember: true }}
        onFinish={handleSubmit}
        onFinishFailed={onFinishFailed}
        autoComplete="off"
+       size="large"
+       className="sign-form"
       >
        <Form.Item
         name="lastname"
         onChange={(e) => setLastName(e.target.value)}
         value={lastname}
-        rules={[
-         {
-          required: true,
-          message: 'Veuillez fournir votre Nom.',
-         },
-        ]}
+        rules={[{ required: true, message: 'Veuillez fournir votre Nom.' }]}
        >
         <Input placeholder="Nom" />
        </Form.Item>
@@ -72,12 +91,7 @@ const Signup = () => {
         name="firstname"
         onChange={(e) => setFirstName(e.target.value)}
         value={firstname}
-        rules={[
-         {
-          required: true,
-          message: 'Veuillez fournir votre Prénom.',
-         },
-        ]}
+        rules={[{ required: true, message: 'Veuillez fournir votre Prénom.' }]}
        >
         <Input placeholder="Prénom" />
        </Form.Item>
@@ -117,10 +131,7 @@ const Signup = () => {
         onChange={(e) => setPassword(e.target.value)}
         value={password}
         rules={[
-         {
-          required: true,
-          message: 'Veuillez créer un mot de passe.',
-         },
+         { required: true, message: 'Veuillez créer un mot de passe.' },
          {
           min: 8,
           message: 'Le mot de passe doit contenir au moins 8 caractères.',
@@ -134,13 +145,12 @@ const Signup = () => {
        >
         <Input.Password prefix={<LockOutlined />} placeholder="Mot de passe" />
        </Form.Item>
+
        <Form.Item
         name="password2"
         dependencies={['password']}
         rules={[
-         {
-          required: true,
-         },
+         { required: true },
          ({ getFieldValue }) => ({
           validator(_, value) {
            if (!value || getFieldValue('password') === value) {
@@ -160,6 +170,7 @@ const Signup = () => {
          placeholder="Confirmez le mot de passe"
         />
        </Form.Item>
+
        {message && (
         <Form.Item>
          <Alert message={message} type="info" showIcon closable />
@@ -170,8 +181,14 @@ const Signup = () => {
          <Alert message={error} type="warning" showIcon closable />
         </Form.Item>
        )}
+
        <Form.Item>
-        <Button disabled={isLoading} type="primary" htmlType="submit">
+        <Button
+         disabled={isLoading}
+         type="primary"
+         htmlType="submit"
+         className="sign-submit-button"
+        >
          Commencez
         </Button>
        </Form.Item>
@@ -182,25 +199,6 @@ const Signup = () => {
        </Form.Item>
       </Form>
      </div>
-    </Col>
-    <Col xs={24} sm={16}>
-     <Flex
-      justify="center"
-      align="center"
-      style={{
-       overflow: 'auto',
-       height: '84vh',
-       backgroundRepeat: 'no-repeat',
-       backgroundImage: `url(${MapImg})`,
-       backgroundPosition: '50%',
-       backgroundSize: 'cover',
-      }}
-     >
-      <Text>
-       Content de te revoir! En tant qu'hôte ConciergeStay, vous êtes un membre
-       important de l'équipe ConciergeStay.
-      </Text>
-     </Flex>
     </Col>
    </Row>
    <Foot />

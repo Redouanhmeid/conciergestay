@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useAuthContext } from './useAuthContext';
+import { auth, provider } from '../services/firebaseConfig';
+import { signInWithPopup } from 'firebase/auth';
 
 export const useSignup = () => {
  const [error, setError] = useState(null);
  const [message, setMessage] = useState(null);
- const [isLoading, setIsLoading] = useState(null);
+ const [isLoading, setIsLoading] = useState(false);
  const { dispatch } = useAuthContext();
 
  const signup = async (email, password, firstname, lastname, phone) => {
@@ -32,5 +34,22 @@ export const useSignup = () => {
    setIsLoading(false);
   }
  };
- return { signup, isLoading, error, message };
+
+ const googleSignup = async () => {
+  try {
+   setIsLoading(true);
+   const result = await signInWithPopup(auth, provider);
+   const user = result.user;
+   // Send user information to your backend if needed
+   dispatch({ type: 'LOGIN', payload: user });
+   localStorage.setItem('user', JSON.stringify(user));
+   setMessage('Google Sign-Up Successful');
+   setIsLoading(false);
+  } catch (error) {
+   setError(error.message);
+   setIsLoading(false);
+  }
+ };
+
+ return { signup, googleSignup, isLoading, error, message };
 };

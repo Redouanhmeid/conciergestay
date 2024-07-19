@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
  Anchor,
  Layout,
@@ -161,7 +161,7 @@ const PropertyDetails = () => {
  const { property, loading } = useGetProperty(id);
  const { user } = useAuthContext();
  const User = user || JSON.parse(localStorage.getItem('user'));
- const { userData, getUserData } = useUserData();
+ const { userData, getUserDataById, isLoading } = useUserData();
  const { getAllAmenities, getOneAmenity } = useAmenity();
  const [amenities, setAmenities] = useState([]);
  const [selectedAmenityDetails, setSelectedAmenityDetails] = useState(null);
@@ -169,25 +169,23 @@ const PropertyDetails = () => {
  const [isARulesModalOpen, setIsARulesModalOpen] = useState(false);
  const [isFixed, setIsFixed] = useState(false);
 
+ const handleScroll = () => {
+  const scrollTop = window.scrollY;
+  const threshold = 200; // Threshold in pixels from the top to fix the card
+
+  if (scrollTop > threshold) {
+   setIsFixed(true);
+  } else {
+   setIsFixed(false);
+  }
+ };
+
  useEffect(() => {
-  const handleScroll = () => {
-   const scrollTop = window.scrollY;
-   const windowHeight = window.innerHeight;
-   const bodyHeight = document.body.scrollHeight;
-   const offset = 100; // The offset from the bottom before fixing the card
-
-   if (scrollTop + windowHeight < bodyHeight - offset) {
-    setIsFixed(true);
-   } else {
-    setIsFixed(false);
-   }
-  };
-
   window.addEventListener('scroll', handleScroll);
   return () => {
    window.removeEventListener('scroll', handleScroll);
   };
- }, []);
+ }, [handleScroll]);
 
  const showARulesModal = () => {
   setIsARulesModalOpen(true);
@@ -196,10 +194,10 @@ const PropertyDetails = () => {
   setIsARulesModalOpen(false);
  };
  useEffect(() => {
-  if (User && User.status !== 'EN ATTENTE') {
-   getUserData(User.email);
+  if (property.propertyManagerId) {
+   getUserDataById(property.propertyManagerId);
   }
- }, [User]);
+ }, [property.propertyManagerId]);
 
  useEffect(() => {
   const fetchData = async (id) => {
@@ -309,39 +307,41 @@ const PropertyDetails = () => {
     />
    </Helmet>
    <Layout className="contentStyle">
-    <Card
-     className={
-      isFixed ? 'fixed-bottom-card host-card-mobile' : 'host-card-mobile'
-     }
-     style={{ width: '100%', marginTop: 16 }}
-     loading={loading}
-     actions={[
-      <Tooltip title={`+${userData.phone}`}>
-       <i
-        key="Phone"
-        className="Hosticon fa-light fa-mobile"
-        onClick={() => window.open(`tel:+${userData.phone}`)}
-       />
-      </Tooltip>,
-      <Image width={32} src={airbnb} preview={false} />,
-      <Image width={32} src={booking} preview={false} />,
-     ]}
-    >
-     <Meta
-      avatar={
-       <Avatar
-        size={{ xs: 54, md: 56, lg: 56, xl: 56, xxl: 56 }}
-        src={userData.avatar}
-       />
+    {!isLoading && (
+     <Card
+      className={
+       isFixed ? 'fixed-bottom-card host-card-mobile' : 'host-card-mobile'
       }
-      title={`${userData.firstname} ${userData.lastname}`}
-      description={
-       <>
-        <i className="fa-light fa-envelope"></i> {userData.email}
-       </>
-      }
-     />
-    </Card>
+      style={{ width: '100%', marginTop: 16 }}
+      loading={loading}
+      actions={[
+       <Tooltip title={`+${userData.phone}`}>
+        <i
+         key="Phone"
+         className="Hosticon fa-light fa-mobile"
+         onClick={() => window.open(`tel:+${userData.phone}`)}
+        />
+       </Tooltip>,
+       <Image width={32} src={airbnb} preview={false} />,
+       <Image width={32} src={booking} preview={false} />,
+      ]}
+     >
+      <Meta
+       avatar={
+        <Avatar
+         size={{ xs: 54, md: 56, lg: 56, xl: 56, xxl: 56 }}
+         src={userData.avatar}
+        />
+       }
+       title={`${userData.firstname} ${userData.lastname}`}
+       description={
+        <>
+         <i className="fa-light fa-envelope"></i> {userData.email}
+        </>
+       }
+      />
+     </Card>
+    )}
     <Head />
     <Layout>
      <div style={{ padding: '20px' }}>
@@ -445,14 +445,15 @@ const PropertyDetails = () => {
       >
        Retour
       </Button>
-      {(userData.role === 'manager' || userData.role === 'admin') && (
-       <FloatButton
-        icon={<i className="fa-light fa-location-plus"></i>}
-        tooltip={<div>Ajouter un lieu à proximité</div>}
-        type="primary"
-        onClick={nearbyPlace}
-       />
-      )}
+      {!isLoading &&
+       (userData.role === 'manager' || userData.role === 'admin') && (
+        <FloatButton
+         icon={<i className="fa-light fa-location-plus"></i>}
+         tooltip={<div>Ajouter un lieu à proximité</div>}
+         type="primary"
+         onClick={nearbyPlace}
+        />
+       )}
       <Row gutter={[16, 4]}>
        <Col xs={24} sm={12} id="desc">
         <div style={{ maxWidth: '100%', margin: '12px 0 0 0' }}>
@@ -738,6 +739,7 @@ const PropertyDetails = () => {
         </Col>
        )}
       </Row>
+      <div style={{ marginBottom: 100 }} />
      </Content>
     </Layout>
     <Foot />

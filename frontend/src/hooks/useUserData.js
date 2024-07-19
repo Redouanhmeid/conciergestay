@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import axios from 'axios';
 
 export const useUserData = () => {
@@ -25,23 +25,26 @@ export const useUserData = () => {
   }
   setIsLoading(false);
  };
- const getUserDataById = async (id) => {
-  setIsLoading(true);
+
+ const getUserDataById = useCallback(async (id) => {
+  setIsLoading(true); // Start loading state here
   try {
-   const params = {
-    url: `/api/v1/propertymanagers/${id}`,
-    method: 'get',
-    rejectUnauthorized: false, //add when working with https sites
-    requestCert: false, //add when working with https sites
-    agent: false, //add when working with https sites
-   };
-   const json = await axios(params);
-   setUserData(json.data);
+   const response = await axios.get(`/api/v1/propertymanagers/${id}`, {
+    rejectUnauthorized: false, // Add when working with HTTPS sites
+    requestCert: false, // Add when working with HTTPS sites
+    agent: false, // Add when working with HTTPS sites
+   });
+
+   setUserData(response.data);
   } catch (error) {
    console.error('Error fetching user data:', error);
+   setError(true);
+   setErrorMsg(error.message);
+  } finally {
+   setIsLoading(false); // End loading state here
   }
-  setIsLoading(false);
- };
+ });
+
  const updatePropertyManager = async (id, firstname, lastname, phone) => {
   setIsLoading(true);
   try {

@@ -17,6 +17,7 @@
     "antd": "^5.15.2",
     "antd-img-crop": "^4.21.0",
     "axios": "^1.6.8",
+    "firebase": "^10.12.3",
     "html2canvas": "^1.4.1",
     "html2pdf.js": "^0.10.1",
     "jspdf": "^2.5.1",

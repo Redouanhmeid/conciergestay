@@ -84,7 +84,6 @@ body {
   position: absolute;
   font-size: 20px;
   top: 40%;
-  z-index: 1;
   color: '#2b2c32';
 }
 .left{
@@ -209,6 +208,11 @@ body {
 .custom-anchor {
   background-color: #fff;
   padding: 8px 0 0 0;
+  z-index: 1000;
+}
+
+.custom-anchor .ant-anchor .ant-anchor-link {
+  margin: 0 16px;
 }
 
 .horizontal-scroll-container {
@@ -362,4 +366,63 @@ body {
   .host-card {
     display: none;
   }
+}
+
+
+/* Login.css */
+.sign-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: url('../src/assets/zoshua-colah.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+.sign-row {
+  flex: 1;
+}
+
+.sign-container {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 14px auto;
+}
+
+.sign-logo {
+  width: 120px;
+}
+
+.sign-title {
+  margin-bottom: 20px;
+}
+
+.sign-subtitle {
+  margin-bottom: 10px;
+}
+
+.sign-google-button {
+  width: 100%;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.sign-form .ant-form-item {
+  margin-bottom: 15px;
+}
+
+.sign-submit-button {
+  width: 100%;
+}
+
+.sign-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
 }
