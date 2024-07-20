@@ -63,52 +63,102 @@ const getPropertyManagers = async (req, res) => {
   res.json(propertymanagers);
  });
 };
+
 // post a PropertyManager
 const postPropertyManager = async (req, res) => {
- let body = req.body;
- let email = req.body.email;
- let password = req.body.password;
- let firstname = req.body.firstname;
- let lastname = req.body.lastname;
- let phone = req.body.phone;
+ const { email, password, firstname, lastname, phone, avatar, isVerified } =
+  req.body;
 
- const createdAt = Date.now();
- const expiresAt = Date.now() + 21600000;
  try {
-  const user = await PropertyManager.ValidateCreate(
-   email,
-   password,
-   firstname,
-   lastname,
-   phone
-  );
+  // Check if the user already exists
+  let user = await PropertyManager.findOne({ where: { email } });
 
-  // create a token
-  const token = createToken(user._id);
+  if (user) {
+   // If the user exists and isVerified is true, update user details
+   if (isVerified) {
+    user.firstname = firstname;
+    user.lastname = lastname;
+    user.phone = phone || user.phone; // Retain existing phone if new phone is empty
+    user.avatar = avatar || user.avatar;
+    user.isVerified = true;
+    await user.save();
 
-  // handle email verification
-  const uniqueString = uuidv4() + token;
+    // Directly return success response
+    console.log('User updated:', JSON.stringify(user, null, 2));
+    return res.status(200).json(user);
+   } else {
+    // Log and return error response
+    console.log('User already exists and is not verified');
+    return res
+     .status(400)
+     .json({ error: 'User already exists and is not verified' });
+   }
+  } else {
+   // Create a new user
+   const createdAt = Date.now();
+   const expiresAt = Date.now() + 21600000;
 
-  sendMail(email, uniqueString, res)
-   .then(() => {
-    const newVerification = PropertyManagerVerification.Create(
-     email,
-     uniqueString,
-     createdAt,
-     expiresAt
+   user = await PropertyManager.ValidateCreate(
+    email,
+    password,
+    firstname,
+    lastname,
+    phone || 'N/A', // Set default phone if empty
+    avatar || '/avatars/default.png', // Set default avatar if not provided
+    'manager',
+    isVerified || false // Set default isVerified to false if not provided
+   );
+
+   // Ensure user is properly created
+   if (!user) {
+    console.log('User creation failed.');
+    return res.status(500).json({ error: 'User creation failed.' });
+   }
+
+   if (!isVerified) {
+    // Handle email verification if the user is not verified
+    const token = createToken(user._id);
+    const uniqueString = uuidv4() + token;
+
+    sendMail(email, uniqueString, res)
+     .then(() => {
+      const newVerification = PropertyManagerVerification.Create(
+       email,
+       uniqueString,
+       createdAt,
+       expiresAt
+      );
+     })
+     .catch((error) => {
+      console.log(error);
+      res.json({
+       status: 'ÉCHOUÉ',
+       message: 'la vérification a échoué!',
+      });
+     });
+   } else {
+    // Log and return success response if verified via Google Sign-In
+    console.log(
+     'User created via Google Sign-In:',
+     JSON.stringify(user, null, 2)
     );
-   })
-   .catch((error) => {
-    console.log(error);
-    res.json({
-     status: 'ÉCHOUÉ',
-     message: 'la vérification a échoué!',
+    return res.status(201).json({
+     email: user.email,
+     password: user.password,
+     firstname: user.firstname,
+     lastname: user.lastname,
+     phone: user.phone,
+     isVerified: user.isVerified,
+     avatar: user.avatar,
     });
-   });
+   }
+  }
  } catch (error) {
-  res.status(400).json({ error: error.message });
+  console.error('Error in postPropertyManager:', error);
+  return res.status(400).json({ error: error.message });
  }
 };
+
 // PropertyManager Login
 const loginPropertyManager = async (req, res) => {
  let email = req.body.email;

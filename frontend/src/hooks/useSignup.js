@@ -40,9 +40,32 @@ export const useSignup = () => {
    setIsLoading(true);
    const result = await signInWithPopup(auth, provider);
    const user = result.user;
+
+   // Generate a dummy password
+   const dummyPassword = Math.random().toString(36).slice(-8);
+
+   // Prepare user data to send to your backend
+   const userData = {
+    email: user.email,
+    password: dummyPassword,
+    firstname: user.displayName.split(' ')[0],
+    lastname: user.displayName.split(' ').slice(1).join(' '),
+    phone: user.phoneNumber || 'N/A', // Ensure phone is not undefined
+    isVerified: true, // Skip verification step for Google sign-ups
+    avatar: user.photoURL || '/avatars/default.png',
+   };
+
+   // Send user data to your backend
+   const response = await fetch('/api/v1/propertymanagers', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userData),
+   });
+   const json = await response.json();
+
    // Send user information to your backend if needed
-   dispatch({ type: 'LOGIN', payload: user });
-   localStorage.setItem('user', JSON.stringify(user));
+   dispatch({ type: 'LOGIN', payload: json });
+   localStorage.setItem('user', JSON.stringify(json));
    setMessage('Google Sign-Up Successful');
    setIsLoading(false);
   } catch (error) {

@@ -31,13 +31,13 @@ module.exports = (db, type) => {
   createdAt,
   expiresAt
  ) {
-  const PropertyManagerVerification = await propertymanagerverification.create({
+  const propertyManagerVerification = await propertymanagerverification.create({
    email,
    uniqueString,
    createdAt,
    expiresAt,
   });
-  return propertymanagerverification;
+  return propertyManagerVerification;
  };
  return propertymanagerverification;
 };

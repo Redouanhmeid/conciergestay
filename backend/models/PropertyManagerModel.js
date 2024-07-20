@@ -53,7 +53,8 @@ module.exports = (db, type) => {
   lastname,
   phone,
   avatar,
-  role
+  role,
+  isVerified
  ) {
   const emailExists = await this.findOne({ where: { email } });
   if (emailExists) {
@@ -68,7 +69,7 @@ module.exports = (db, type) => {
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
 
-  const PropertyManager = await propertymanager.create({
+  const propertyManager = await propertymanager.create({
    email,
    password: hash,
    firstname,
@@ -76,9 +77,10 @@ module.exports = (db, type) => {
    phone,
    avatar,
    role,
+   isVerified,
   });
 
-  return propertymanager;
+  return propertyManager;
  };
 
  propertymanager.Login = async function (email, password) {
