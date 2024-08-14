@@ -68,15 +68,14 @@ const Step5HouseManual = ({ prev, values }) => {
   setShowAdditionalRules(checkedValues.includes('additionalRules'));
  };
  const onFinish = async (values) => {
-  console.log(values);
   try {
    await createProperty(values);
-   if (success) {
-    setTimeout(() => {
-     // Navigate to the dashboard
-     navigate('/dashboard');
-    }, 1000);
-   }
+
+   console.log(values);
+   setTimeout(() => {
+    // Navigate to the dashboard
+    navigate('/dashboard');
+   }, 1000);
   } catch (error) {
    console.error('Error:', error);
   }
@@ -214,7 +213,7 @@ const Step5HouseManual = ({ prev, values }) => {
           htmlType="submit"
           shape="circle"
           onClick={prev}
-          loading={loading}
+          disabled={loading}
           icon={<ArrowLeftOutlined />}
          />
         </Form.Item>

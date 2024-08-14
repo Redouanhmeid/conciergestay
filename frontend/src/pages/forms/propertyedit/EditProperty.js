@@ -408,7 +408,7 @@ const EditProperty = () => {
           <Divider orientation="left">
            <Title level={4}>Les photos de votre logement</Title>
           </Divider>
-          <ImgCrop rotationSlider>
+          <ImgCrop aspect={640 / 426} rotationSlider>
            <Upload
             listType="picture-card"
             fileList={fileList}

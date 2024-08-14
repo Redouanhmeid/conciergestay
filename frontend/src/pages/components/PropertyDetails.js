@@ -17,6 +17,9 @@ import {
  Modal,
  Avatar,
  Tooltip,
+ Dropdown,
+ Popconfirm,
+ message,
 } from 'antd';
 import {
  ArrowLeftOutlined,
@@ -32,6 +35,7 @@ import MapMarker from './MapMarker';
 import NearbyPlacesCarousel from './nearbyplacescarousel';
 import { Helmet } from 'react-helmet';
 import useGetProperty from '../../hooks/useGetProperty';
+import useDeleteProperty from '../../hooks/useDeleteProperty';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useUserData } from '../../hooks/useUserData';
 import useAmenity from '../../hooks/useAmenity';
@@ -159,8 +163,10 @@ const PropertyDetails = () => {
  const { id } = queryString.parse(location.search);
  const navigate = useNavigate();
  const { property, loading } = useGetProperty(id);
+ const { deleteProperty, deletesuccess, deleteloading, deleteerror } =
+  useDeleteProperty();
  const { user } = useAuthContext();
- const User = user || JSON.parse(localStorage.getItem('user'));
+ const storedUser = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserDataById, isLoading } = useUserData();
  const { getAllAmenities, getOneAmenity } = useAmenity();
  const [amenities, setAmenities] = useState([]);
@@ -168,6 +174,71 @@ const PropertyDetails = () => {
  const [isModalVisible, setIsModalVisible] = useState(false);
  const [isARulesModalOpen, setIsARulesModalOpen] = useState(false);
  const [isFixed, setIsFixed] = useState(false);
+ const [isOwner, setIsOwner] = useState(false);
+
+ const handleDeleteClick = () => {
+  deleteProperty(id);
+ };
+
+ const confirmDelete = async () => {
+  await deleteProperty(id);
+  if (!deleteerror) {
+   message.success('Propriété supprimée avec succès.');
+   navigate(`/dashboard`);
+  } else {
+   message.error(
+    `Erreur lors de la suppression de la propriété: ${deleteerror.message}`
+   );
+  }
+ };
+
+ const cancelDelete = () => {
+  message.error('Opération de suppression annulée.');
+ };
+
+ const actionsItems = [
+  {
+   key: '1',
+   label: (
+    <Button
+     type="text"
+     icon={<i className="fa-light fa-house-lock"></i>}
+     onClick={() => navigate(`/digitalguidebook?id=${id}`)}
+    >
+     Accéder au guidebook digital
+    </Button>
+   ),
+  },
+  {
+   key: '2',
+   label: isOwner ? (
+    <Button
+     type="text"
+     icon={<i className="fa-light fa-pen-to-square"></i>}
+     onClick={() => navigate(`/editproperty?id=${id}`)}
+    >
+     Modifier
+    </Button>
+   ) : null,
+  },
+  {
+   key: '3',
+   label: isOwner ? (
+    <Popconfirm
+     title="Supprimer la propriété"
+     description="Etes-vous sûr de vouloir supprimer cette propriété ?"
+     onConfirm={confirmDelete}
+     onCancel={cancelDelete}
+     okText="Oui"
+     cancelText="Non"
+    >
+     <Button type="text" icon={<i className="fa-light fa-trash-can"></i>}>
+      Supprimer
+     </Button>
+    </Popconfirm>
+   ) : null,
+  },
+ ];
 
  const handleScroll = () => {
   const scrollTop = window.scrollY;
@@ -196,8 +267,11 @@ const PropertyDetails = () => {
  useEffect(() => {
   if (property.propertyManagerId) {
    getUserDataById(property.propertyManagerId);
+   if (userData && property.propertyManagerId === userData.id) {
+    setIsOwner(true);
+   }
   }
- }, [property.propertyManagerId]);
+ }, [property.propertyManagerId, storedUser]);
 
  useEffect(() => {
   const fetchData = async (id) => {
@@ -437,14 +511,32 @@ const PropertyDetails = () => {
       />
      </div>
      <Content className="container-poperty-details">
-      <Button
-       type="default"
-       shape="round"
-       icon={<ArrowLeftOutlined />}
-       onClick={goBack}
-      >
-       Retour
-      </Button>
+      <Flex gap="middle" align="start" justify="space-between">
+       <Button
+        type="default"
+        shape="round"
+        icon={<ArrowLeftOutlined />}
+        onClick={goBack}
+       >
+        Retour
+       </Button>
+       <div>
+        <Dropdown.Button
+         menu={{
+          items: actionsItems,
+         }}
+         className="right-button"
+        >
+         Actions
+        </Dropdown.Button>
+        {deletesuccess && <p>Propriété supprimée avec succès.</p>}
+        {deleteerror && (
+         <p>
+          Erreur lors de la suppression de la propriété: {deleteerror.message}
+         </p>
+        )}
+       </div>
+      </Flex>
       {!isLoading &&
        (userData.role === 'manager' || userData.role === 'admin') && (
         <FloatButton
@@ -576,14 +668,14 @@ const PropertyDetails = () => {
                    >
                     Voir la carte
                    </Button>
-                  ) : (
+                  ) : isOwner ? (
                    <Button
                     icon={<PlusOutlined />}
                     onClick={() => AddAmenity(amenity)}
                    >
                     Ajouter une carte
                    </Button>
-                  )}
+                  ) : null}
                  </>
                 )
                }

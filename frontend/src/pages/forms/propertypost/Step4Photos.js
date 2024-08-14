@@ -151,7 +151,7 @@ const Step4Photos = ({ next, prev, values }) => {
        <>
         <Alert
          message="Vous avez atteint le nombre maximum de photos."
-         type="success"
+         type="info"
         />
         <br />
        </>
@@ -170,7 +170,12 @@ const Step4Photos = ({ next, prev, values }) => {
        </Col>
        <Col xs={16} md={3}>
         <Form.Item>
-         <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+         <Button
+          type="primary"
+          htmlType="submit"
+          style={{ width: '100%' }}
+          loading={uploading}
+         >
           Continue {<ArrowRightOutlined />}
          </Button>
         </Form.Item>
