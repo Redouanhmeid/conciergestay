@@ -27,6 +27,7 @@ import Foot from '../../../components/common/footer';
 import MapMarker from '../../components/MapMarker';
 import dayjs from 'dayjs';
 import ImgCrop from 'antd-img-crop';
+import ReactPlayer from 'react-player';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -59,6 +60,7 @@ const EditProperty = () => {
  const [uploading, setUploading] = useState(false);
  const [successMessage, setSuccessMessage] = useState('');
  const [errorMessage, setErrorMessage] = useState('');
+ const [videoURL, setVideoURL] = useState('');
 
  const parseJSONFields = (property) => {
   const fields = [
@@ -95,6 +97,7 @@ const EditProperty = () => {
      url: url,
     }))
    );
+   setVideoURL(property.videoCheckIn || ''); // Initialize video URL state
   }
  }, [loading, property]);
 
@@ -296,6 +299,9 @@ const EditProperty = () => {
               </Col>
               <Col span={24}>
                <Checkbox value="pool">Piscine</Checkbox>
+              </Col>
+              <Col span={24}>
+               <Checkbox value="garbageCan">Benne à ordures</Checkbox>
               </Col>
              </Row>
             </Checkbox.Group>
@@ -553,6 +559,27 @@ const EditProperty = () => {
           >
            <TextArea />
           </Form.Item>
+         </Col>
+         {/* Video URL Input */}
+         <Col xs={24}>
+          <Form.Item label="Lien vidéo pour les instructions d'enregistrement">
+           <Input
+            placeholder={
+             !property.videoCheckIn
+              ? "Entrez l'URL de la vidéo (Hébergez vos vidéos sur Vimeo ou Youtube avant)"
+              : ''
+            }
+            value={videoURL}
+            onChange={(e) => setVideoURL(e.target.value)} // Handle change
+           />
+          </Form.Item>
+
+          {/* Show the video if videoURL exists */}
+          {videoURL && (
+           <div style={{ marginTop: '16px' }}>
+            <ReactPlayer url={videoURL} controls={true} width="100%" />
+           </div>
+          )}
          </Col>
         </Row>
        </Col>

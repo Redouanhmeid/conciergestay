@@ -70,8 +70,6 @@ const Step5HouseManual = ({ prev, values }) => {
  const onFinish = async (values) => {
   try {
    await createProperty(values);
-
-   console.log(values);
    setTimeout(() => {
     // Navigate to the dashboard
     navigate('/dashboard');

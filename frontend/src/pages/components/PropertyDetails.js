@@ -78,6 +78,10 @@ const getAmenityDetails = (type, item, showARulesModal) => {
     avatar: <i className="icon-style fa-light fa-water-ladder"></i>,
     title: 'Piscine',
    },
+   garbageCan: {
+    avatar: <i className="icon-style fa-light fa-trash-can"></i>,
+    title: 'Benne à ordures',
+   },
   },
   security: {
    smokeDetector: {
@@ -264,14 +268,18 @@ const PropertyDetails = () => {
  const handleARulesCancel = () => {
   setIsARulesModalOpen(false);
  };
+
  useEffect(() => {
   if (property.propertyManagerId) {
    getUserDataById(property.propertyManagerId);
-   if (userData && property.propertyManagerId === userData.id) {
-    setIsOwner(true);
-   }
   }
- }, [property.propertyManagerId, storedUser]);
+ }, [property.propertyManagerId]);
+
+ useEffect(() => {
+  if (userData && property.propertyManagerId === userData.id) {
+   setIsOwner(true);
+  }
+ }, [userData, property.propertyManagerId]);
 
  useEffect(() => {
   const fetchData = async (id) => {
@@ -610,7 +618,7 @@ const PropertyDetails = () => {
        <Divider id="basicamenities" />
        {parsedProperty.basicAmenities && (
         <Col xs={24} sm={24}>
-         <Title level={3}>Commodités de base:</Title>
+         <Title level={3}>Manuelle de la maison:</Title>
          <br />
          <Row gutter={[16, 16]}>
           {parsedProperty.basicAmenities.map((amenity, index) => {
@@ -805,7 +813,7 @@ const PropertyDetails = () => {
        <Divider id="rules" />
        {parsedProperty.houseRules && (
         <Col xs={24} sm={24}>
-         <Title level={3}>Règles de la maison:</Title>
+         <Title level={3}>Reglement intérieur:</Title>
          <br />
          <Row gutter={[0, 16]}>
           {parsedProperty.houseRules.map((houseRule, index) => {

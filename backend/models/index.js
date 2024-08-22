@@ -40,8 +40,8 @@ Amenity.belongsTo(Property, {
 });
 
 // generate tables in DB
-db.sync({ force: false }).then(() => {
- console.log('Tables Created!');
+db.sync({ alter: false }).then(() => {
+ console.log('Tables Altered and Synced!');
 });
 
 module.exports = {

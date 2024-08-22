@@ -65,6 +65,10 @@ module.exports = (db, type) => {
    type: type.STRING,
    allowNull: true,
   },
+  videoCheckIn: {
+   type: type.STRING,
+   allowNull: true,
+  },
   checkOutTime: {
    type: type.DATE,
    allowNull: true,

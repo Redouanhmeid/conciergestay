@@ -60,12 +60,16 @@ module.exports = (db, type) => {
   if (emailExists) {
    throw Error('Cette adresse email est déjà enregistré!');
   }
-  const phoneExists = await this.findOne({ where: { phone } });
-  if (phoneExists) {
-   throw Error('Ce numéro de téléphone est déjà utilisé!');
+
+  // Check if the phone already exists, but skip the check if phone is "N/A"
+  if (phone !== 'N/A') {
+   const phoneExists = await this.findOne({ where: { phone } });
+   if (phoneExists) {
+    throw Error('Ce numéro de téléphone est déjà utilisé!');
+   }
   }
 
-  // hashing password
+  // Hash  password
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
 

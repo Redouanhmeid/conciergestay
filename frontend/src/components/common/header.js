@@ -36,8 +36,9 @@ const Head = () => {
  const { logout } = useLogout();
  const { user } = useAuthContext();
  const User = user || JSON.parse(localStorage.getItem('user'));
- const { userData, getUserData } = useUserData();
+ const { userData = {}, getUserData } = useUserData();
  const navigate = useNavigate();
+
  const handleLogOut = () => {
   logout();
   navigate('/login');
@@ -71,7 +72,9 @@ const Head = () => {
    <i className="fa-light fa-right-from-bracket"></i>
   ),
  ];
+
  const [open, setOpen] = useState(false);
+
  const showDrawer = () => {
   setOpen(true);
  };
@@ -81,11 +84,13 @@ const Head = () => {
  const onClick = () => {
   onClose();
  };
+
  useEffect(() => {
   if (User && User.status !== 'EN ATTENTE') {
    getUserData(User.email);
   }
  }, [User]);
+
  return (
   <>
    <Helmet>

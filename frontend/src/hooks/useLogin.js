@@ -43,13 +43,53 @@ export const useLogin = () => {
    setIsLoading(true);
    const result = await signInWithPopup(auth, provider);
    const user = result.user;
-   // Optionally send user information to your backend if needed
-   dispatch({ type: 'LOGIN', payload: user });
-   localStorage.setItem('user', JSON.stringify(user));
+
+   // Check if the user already exists in your backend
+   const response = await fetch(`/api/v1/propertymanagers/email/${user.email}`);
+   const userData = await response.json();
+
+   if (response.ok && userData) {
+    // If user exists, log them in
+    dispatch({ type: 'LOGIN', payload: userData });
+    localStorage.setItem('user', JSON.stringify(userData));
+   } else {
+    // If user doesn't exist, sign them up
+    const dummyPassword = Math.random().toString(36).slice(-8);
+
+    const newUser = {
+     email: user.email,
+     password: dummyPassword,
+     firstname: user.displayName.split(' ')[0],
+     lastname: user.displayName.split(' ').slice(1).join(' '),
+     phone: user.phoneNumber || 'N/A',
+     avatar: user.photoURL || '/avatars/default.png',
+     isVerified: true, // Automatically verified for Google sign-ups
+    };
+
+    const signupResponse = await fetch('/api/v1/propertymanagers', {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify(newUser),
+    });
+
+    const newUserData = await signupResponse.json();
+
+    if (signupResponse.ok) {
+     dispatch({ type: 'LOGIN', payload: newUserData });
+     localStorage.setItem('user', JSON.stringify(newUserData));
+    } else {
+     throw new Error(newUserData.error || 'Sign-up failed');
+    }
+   }
+
    setIsLoading(false);
    navigate('/');
   } catch (error) {
-   setError(error.message);
+   if (error.code === 'auth/popup-closed-by-user') {
+    setError('Vous avez fermé la fenêtre de connexion. Veuillez réessayer.');
+   } else {
+    setError(error.message);
+   }
    setIsLoading(false);
   }
  };

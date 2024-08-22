@@ -175,6 +175,17 @@ const DigitalGuidebook = () => {
        {earlyCheckInParagraphs.map((paragraph, index) => (
         <Paragraph key={index}>{paragraph}</Paragraph>
        ))}
+
+       {/* Display video if videoCheckIn is not null or empty */}
+       {property.videoCheckIn && (
+        <div>
+         <Divider>
+          <i className="fa-light fa-video"></i>
+          <Text strong> Vidéo d'enregistrement</Text>
+         </Divider>
+         <ReactPlayer url={property.videoCheckIn} controls width="100%" />
+        </div>
+       )}
       </div>
      )}
      {accessToPropertyParagraphs.length > 0 && (
@@ -226,7 +237,7 @@ const DigitalGuidebook = () => {
        <Text strong> Arriver ici</Text>
       </Divider>
      ) : (
-      <div>Invalid coordinates provided.</div>
+      <div>Coordonnées fournies non valides.</div>
      )}
      {validLatitude && validLongitude && (
       <Row gutter={[16, 16]}>

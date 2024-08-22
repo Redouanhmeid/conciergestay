@@ -69,7 +69,11 @@ export const useSignup = () => {
    setMessage('Google Sign-Up Successful');
    setIsLoading(false);
   } catch (error) {
-   setError(error.message);
+   if (error.code === 'auth/popup-closed-by-user') {
+    setError("Vous avez fermé la fenêtre d'inscription. Veuillez réessayer.");
+   } else {
+    setError(error.message);
+   }
    setIsLoading(false);
   }
  };

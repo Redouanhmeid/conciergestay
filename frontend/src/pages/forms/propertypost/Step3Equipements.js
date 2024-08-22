@@ -61,6 +61,9 @@ const Step3Equipements = ({ next, prev, values }) => {
            <Col span={24}>
             <Checkbox value="pool">Piscine</Checkbox>
            </Col>
+           <Col span={24}>
+            <Checkbox value="garbageCan">Benne à ordures</Checkbox>
+           </Col>
           </Row>
          </Checkbox.Group>
         </Form.Item>

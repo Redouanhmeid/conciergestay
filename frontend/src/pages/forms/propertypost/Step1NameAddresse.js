@@ -10,6 +10,7 @@ const { Title } = Typography;
 
 const Step1NameAddresse = ({ next, handleFormData, values }) => {
  const [checkedType, setCheckedType] = useState(null);
+
  const propertyTypes = [
   {
    label: 'Maison',
@@ -27,18 +28,9 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
    icon: <i className="Radioicon fa-light fa-house-user"></i>,
   },
  ];
+
  const handleRadioChange = (e) => {
   setCheckedType(e.target.value);
- };
- const submitFormData = () => {
-  const { name, description } = values;
-  handleFormData({
-   name,
-   description,
-  });
-  values.type = checkedType;
-  console.log(values);
-  next();
  };
 
  const handlePlaceSelected = ({ latitude, longitude, placeName }) => {
@@ -47,6 +39,17 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
   values.longitude = longitude;
   values.placeName = placeName;
  };
+
+ const submitFormData = () => {
+  values.type = checkedType;
+  handleFormData({
+   name: values.name,
+   description: values.description,
+   type: values.type,
+  });
+  next();
+ };
+
  return (
   <Layout className="contentStyle">
    <Head />
@@ -61,27 +64,37 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
       <Title level={2}>Enregistrez les informations de votre propriété</Title>
       <Row gutter={[24, 0]}>
        <Col xs={24} md={24}>
-        <Title level={4}>Type de propriété</Title>
-        <Radio.Group value={checkedType} onChange={handleRadioChange}>
-         <div className="customRadioGroup">
-          {propertyTypes.map((PropertyType) => (
-           <div className="customRadioContainer" key={PropertyType.value}>
-            <Radio value={PropertyType.value}>
-             <div
-              className={
-               checkedType === PropertyType.value
-                ? 'customRadioButton customRadioChecked'
-                : 'customRadioButton'
-              }
-             >
-              {PropertyType.icon}
-              <div>{PropertyType.label}</div>
-             </div>
-            </Radio>
-           </div>
-          ))}
-         </div>
-        </Radio.Group>
+        <Form.Item
+         label="Type de propriété"
+         name="type"
+         rules={[
+          {
+           required: true,
+           message: 'Veuillez sélectionner un type de propriété!',
+          },
+         ]}
+        >
+         <Radio.Group value={checkedType} onChange={handleRadioChange}>
+          <div className="customRadioGroup">
+           {propertyTypes.map((PropertyType) => (
+            <div className="customRadioContainer" key={PropertyType.value}>
+             <Radio value={PropertyType.value}>
+              <div
+               className={
+                checkedType === PropertyType.value
+                 ? 'customRadioButton customRadioChecked'
+                 : 'customRadioButton'
+               }
+              >
+               {PropertyType.icon}
+               <div>{PropertyType.label}</div>
+              </div>
+             </Radio>
+            </div>
+           ))}
+          </div>
+         </Radio.Group>
+        </Form.Item>
        </Col>
 
        <Col xs={24} md={24}>

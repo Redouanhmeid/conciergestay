@@ -44,19 +44,21 @@ const useUploadPhotos = () => {
  };
 
  const uploadPhoto = async (photo) => {
+  const formData = new FormData();
+  formData.append('photo', photo[0].originFileObj); // Use the original file
+
   try {
    setUploading(true);
-   const compressedPhoto = await compressImage(photo[0].originFileObj);
-   const formData = new FormData();
-   formData.append('photo', compressedPhoto);
 
    const response = await fetch('/upload/single', {
     method: 'POST',
     body: formData,
    });
+
    if (!response.ok) {
     throw new Error('Failed to upload photo');
    }
+
    const data = await response.json();
    setUploading(false);
 

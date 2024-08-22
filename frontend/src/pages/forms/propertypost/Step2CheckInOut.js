@@ -13,6 +13,7 @@ import {
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import ReactPlayer from 'react-player';
 import dayjs from 'dayjs';
 
 const { Content } = Layout;
@@ -32,6 +33,7 @@ const Step2CheckInOut = ({ next, prev, values }) => {
  const [LateCheckOutPolicy, setLateCheckOutPolicy] = useState([]);
  const [BeforeCheckOut, setBeforeCheckOut] = useState([]);
  const [GuestAccessInfo, setGuestAccessInfo] = useState('');
+ const [VideoCheckIn, setVideoCheckIn] = useState('');
  const [AdditionalCheckOutInfo, setAdditionalCheckOutInfo] = useState('');
 
  const submitFormData = () => {
@@ -43,6 +45,7 @@ const Step2CheckInOut = ({ next, prev, values }) => {
   values.beforeCheckOut = BeforeCheckOut;
   values.guestAccessInfo = GuestAccessInfo;
   values.additionalCheckOutInfo = AdditionalCheckOutInfo;
+  values.videoCheckIn = VideoCheckIn;
   next();
  };
 
@@ -68,6 +71,7 @@ const Step2CheckInOut = ({ next, prev, values }) => {
        setEarlyCheckIn={setEarlyCheckIn}
        setAccessToProperty={setAccessToProperty}
        setGuestAccessInfo={setGuestAccessInfo}
+       setVideoCheckIn={setVideoCheckIn}
       />
       <CheckOutForm
        form={form}
@@ -112,7 +116,9 @@ const CheckInForm = ({
  setEarlyCheckIn,
  setAccessToProperty,
  setGuestAccessInfo,
+ setVideoCheckIn,
 }) => {
+ const [videoURL, setVideoURL] = useState('');
  const onChangeCheckIn = (time) => {
   setCheckInTime(time);
  };
@@ -122,6 +128,11 @@ const CheckInForm = ({
  const onChangeAccessToProperty = (checkedvalues) => {
   setAccessToProperty(checkedvalues);
  };
+ const handleVideoURLChange = (e) => {
+  setVideoURL(e.target.value);
+  setVideoCheckIn(e.target.value);
+ };
+
  return (
   <Row gutter={[24, 0]}>
    <Col xs={24} md={24}>
@@ -221,6 +232,24 @@ const CheckInForm = ({
      <TextArea onChange={(e) => setGuestAccessInfo(e.target.value)} />
     </Form.Item>
    </Col>
+
+   {/* Video URL Input */}
+   <Col xs={24} md={24}>
+    <Form.Item label="Lien vidéo pour les instructions d'enregistrement">
+     <Input
+      placeholder="Entrez l'URL de la vidéo (Hébergez vos vidéos sur Vimeo ou Youtube avant)"
+      value={videoURL}
+      onChange={handleVideoURLChange}
+     />
+    </Form.Item>
+   </Col>
+
+   {/* Video Embed */}
+   {videoURL && (
+    <Col xs={24} md={24}>
+     <ReactPlayer url={videoURL} controls={true} width="100%" />
+    </Col>
+   )}
   </Row>
  );
 };

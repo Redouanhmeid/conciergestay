@@ -12,7 +12,7 @@ const useNearbyPlaces = (latitude, longitude) => {
      `/api/v1/nearbyplaces/nearby-places?latitude=${latitude}&longitude=${longitude}`
     );
     if (!response.ok) {
-     throw new Error('Failed to fetch data');
+     throw new Error('Aucun endroit à proximité à montrer');
     }
     const json = await response.json();
     setData(json);
