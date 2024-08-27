@@ -47,7 +47,7 @@ const EditProperty = () => {
  const { id } = queryString.parse(location.search);
  const { property, loading } = useGetProperty(id);
  const navigate = useNavigate();
- const { uploadPhotos } = useUploadPhotos();
+ const { uploadPhotos, uploadFrontPhoto } = useUploadPhotos();
  const { updateProperty } = useUpdateProperty();
  const [showAdditionalRules, setShowAdditionalRules] = useState(false);
  const [additionalRules, setAdditionalRules] = useState('');
@@ -61,6 +61,10 @@ const EditProperty = () => {
  const [successMessage, setSuccessMessage] = useState('');
  const [errorMessage, setErrorMessage] = useState('');
  const [videoURL, setVideoURL] = useState('');
+
+ const [fileList2, setFileList2] = useState([]);
+ const [previewImage2, setPreviewImage2] = useState('');
+ const [previewOpen2, setPreviewOpen2] = useState(false);
 
  const parseJSONFields = (property) => {
   const fields = [
@@ -97,6 +101,14 @@ const EditProperty = () => {
      url: url,
     }))
    );
+   setFileList2([
+    {
+     uid: 1,
+     name: property.frontPhoto,
+     status: 'done',
+     url: property.frontPhoto,
+    },
+   ]);
    setVideoURL(property.videoCheckIn || ''); // Initialize video URL state
   }
  }, [loading, property]);
@@ -122,6 +134,34 @@ const EditProperty = () => {
   setFileList(fileList.filter((item) => item.uid !== file.uid));
  };
 
+ const handlePreview2 = async (file) => {
+  if (!file.url && !file.preview) {
+   file.preview = await getBase64(file.originFileObj);
+  }
+  setPreviewImage2(file.url || file.preview);
+  setPreviewOpen2(true);
+ };
+ const handleChange2 = ({ fileList }) => {
+  setFileList2(fileList);
+ };
+ const uploadButton = (
+  <button
+   style={{
+    border: 0,
+    background: 'none',
+   }}
+   type="button"
+  >
+   <PlusOutlined />
+   <div
+    style={{
+     marginTop: 8,
+    }}
+   >
+    Charger
+   </div>
+  </button>
+ );
  const submitFormData = async () => {
   const formData = form.getFieldsValue();
   const {
@@ -160,8 +200,16 @@ const EditProperty = () => {
     formData[key] = null;
    }
   }
+
   const filesWithOriginFileObj = fileList.filter((file) => file.originFileObj);
   const newFileList = filesWithOriginFileObj.reduce((acc, file, index) => {
+   acc[index] = file;
+   return acc;
+  }, []);
+  const filesWithOriginFileObj2 = fileList2.filter(
+   (file) => file.originFileObj
+  );
+  const newFileList2 = filesWithOriginFileObj2.reduce((acc, file, index) => {
    acc[index] = file;
    return acc;
   }, []);
@@ -170,13 +218,11 @@ const EditProperty = () => {
    .filter((file) => !file.originFileObj)
    .map((file) => file.url);
   try {
-   console.log(newFileList);
-   console.log(typeof newFileList);
    const photoUrls = await uploadPhotos(newFileList);
    photoUrls.unshift(...urlsArray);
    formData.photos = photoUrls;
-   console.log(photoUrls);
-   console.log(formData);
+   const frontPhoto = await uploadFrontPhoto(newFileList2);
+   formData.frontPhoto = frontPhoto;
    await updateProperty(id, formData);
    setSuccessMessage('Property updated successfully');
    setErrorMessage('');
@@ -560,6 +606,47 @@ const EditProperty = () => {
            <TextArea />
           </Form.Item>
          </Col>
+
+         {/* Fron image Input */}
+         <Col xs={24} md={24}>
+          <Form.Item
+           label="Photo de la façade de la résidence ou de la maison."
+           name="frontPhoto"
+          >
+           <div>
+            <ImgCrop rotationSlider>
+             <Upload
+              action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+              listType="picture-card"
+              fileList={fileList2}
+              onPreview={handlePreview2}
+              onChange={handleChange2}
+             >
+              {fileList2.length >= 1 ? null : uploadButton}
+             </Upload>
+            </ImgCrop>
+            {previewImage2 && (
+             <Image
+              style={{
+               width: '100%',
+               height: '100%',
+               objectFit: 'cover',
+              }}
+              wrapperStyle={{
+               display: 'none',
+              }}
+              preview={{
+               visible: previewOpen2,
+               onVisibleChange: (visible) => setPreviewOpen2(visible),
+               afterOpenChange: (visible) => !visible && setPreviewImage2(''),
+              }}
+              src={previewImage2}
+             />
+            )}
+           </div>
+          </Form.Item>
+         </Col>
+
          {/* Video URL Input */}
          <Col xs={24}>
           <Form.Item label="Lien vidéo pour les instructions d'enregistrement">

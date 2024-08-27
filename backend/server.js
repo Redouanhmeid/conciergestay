@@ -81,6 +81,20 @@ const avatars = multer({
   checkFileType(file, cb);
  },
 });
+const amenitiesUpload = multer({
+ storage: storage(path.join(__dirname, 'amenities')),
+ limits: { fileSize: 15 * 1024 * 1024 },
+ fileFilter: function (req, file, cb) {
+  checkFileType(file, cb);
+ },
+});
+const frontPhotoUpload = multer({
+ storage: storage(path.join(__dirname, 'frontphotos')),
+ limits: { fileSize: 15 * 1024 * 1024 },
+ fileFilter: function (req, file, cb) {
+  checkFileType(file, cb);
+ },
+});
 
 console.log('Multer configuration complete.');
 
@@ -111,7 +125,7 @@ app.post('/upload', upload.array('photos', 16), (req, res) => {
 app.use('/uploads', express.static(UPLOADS_PATH));
 
 // Handle file upload for a single photo
-app.post('/upload/single', singleUpload.single('photo'), (req, res) => {
+app.post('/places', singleUpload.single('photo'), (req, res) => {
  if (!req.file) {
   return res.status(400).json({ error: 'No file uploaded' });
  }
@@ -139,6 +153,34 @@ app.post('/upload/avatars', avatars.single('avatar'), (req, res) => {
  res.json({ file: file });
 });
 app.use('/avatars', express.static(AVATARS_PATH));
+
+app.post('/amenities', amenitiesUpload.single('photo'), (req, res) => {
+ if (!req.file) {
+  return res.status(400).json({ error: 'No file uploaded' });
+ }
+
+ const file = {
+  filename: req.file.filename,
+  url: `/amenities/${req.file.filename}`,
+ };
+
+ res.json({ file: file });
+});
+app.use('/amenities', express.static(path.join(__dirname, 'amenities')));
+
+app.post('/frontphotos', frontPhotoUpload.single('photo'), (req, res) => {
+ if (!req.file) {
+  return res.status(400).json({ error: 'No file uploaded' });
+ }
+
+ const file = {
+  filename: req.file.filename,
+  url: `/frontphotos/${req.file.filename}`,
+ };
+
+ res.json({ file: file });
+});
+app.use('/frontphotos', express.static(path.join(__dirname, 'frontphotos')));
 
 console.log('Server setup complete.');
 

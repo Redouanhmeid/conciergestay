@@ -40,7 +40,7 @@ Amenity.belongsTo(Property, {
 });
 
 // generate tables in DB
-db.sync({ alter: false }).then(() => {
+db.sync({ alter: true }).then(() => {
  console.log('Tables Altered and Synced!');
 });
 

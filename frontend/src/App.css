@@ -426,3 +426,29 @@ body {
   align-items: center;
   margin-bottom: 15px;
 }
+
+.dashboard-container {
+  padding: 2rem;
+  background-color: #f5f5f5;
+}
+
+.ant-card {
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ant-card-head {
+  font-weight: bold;
+}
+
+.ant-card-body {
+  padding: 16px;
+}
+
+.ant-typography {
+  color: #2b2c32;
+}
+
+.ant-divider {
+  margin: 8px 0;
+}

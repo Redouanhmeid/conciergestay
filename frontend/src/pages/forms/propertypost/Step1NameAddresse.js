@@ -4,6 +4,8 @@ import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import MapPicker from './MapPicker';
+import airbnb from '../../../assets/airbnb.png';
+import booking from '../../../assets/booking.png';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -46,7 +48,10 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
    name: values.name,
    description: values.description,
    type: values.type,
+   airbnbUrl: values.airbnbUrl,
+   bookingUrl: values.bookingUrl,
   });
+  console.log(values);
   next();
  };
 
@@ -123,6 +128,46 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
          ]}
         >
          <Input.TextArea onChange={handleFormData('description')} />
+        </Form.Item>
+       </Col>
+
+       <Col xs={24} md={12}>
+        <Form.Item
+         label="Airbnb URL (facultatif)"
+         name="airbnbUrl"
+         rules={[
+          {
+           type: 'url',
+           message: 'Veuillez saisir une URL valide!',
+          },
+         ]}
+        >
+         <Input
+          onChange={handleFormData('airbnbUrl')}
+          prefix={
+           <img src={airbnb} alt="prefix" style={{ width: 24, height: 24 }} />
+          }
+         />
+        </Form.Item>
+       </Col>
+
+       <Col xs={24} md={12}>
+        <Form.Item
+         label="Booking URL (facultatif)"
+         name="bookingUrl"
+         rules={[
+          {
+           type: 'url',
+           message: 'Veuillez saisir une URL valide!',
+          },
+         ]}
+        >
+         <Input
+          onChange={handleFormData('bookingUrl')}
+          prefix={
+           <img src={booking} alt="prefix" style={{ width: 24, height: 24 }} />
+          }
+         />
         </Form.Item>
        </Col>
 

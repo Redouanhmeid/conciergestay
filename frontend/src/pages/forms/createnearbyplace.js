@@ -42,7 +42,7 @@ const getBase64 = (file) =>
 
 const CreateNearbyPlace = () => {
  const { loading, error, success, createNearbyPlace } = useCreateNearbyPlace();
- const { uploadPhoto } = useUploadPhotos();
+ const { uploadPlace } = useUploadPhotos();
  const navigate = useNavigate();
  const [form] = Form.useForm();
  const [Latitude, setLatitude] = useState(null);
@@ -137,7 +137,7 @@ const CreateNearbyPlace = () => {
  );
 
  const onFinish = async (values) => {
-  const photoUrls = await uploadPhoto(Photo);
+  const photoUrls = await uploadPlace(Photo);
   values.photo = photoUrls;
   const mergedValues = {
    ...values,

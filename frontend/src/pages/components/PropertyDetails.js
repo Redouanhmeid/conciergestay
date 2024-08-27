@@ -276,10 +276,12 @@ const PropertyDetails = () => {
  }, [property.propertyManagerId]);
 
  useEffect(() => {
-  if (userData && property.propertyManagerId === userData.id) {
-   setIsOwner(true);
+  if (storedUser && userData) {
+   if (String(storedUser.email) === String(userData.email)) {
+    setIsOwner(true);
+   }
   }
- }, [userData, property.propertyManagerId]);
+ }, [storedUser, userData]);
 
  useEffect(() => {
   const fetchData = async (id) => {
@@ -404,8 +406,18 @@ const PropertyDetails = () => {
          onClick={() => window.open(`tel:+${userData.phone}`)}
         />
        </Tooltip>,
-       <Image width={32} src={airbnb} preview={false} />,
-       <Image width={32} src={booking} preview={false} />,
+       <Image
+        width={32}
+        src={airbnb}
+        preview={false}
+        onClick={() => window.open(property.airbnbUrl, '_blank')}
+       />,
+       <Image
+        width={32}
+        src={booking}
+        preview={false}
+        onClick={() => window.open(property.bookingUrl, '_blank')}
+       />,
       ]}
      >
       <Meta
@@ -595,8 +607,18 @@ const PropertyDetails = () => {
             onClick={() => window.open(`tel:+${userData.phone}`)}
            />
           </Tooltip>,
-          <Image width={32} src={airbnb} preview={false} />,
-          <Image width={32} src={booking} preview={false} />,
+          <Image
+           width={32}
+           src={airbnb}
+           preview={false}
+           onClick={() => window.open(property.airbnbUrl, '_blank')}
+          />,
+          <Image
+           width={32}
+           src={booking}
+           preview={false}
+           onClick={() => window.open(property.bookingUrl, '_blank')}
+          />,
          ]}
         >
          <Meta
@@ -700,7 +722,8 @@ const PropertyDetails = () => {
            onOk={handleOk}
            onCancel={handleCancel}
            footer={
-            (userData.role === 'manager' || userData.role === 'admin') && (
+            ((isOwner && userData.role === 'manager') ||
+             userData.role === 'admin') && (
              <Button
               icon={<SettingOutlined />}
               type="primary"

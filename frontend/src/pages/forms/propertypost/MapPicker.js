@@ -68,24 +68,51 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
  };
 
  const handleMarkerDragEnd = ({ latLng }) => {
-  if (typeof onPlaceSelected === 'function') {
-   setPlaceName('');
-   setPlaceURL('');
-   setPlaceAddress('');
-   setPlaceRating(0);
-   setPlacePhoto('');
-   setPlaceTypes([]);
-   onPlaceSelected({
-    latitude: latLng.lat() || null,
-    longitude: latLng.lng() || null,
-    placeName: placeName,
-    placeURL: placeURL,
-    placeAddress: placeAddress,
-    placeRating: placeRating,
-    placePhoto: placePhoto,
-    placeTypes: placeTypes,
-   });
-  }
+  if (!latLng) return;
+
+  const geocoder = new window.google.maps.Geocoder();
+  const newLatLng = { lat: latLng.lat(), lng: latLng.lng() };
+
+  geocoder.geocode({ location: newLatLng }, (results, status) => {
+   if (status === 'OK' && results[0]) {
+    const place = results[0];
+
+    // Find the locality (city) from address_components
+    const localityComponent = place.address_components.find((component) =>
+     component.types.includes('locality')
+    );
+
+    // Extract locality name, or fallback to formatted_address
+    const placeName = localityComponent
+     ? localityComponent.long_name
+     : place.formatted_address;
+
+    // Update the state with the new place details
+    setPosition(newLatLng);
+    setPlaceName(placeName);
+    setPlaceAddress(place.formatted_address || 'Address not available');
+    setPlaceURL(place.url || '');
+    setPlaceRating(0); // Optional, depends on geocoding result
+    setPlacePhoto(''); // Optional, depends on your requirements
+    setPlaceTypes(place.types || []);
+
+    // Trigger the callback with the updated data
+    onPlaceSelected({
+     latitude: newLatLng.lat,
+     longitude: newLatLng.lng,
+     placeName: placeName,
+     placeAddress: place.formatted_address || 'Address not available',
+     placeURL: '',
+     placeRating: 0, // Optional
+     placePhoto: '', // Optional
+     placeTypes: place.types || [],
+    });
+   } else {
+    console.error(
+     'Geocode was not successful for the following reason: ' + status
+    );
+   }
+  });
  };
 
  if (!isLoaded) {

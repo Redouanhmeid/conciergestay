@@ -13,6 +13,7 @@ import {
  Menu,
  Button,
  Space,
+ message,
 } from 'antd';
 import Logo from '../../assets/logo.png';
 import { Helmet } from 'react-helmet';
@@ -50,7 +51,19 @@ const Head = () => {
   logout();
   navigate('/signup');
  };
+ const handleReferFriend = () => {
+  const referralLink = `${window.location.origin}/signup?referralCode=${userData.id}`;
+  navigator.clipboard.writeText(referralLink);
+  message.success('Lien de parrainage copié ! Partagez-le avec vos amis.');
+ };
+
  const menuItems = [
+  userData.role === 'admin' &&
+   getItem(
+    <Link to="/adminpanel">Panneau d'administration</Link>,
+    '0',
+    <i className="fa-light fa-folder-gear"></i>
+   ),
   getItem(
    <Link to="/dashboard">Tableau de bord</Link>,
    '1',
@@ -61,8 +74,11 @@ const Head = () => {
    '2',
    <i className="fa-light fa-user-pen"></i>
   ),
-  getItem('Paramètres', '3', <i className="fa-light fa-gear"></i>),
-  getItem('Référez un ami', '4', <i className="fa-light fa-users-medical"></i>),
+  getItem(
+   <span onClick={handleReferFriend}>Référez un ami</span>,
+   '3',
+   <i className="fa-light fa-users-medical"></i>
+  ),
   {
    type: 'divider',
   },
@@ -71,10 +87,9 @@ const Head = () => {
    '5',
    <i className="fa-light fa-right-from-bracket"></i>
   ),
- ];
+ ].filter(Boolean);
 
  const [open, setOpen] = useState(false);
-
  const showDrawer = () => {
   setOpen(true);
  };

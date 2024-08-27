@@ -37,7 +37,7 @@ const EditAmenity = () => {
  const location = useLocation();
  const { id } = location.state;
  const navigate = useNavigate();
- const { uploadPhoto } = useUploadPhotos();
+ const { uploadAmenity } = useUploadPhotos();
  const { loading, error, updateAmenity, getOneAmenity } = useAmenity();
  const [form] = Form.useForm();
  const [amenity, setAmenity] = useState('');
@@ -120,7 +120,7 @@ const EditAmenity = () => {
   values.propertyId = id;
   values.media = videoUrl;
   if (mediaType === 'Photo' && fileList.length > 0) {
-   const photoUrl = await uploadPhoto(fileList);
+   const photoUrl = await uploadAmenity(fileList);
    values.media = photoUrl;
   }
   try {

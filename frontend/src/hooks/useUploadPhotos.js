@@ -43,14 +43,69 @@ const useUploadPhotos = () => {
   }
  };
 
- const uploadPhoto = async (photo) => {
+ const uploadPlace = async (photo) => {
   const formData = new FormData();
   formData.append('photo', photo[0].originFileObj); // Use the original file
 
   try {
    setUploading(true);
 
-   const response = await fetch('/upload/single', {
+   const response = await fetch('/places', {
+    method: 'POST',
+    body: formData,
+   });
+
+   if (!response.ok) {
+    throw new Error('Failed to upload photo');
+   }
+
+   const data = await response.json();
+   setUploading(false);
+
+   return data.file.url;
+  } catch (error) {
+   console.error('Error uploading photo:', error);
+   setUploading(false);
+   throw error;
+  }
+ };
+
+ const uploadAmenity = async (photo) => {
+  const formData = new FormData();
+  formData.append('photo', photo[0].originFileObj); // Use the original file
+
+  try {
+   setUploading(true);
+
+   const response = await fetch('/amenities', {
+    method: 'POST',
+    body: formData,
+   });
+
+   if (!response.ok) {
+    throw new Error('Failed to upload photo');
+   }
+
+   const data = await response.json();
+   setUploading(false);
+
+   return data.file.url;
+  } catch (error) {
+   console.error('Error uploading photo:', error);
+   setUploading(false);
+   throw error;
+  }
+ };
+
+ const uploadFrontPhoto = async (photo) => {
+  console.log(photo);
+  const formData = new FormData();
+  formData.append('photo', photo[0].originFileObj); // Use the original file
+
+  try {
+   setUploading(true);
+
+   const response = await fetch('/frontphotos', {
     method: 'POST',
     body: formData,
    });
@@ -94,7 +149,14 @@ const useUploadPhotos = () => {
   }
  };
 
- return { uploadPhotos, uploadPhoto, uploadAvatar, uploading };
+ return {
+  uploadPhotos,
+  uploadPlace,
+  uploadAmenity,
+  uploadFrontPhoto,
+  uploadAvatar,
+  uploading,
+ };
 };
 
 export default useUploadPhotos;

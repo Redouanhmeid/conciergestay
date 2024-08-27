@@ -132,6 +132,10 @@ const DigitalGuidebook = () => {
   () => parsedAmenities.find((amenity) => amenity.name === 'pool'),
   [parsedAmenities]
  );
+ const garbageCanAmenity = useMemo(
+  () => parsedAmenities.find((amenity) => amenity.name === 'garbageCan'),
+  [parsedAmenities]
+ );
 
  const additionalRules = getAdditionalRules(property?.houseRules);
  const earlyCheckInParagraphs = useMemo(
@@ -168,24 +172,30 @@ const DigitalGuidebook = () => {
         <i className="fa-light fa-key"></i>
         <Text strong> Arrivée</Text>
        </Divider>
-       <Paragraph>
-        L'heure d'enregistrement s'effectue à tout moment après{' '}
-        {formatTimeFromDatetime(property.checkInTime)}
-       </Paragraph>
-       {earlyCheckInParagraphs.map((paragraph, index) => (
-        <Paragraph key={index}>{paragraph}</Paragraph>
-       ))}
-
-       {/* Display video if videoCheckIn is not null or empty */}
-       {property.videoCheckIn && (
-        <div>
-         <Divider>
-          <i className="fa-light fa-video"></i>
-          <Text strong> Vidéo d'enregistrement</Text>
-         </Divider>
-         <ReactPlayer url={property.videoCheckIn} controls width="100%" />
-        </div>
-       )}
+       <Row gutter={[16, 16]}>
+        <Col xs={24} md={16}>
+         <Paragraph>
+          L'heure d'enregistrement s'effectue à tout moment après{' '}
+          {formatTimeFromDatetime(property.checkInTime)}
+         </Paragraph>
+         {earlyCheckInParagraphs.map((paragraph, index) => (
+          <Paragraph key={index}>{paragraph}</Paragraph>
+         ))}
+        </Col>
+        <Col xs={24} md={8}>
+         {property.frontPhoto && <Image src={property.frontPhoto} />}
+        </Col>
+       </Row>
+      </div>
+     )}
+     {/* Display video if videoCheckIn is not null or empty */}
+     {property.videoCheckIn && (
+      <div>
+       <Divider>
+        <i className="fa-light fa-video"></i>
+        <Text strong> Vidéo d'enregistrement</Text>
+       </Divider>
+       <ReactPlayer url={property.videoCheckIn} controls width="100%" />
       </div>
      )}
      {accessToPropertyParagraphs.length > 0 && (
@@ -507,6 +517,48 @@ const DigitalGuidebook = () => {
       </Col>
      )}
 
+     {garbageCanAmenity && (
+      <Col xs={24} md={8}>
+       <Divider>
+        <i className="fa-light fa-trash-can"></i>
+        <Text strong> Benne à ordures</Text>
+       </Divider>
+       <Card
+        hoverable={false}
+        style={{
+         width: '100%',
+        }}
+        cover={
+         ReactPlayer.canPlay(garbageCanAmenity.media) ? (
+          <ReactPlayer
+           url={garbageCanAmenity.media}
+           controls
+           width={'100%'}
+           height={240}
+          />
+         ) : (
+          <Image src={garbageCanAmenity.media} />
+         )
+        }
+       >
+        <Meta
+         title="Benne à ordures"
+         description={
+          <Paragraph
+           ellipsis={{
+            rows,
+            expandable: true,
+            symbol: 'lire plus',
+           }}
+          >
+           {garbageCanAmenity.description}
+          </Paragraph>
+         }
+        />
+       </Card>
+      </Col>
+     )}
+     <Col xs={24}></Col>
      {property.houseRules && (
       <Col xs={24} md={12}>
        <Divider>

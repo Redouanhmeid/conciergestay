@@ -8,6 +8,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import NotFoundPage from './pages/notfoundpage';
+import AdminPanel from './pages/adminpanel';
 import Login from './pages/forms/sign/login';
 import Signup from './pages/forms/sign/signup';
 import Account from './pages/forms/account';
@@ -29,6 +30,7 @@ import NewPassword from './pages/forms/sign/NewPassword';
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
  { path: '/dashboard', element: <PropertyManagerHome /> },
+ { path: '/adminpanel', element: <AdminPanel /> },
  { path: '/login', element: <Login /> },
  { path: '/signup', element: <Signup /> },
  { path: '/account', element: <Account /> },

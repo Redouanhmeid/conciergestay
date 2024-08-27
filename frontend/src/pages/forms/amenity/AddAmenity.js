@@ -36,7 +36,7 @@ const AddAmenity = () => {
  const location = useLocation();
  const { amenity, id } = location.state;
  const navigate = useNavigate();
- const { uploadPhoto } = useUploadPhotos();
+ const { uploadAmenity } = useUploadPhotos();
  const { loading, error, postAmenity } = useAmenity();
  const [form] = Form.useForm();
  const [name, setName] = useState('');
@@ -66,8 +66,11 @@ const AddAmenity = () => {
    case 'airConditioning':
     setName('Climatisation');
     break;
-   case 'dedicatedWorkspace':
-    setName('Espace de travail');
+   case 'pool':
+    setName('Piscine');
+    break;
+   case 'garbageCan':
+    setName('Benne à ordures');
     break;
    default:
     setName('');
@@ -117,7 +120,7 @@ const AddAmenity = () => {
   values.propertyId = id;
   values.media = videoUrl;
   if (mediaType === 'Photo' && fileList.length > 0) {
-   const photoUrl = await uploadPhoto(fileList);
+   const photoUrl = await uploadAmenity(fileList);
    values.media = photoUrl;
   }
   try {
@@ -157,7 +160,7 @@ const AddAmenity = () => {
        form={form}
       >
        <Row gutter={[32, 16]}>
-        <Col xs={24} md={12}>
+        <Col xs={24} md={14}>
          <Flex
           horizontal="true"
           gap="middle"
@@ -225,13 +228,14 @@ const AddAmenity = () => {
            />
           </Form.Item>
          )}
+         {mediaType === 'Video' &&
+          form.getFieldValue(['media']) &&
+          form.getFieldValue(['media']).trim() !== '' && (
+           <ReactPlayer url={form.getFieldValue(['media'])} controls />
+          )}
         </Col>
-        {mediaType === 'Video' &&
-         form.getFieldValue(['media']) &&
-         form.getFieldValue(['media']).trim() !== '' && (
-          <ReactPlayer url={form.getFieldValue(['media'])} controls />
-         )}
-        <Col xs={24} md={12}>
+
+        <Col xs={24} md={10}>
          <Form.Item
           label="Que souhaitez-vous dire à vos invités sur ce sujet ?"
           name="description"
@@ -243,12 +247,12 @@ const AddAmenity = () => {
          <Col xs={24} md={12}>
           <Row gutter={[16, 32]}>
            <Col xs={24} md={12}>
-            <Form.Item label="WiFi Name" name="wifiName">
+            <Form.Item label="Nom du Wi-Fi" name="wifiName">
              <Input />
             </Form.Item>
            </Col>
            <Col xs={24} md={12}>
-            <Form.Item label="WiFi Password" name="wifiPassword">
+            <Form.Item label="Mot de passe Wi-Fi" name="wifiPassword">
              <Input />
             </Form.Item>
            </Col>

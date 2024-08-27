@@ -10,6 +10,7 @@ import {
  Divider,
  Layout,
  InputNumber,
+ Select,
  Alert,
 } from 'antd';
 import {
@@ -21,8 +22,10 @@ import {
 import { Link } from 'react-router-dom';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
+import { countries } from '../../../utils/countries';
 
 const { Title, Text } = Typography;
+const { Option } = Select;
 
 const onFinishFailed = (errorInfo) => {
  console.log('Failed:', errorInfo);
@@ -35,6 +38,13 @@ const Signup = () => {
  const [firstname, setFirstName] = useState('');
  const [lastname, setLastName] = useState('');
  const [phone, setPhone] = useState('');
+ const [countryCode, setCountryCode] = useState(
+  countries.find((country) => country.name === 'Maroc').dialCode
+ ); // Default to first country
+
+ const handleCountryChange = (value) => {
+  setCountryCode(value);
+ };
 
  const handleSubmit = async (e) => {
   await signup(email, password, firstname, lastname, phone);
@@ -118,8 +128,19 @@ const Signup = () => {
        >
         <InputNumber
          type="number"
-         addonBefore={<PhoneOutlined />}
-         prefix="+"
+         addonBefore={
+          <Select
+           defaultValue={countryCode}
+           style={{ width: 140 }}
+           onChange={handleCountryChange}
+          >
+           {countries.map((country) => (
+            <Option key={country.code} value={country.dialCode}>
+             {`${country.name} ${country.dialCode}`}
+            </Option>
+           ))}
+          </Select>
+         }
          style={{ width: '100%' }}
          placeholder="N° Téléphone"
          controls={false}

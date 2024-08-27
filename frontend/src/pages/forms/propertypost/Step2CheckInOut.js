@@ -9,19 +9,36 @@ import {
  Input,
  Button,
  TimePicker,
+ Upload,
+ Image,
 } from 'antd';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
-import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import {
+ ArrowLeftOutlined,
+ ArrowRightOutlined,
+ PlusOutlined,
+} from '@ant-design/icons';
 import ReactPlayer from 'react-player';
 import dayjs from 'dayjs';
+import ImgCrop from 'antd-img-crop';
+import useUploadPhotos from '../../../hooks/useUploadPhotos';
 
 const { Content } = Layout;
 const { TextArea } = Input;
 const format = 'HH:mm';
 
+const getBase64 = (file) =>
+ new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = (error) => reject(error);
+ });
+
 const Step2CheckInOut = ({ next, prev, values }) => {
  const [form] = Form.useForm();
+ const { uploadFrontPhoto } = useUploadPhotos();
  const [CheckInTime, setCheckInTime] = useState(
   form.getFieldValue('checkInTime')
  );
@@ -35,8 +52,9 @@ const Step2CheckInOut = ({ next, prev, values }) => {
  const [GuestAccessInfo, setGuestAccessInfo] = useState('');
  const [VideoCheckIn, setVideoCheckIn] = useState('');
  const [AdditionalCheckOutInfo, setAdditionalCheckOutInfo] = useState('');
+ const [frontPhoto, setFrontPhoto] = useState('');
 
- const submitFormData = () => {
+ const submitFormData = async () => {
   values.checkInTime = CheckInTime || dayjs().hour(12).minute(0);
   values.earlyCheckIn = EarlyCheckIn;
   values.accessToProperty = AccessToProperty;
@@ -46,6 +64,12 @@ const Step2CheckInOut = ({ next, prev, values }) => {
   values.guestAccessInfo = GuestAccessInfo;
   values.additionalCheckOutInfo = AdditionalCheckOutInfo;
   values.videoCheckIn = VideoCheckIn;
+
+  if (frontPhoto) {
+   const photoUrl = await uploadFrontPhoto(frontPhoto);
+   values.frontPhoto = photoUrl;
+  }
+  console.log(values);
   next();
  };
 
@@ -72,6 +96,7 @@ const Step2CheckInOut = ({ next, prev, values }) => {
        setAccessToProperty={setAccessToProperty}
        setGuestAccessInfo={setGuestAccessInfo}
        setVideoCheckIn={setVideoCheckIn}
+       setFrontPhoto={setFrontPhoto}
       />
       <CheckOutForm
        form={form}
@@ -117,8 +142,44 @@ const CheckInForm = ({
  setAccessToProperty,
  setGuestAccessInfo,
  setVideoCheckIn,
+ setFrontPhoto,
 }) => {
  const [videoURL, setVideoURL] = useState('');
+ const [fileList, setFileList] = useState([]);
+ const [previewImage, setPreviewImage] = useState('');
+ const [previewOpen, setPreviewOpen] = useState(false);
+
+ const handlePreview = async (file) => {
+  if (!file.url && !file.preview) {
+   file.preview = await getBase64(file.originFileObj);
+  }
+  setPreviewImage(file.url || file.preview);
+  setPreviewOpen(true);
+ };
+ const handleChange = ({ fileList: newFileList }) => {
+  setFileList(newFileList);
+  setFrontPhoto(newFileList);
+ };
+
+ const uploadButton = (
+  <button
+   style={{
+    border: 0,
+    background: 'none',
+   }}
+   type="button"
+  >
+   <PlusOutlined />
+   <div
+    style={{
+     marginTop: 8,
+    }}
+   >
+    Charger
+   </div>
+  </button>
+ );
+
  const onChangeCheckIn = (time) => {
   setCheckInTime(time);
  };
@@ -230,6 +291,45 @@ const CheckInForm = ({
      name="guestAccessInfo"
     >
      <TextArea onChange={(e) => setGuestAccessInfo(e.target.value)} />
+    </Form.Item>
+   </Col>
+
+   <Col xs={24} md={24}>
+    <Form.Item
+     label="Photo de la façade de la résidence ou de la maison."
+     name="frontPhoto"
+    >
+     <div>
+      <ImgCrop rotationSlider>
+       <Upload
+        action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+        listType="picture-card"
+        fileList={fileList}
+        onPreview={handlePreview}
+        onChange={handleChange}
+       >
+        {fileList.length >= 1 ? null : uploadButton}
+       </Upload>
+      </ImgCrop>
+      {previewImage && (
+       <Image
+        style={{
+         width: '100%',
+         height: '100%',
+         objectFit: 'cover',
+        }}
+        wrapperStyle={{
+         display: 'none',
+        }}
+        preview={{
+         visible: previewOpen,
+         onVisibleChange: (visible) => setPreviewOpen(visible),
+         afterOpenChange: (visible) => !visible && setPreviewImage(''),
+        }}
+        src={previewImage}
+       />
+      )}
+     </div>
     </Form.Item>
    </Col>
 

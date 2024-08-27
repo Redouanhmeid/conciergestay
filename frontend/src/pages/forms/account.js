@@ -7,6 +7,7 @@ import {
  Form,
  Input,
  InputNumber,
+ Select,
  Button,
  Divider,
  Upload,
@@ -23,7 +24,6 @@ import {
  DownloadOutlined,
  CopyOutlined,
  ShareAltOutlined,
- PhoneOutlined,
  PlusOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
@@ -35,9 +35,12 @@ import { useAuthContext } from '../../hooks/useAuthContext';
 import { useUserData } from '../../hooks/useUserData';
 import ImgCrop from 'antd-img-crop';
 import useUploadPhotos from '../../hooks/useUploadPhotos';
+import { countries } from '../../utils/countries';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
+const { Option } = Select;
+
 const getBase64 = (file) =>
  new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -87,6 +90,9 @@ const Account = () => {
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
  const [fileList, setFileList] = useState([]);
+ const [countryCode, setCountryCode] = useState(
+  countries.find((country) => country.name === 'Maroc').dialCode
+ ); // Default to first country
 
  const showModal = () => {
   setIsModalOpen(true);
@@ -116,6 +122,9 @@ const Account = () => {
  const onAvatarChange = async () => {
   const AvatarUrl = await uploadAvatar(fileList);
   updateAvatar(userData.id, AvatarUrl);
+ };
+ const handleCountryChange = (value) => {
+  setCountryCode(value);
  };
  const uploadButton = (
   <button
@@ -203,9 +212,20 @@ const Account = () => {
        <Form.Item name="phone" label="Téléphone">
         <InputNumber
          type="number"
-         addonBefore={<PhoneOutlined />}
+         addonBefore={
+          <Select
+           defaultValue={countryCode}
+           style={{ width: 140 }}
+           onChange={handleCountryChange}
+          >
+           {countries.map((country) => (
+            <Option key={country.code} value={country.dialCode}>
+             {`${country.name} ${country.dialCode}`}
+            </Option>
+           ))}
+          </Select>
+         }
          style={{ width: '100%' }}
-         prefix="+"
          controls={false}
         />
        </Form.Item>
@@ -219,7 +239,7 @@ const Account = () => {
       <Form name="avatar" onFinish={onAvatarChange} layout="vertical">
        <Row gutter={[24, 0]}>
         <Flex align="center">
-         <Col xs={24} md={10}>
+         <Col xs={24} md={12}>
           <Form.Item name="avatar" label="Avatar">
            <div>
             <ImgCrop rotationSlider>
@@ -253,7 +273,7 @@ const Account = () => {
            </div>
           </Form.Item>
          </Col>
-         <Col xs={24} md={14}>
+         <Col xs={24} md={12}>
           <Form.Item>
            <Button type="primary" htmlType="submit">
             Changer l'avatar

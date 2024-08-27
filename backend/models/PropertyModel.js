@@ -17,6 +17,14 @@ module.exports = (db, type) => {
    type: type.STRING(50),
    allowNull: false,
   },
+  airbnbUrl: {
+   type: type.STRING,
+   allowNull: true,
+  },
+  bookingUrl: {
+   type: type.STRING,
+   allowNull: true,
+  },
   basicAmenities: {
    type: type.JSON,
    allowNull: true,
@@ -99,6 +107,10 @@ module.exports = (db, type) => {
   },
   photos: {
    type: type.JSON,
+   allowNull: true,
+  },
+  frontPhoto: {
+   type: type.STRING(90),
    allowNull: true,
   },
  });
