@@ -679,13 +679,13 @@ const DigitalGuidebook = () => {
      <MapNearbyPlaces
       latitude={property.latitude}
       longitude={property.longitude}
-      type="food"
+      type="Restaurant & Café"
      />
      <Divider />
      <NearbyPlacesCarouselByType
       latitude={property.latitude}
       longitude={property.longitude}
-      type="food"
+      type="Restaurant & Café"
      />
     </div>
    ),
@@ -699,13 +699,13 @@ const DigitalGuidebook = () => {
      <MapNearbyPlaces
       latitude={property.latitude}
       longitude={property.longitude}
-      type="point_of_interest"
+      type="Activité"
      />
      <Divider />
      <NearbyPlacesCarouselByType
       latitude={property.latitude}
       longitude={property.longitude}
-      type="point_of_interest"
+      type="Activité"
      />
     </div>
    ),
@@ -719,13 +719,13 @@ const DigitalGuidebook = () => {
      <MapNearbyPlaces
       latitude={property.latitude}
       longitude={property.longitude}
-      type="natural_feature"
+      type="Attraction"
      />
      <Divider />
      <NearbyPlacesCarouselByType
       latitude={property.latitude}
       longitude={property.longitude}
-      type="natural_feature"
+      type="Attraction"
      />
     </div>
    ),

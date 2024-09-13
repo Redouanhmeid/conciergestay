@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const useGetPropertiesByLatLon = (latitude, longitude) => {
+const useGetPropertiesByLatLon = (latitude, longitude, bounds) => {
  const [loading, setLoading] = useState(true);
  const [error, setError] = useState(null);
  const [data, setData] = useState(null);
@@ -8,9 +8,15 @@ const useGetPropertiesByLatLon = (latitude, longitude) => {
  useEffect(() => {
   const fetchData = async () => {
    try {
-    const response = await fetch(
-     `/api/v1/properties/properties?latitude=${latitude}&longitude=${longitude}`
-    );
+    let url = `/api/v1/properties/properties?latitude=${latitude}&longitude=${longitude}`;
+
+    if (bounds) {
+     const ne = bounds.getNorthEast();
+     const sw = bounds.getSouthWest();
+     url += `&ne_lat=${ne.lat()}&ne_lng=${ne.lng()}&sw_lat=${sw.lat()}&sw_lng=${sw.lng()}`;
+    }
+
+    const response = await fetch(url);
     if (!response.ok) {
      throw new Error('Failed to fetch data');
     }
@@ -24,7 +30,8 @@ const useGetPropertiesByLatLon = (latitude, longitude) => {
   };
 
   fetchData();
- }, [latitude, longitude]);
+ }, [latitude, longitude, bounds]);
+
  return { loading, error, data };
 };
 

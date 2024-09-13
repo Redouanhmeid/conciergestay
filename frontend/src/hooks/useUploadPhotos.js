@@ -44,6 +44,7 @@ const useUploadPhotos = () => {
  };
 
  const uploadPlace = async (photo) => {
+  console.log(photo);
   const formData = new FormData();
   formData.append('photo', photo[0].originFileObj); // Use the original file
 
@@ -100,9 +101,14 @@ const useUploadPhotos = () => {
  const uploadFrontPhoto = async (photo) => {
   console.log(photo);
   const formData = new FormData();
-  formData.append('photo', photo[0].originFileObj); // Use the original file
 
   try {
+   // Compress the photo before uploading
+   const compressedPhoto = await compressImage(photo[0].originFileObj);
+
+   // Append the compressed photo to the FormData
+   formData.append('photo', compressedPhoto, photo[0].name);
+
    setUploading(true);
 
    const response = await fetch('/frontphotos', {

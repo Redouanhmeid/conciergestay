@@ -1,20 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Spin, Space, Tag, Typography, Button } from 'antd';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Spin, Space, Tag, Typography, Button, message } from 'antd';
 import { RightOutlined } from '@ant-design/icons';
 import MapConfig from '../../mapconfig';
 import {
  Map,
  AdvancedMarker,
  InfoWindow,
- Pin,
- useAdvancedMarkerRef,
+ useMap,
 } from '@vis.gl/react-google-maps';
 import useGetPropertiesByLatLon from '../../hooks/useGetPropertiesByLatLon';
+import useDebounce from '../../hooks/useDebounce';
 import { useNavigate } from 'react-router-dom';
 import pinIcon from '../../assets/position.gif';
 import { filterProperties } from '../../utils/filterProperties';
 
 const { Text } = Typography;
+// Fallback center (e.g., center of Rabat)
+const FALLBACK_CENTER = { lat: 34.0209, lng: -6.8416 };
 
 const MapHome = React.memo(
  ({
@@ -26,34 +28,66 @@ const MapHome = React.memo(
   paxValue,
   checkedbasicAmenities,
  }) => {
-  const [center, setCenter] = useState({ lat: 34.0209, lng: -6.8416 });
+  const [mapCenter, setMapCenter] = useState(FALLBACK_CENTER);
   const [currentPosition, setCurrentPosition] = useState();
+  const [zoom, setZoom] = useState(13);
   const [selectedPlace, setSelectedPlace] = useState(null);
-  const { loading, data } = useGetPropertiesByLatLon(center.lat, center.lng);
+  const [mapBounds, setMapBounds] = useState(null);
+
+  const debouncedCenter = useDebounce(mapCenter, 300);
+  const debouncedBounds = useDebounce(mapBounds, 300);
+
+  const { loading, error, data } = useGetPropertiesByLatLon(
+   debouncedCenter.lat,
+   debouncedCenter.lng,
+   debouncedBounds
+  );
   const [filteredProperties, setFilteredProperties] = useState([]);
-  const [infowindowShown, setInfowindowShown] = useState(false);
+
+  const navigate = useNavigate();
+  const map = useMap();
 
   const toggleInfoWindow = (place) =>
    setSelectedPlace(
     selectedPlace && selectedPlace.id === place.id ? null : place
    );
+
   const closeInfoWindow = () => {
    setSelectedPlace(null);
-   setInfowindowShown(false);
   };
-
-  const navigate = useNavigate();
 
   const display = (id) => {
-   navigate('/propertydetails', { state: { id } });
+   navigate(`/propertydetails?id=${id}`);
   };
+
+  const onMapIdle = useCallback(() => {
+   if (map) {
+    const newCenter = map.getCenter();
+    if (newCenter) {
+     setMapCenter({ lat: newCenter.lat(), lng: newCenter.lng() });
+    }
+    setZoom(map.getZoom());
+    setMapBounds(map.getBounds());
+   }
+  }, [map]);
+
+  useEffect(() => {
+   if (map) {
+    const listeners = [
+     map.addListener('idle', onMapIdle),
+     map.addListener('dragend', onMapIdle),
+     map.addListener('zoom_changed', onMapIdle),
+    ];
+    return () => listeners.forEach((listener) => listener.remove());
+   }
+  }, [map, onMapIdle]);
 
   useEffect(() => {
    if (data) {
     setFilteredProperties(
      filterProperties(
       data,
-      city,
+      '',
       checkedTypes,
       range,
       roomValue,
@@ -62,62 +96,71 @@ const MapHome = React.memo(
      )
     );
    }
-  }, [
-   data,
-   city,
-   checkedTypes,
-   range,
-   roomValue,
-   paxValue,
-   checkedbasicAmenities,
-  ]);
+  }, [data, checkedTypes, range, roomValue, paxValue, checkedbasicAmenities]);
 
-  // Set center coordinates when city prop changes
   useEffect(() => {
-   // Set center coordinates based on the city value
-   const getCityCoordinates = async (city) => {
-    if (!city || !isLoaded || !window.google) return; // Do nothing if city is not provided
+   const getUserLocation = () => {
+    if (navigator.geolocation) {
+     navigator.geolocation.getCurrentPosition(
+      (position) => {
+       setMapCenter({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+       });
+       setCurrentPosition({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+       });
+      },
+      (error) => {
+       console.error('Error getting user location:', error);
+       message.warning(
+        "Impossible d'obtenir votre position. Utilisation de l'emplacement par défaut."
+       );
+       setMapCenter(FALLBACK_CENTER);
+      }
+     );
+    } else {
+     console.error('Geolocation is not supported by this browser.');
+     message.warning(
+      "La géolocalisation n'est pas prise en charge par votre navigateur. Utilisation de l'emplacement par défaut."
+     );
+     setMapCenter(FALLBACK_CENTER);
+    }
+   };
 
-    const placesService = new window.google.maps.places.PlacesService(
-     document.createElement('div')
-    );
-    placesService.textSearch({ query: city }, (results, status) => {
-     if (
-      status === window.google.maps.places.PlacesServiceStatus.OK &&
-      results.length > 0
-     ) {
-      const location = results[0].geometry.location;
-      setCenter({ lat: location.lat(), lng: location.lng() });
+   if (city) {
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ address: city }, (results, status) => {
+     if (status === 'OK' && results[0]) {
+      const { lat, lng } = results[0].geometry.location;
+      setMapCenter({ lat: lat(), lng: lng() });
      } else {
-      console.error('Error fetching city coordinates:', status);
+      console.error('Geocode was not successful: ' + status);
+      message.warning(
+       'Impossible de localiser la ville spécifiée. Utilisation de votre position actuelle.'
+      );
+      getUserLocation();
      }
     });
-   };
-   getCityCoordinates(city);
-  }, [city, isLoaded]);
-
-  // Get user's current position
-  useEffect(() => {
-   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-     (position) => {
-      setCenter({
-       lat: position.coords.latitude,
-       lng: position.coords.longitude,
-      });
-      setCurrentPosition({
-       lat: position.coords.latitude,
-       lng: position.coords.longitude,
-      });
-     },
-     (error) => {
-      console.error('Error getting user location:', error);
-     }
-    );
    } else {
-    console.error('Geolocation is not supported by this browser.');
+    getUserLocation();
    }
-  }, []);
+  }, [city]);
+
+  const memoizedMarkers = useMemo(() => {
+   return filteredProperties.map((place) => (
+    <AdvancedMarker
+     key={place.id}
+     position={{ lat: place.latitude, lng: place.longitude }}
+     onClick={() => toggleInfoWindow(place)}
+    >
+     <div className="pin">
+      <img src={place.photos[0]} alt={place.name} />
+     </div>
+    </AdvancedMarker>
+   ));
+  }, [filteredProperties]);
 
   if (!isLoaded) {
    return (
@@ -138,35 +181,25 @@ const MapHome = React.memo(
     }}
    >
     <Map
-     key={`${center.lat}-${center.lng}`}
      mapId={MapConfig.MAP_ID}
-     defaultZoom={13}
-     defaultCenter={center}
-     onDragend={(mapProps) =>
-      mapProps &&
-      mapProps.center &&
-      setCenter({ lat: mapProps.center.lat(), lng: mapProps.center.lng() })
-     }
+     zoom={zoom}
+     center={mapCenter}
+     onCenterChanged={() => {
+      if (map) {
+       const newCenter = map.getCenter();
+       setMapCenter({ lat: newCenter.lat(), lng: newCenter.lng() });
+      }
+     }}
     >
      <AdvancedMarker position={currentPosition}>
       <img src={pinIcon} alt="Position actuelle" />
      </AdvancedMarker>
+     {memoizedMarkers}
 
-     {filteredProperties.map((place, index) => (
-      <AdvancedMarker
-       key={index}
-       position={{ lat: place.latitude, lng: place.longitude }}
-       onClick={() => toggleInfoWindow(place)}
-      >
-       <div className="pin">
-        <img src={place.photos[0]} alt={place.name} />
-       </div>
-      </AdvancedMarker>
-     ))}
      {selectedPlace && (
       <InfoWindow
        position={{ lat: selectedPlace.latitude, lng: selectedPlace.longitude }}
-       pixelOffset={new window.google.maps.Size(0, -100)}
+       pixelOffset={new window.google.maps.Size(0, -80)}
        onCloseClick={closeInfoWindow}
       >
        <Space direction="vertical" style={{ margin: 4 }}>

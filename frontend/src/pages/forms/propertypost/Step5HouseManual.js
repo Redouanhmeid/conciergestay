@@ -71,6 +71,7 @@ const Step5HouseManual = ({ prev, values }) => {
   try {
    await createProperty(values);
    setTimeout(() => {
+    console.log(values);
     // Navigate to the dashboard
     navigate('/dashboard');
    }, 1000);

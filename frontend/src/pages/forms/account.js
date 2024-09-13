@@ -101,11 +101,12 @@ const Account = () => {
   setIsModalOpen(false);
  };
  const onFinish = (values) => {
+  const fullPhoneNumber = `${countryCode}${values.phone}`;
   updatePropertyManager(
    userData.id,
    values.firstname,
    values.lastname,
-   values.phone
+   fullPhoneNumber
   );
  };
 

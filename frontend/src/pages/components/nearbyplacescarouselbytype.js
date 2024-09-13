@@ -8,32 +8,28 @@ import {
  Typography,
  Rate,
  Grid,
+ message,
 } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import useNearbyPlaces from '../../hooks/useNearbyPlaces';
+import useNearbyPlace from '../../hooks/useNearbyPlace';
+import { useNavigate } from 'react-router-dom';
 
 const { Title } = Typography;
 const { useBreakpoint } = Grid;
 
 const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
  const slider = useRef(null);
- const { loading, error, data } = useNearbyPlaces(latitude, longitude);
+ const navigate = useNavigate();
+
+ const { loading, error, getNearbyPlacesByLatLon } = useNearbyPlace();
  const screens = useBreakpoint();
+ const [data, setData] = useState(null);
  const [filteredPlaces, setFilteredPlaces] = useState([]);
 
  const filterPlaces = useCallback(() => {
   if (Array.isArray(data) && data.length > 0) {
    if (type && type !== 'Tous') {
-    if (type === 'food') {
-     setFilteredPlaces(
-      data.filter(
-       (place) =>
-        place.types.includes('restaurant') || place.types.includes('food')
-      )
-     );
-    } else {
-     setFilteredPlaces(data.filter((place) => place.types.includes(type)));
-    }
+    setFilteredPlaces(data.filter((place) => place.types.includes(type)));
    } else {
     setFilteredPlaces(data);
    }
@@ -41,6 +37,18 @@ const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
    setFilteredPlaces([]); // Ensure it is always an array
   }
  }, [data, type]);
+
+ useEffect(() => {
+  if (latitude && longitude) {
+   getNearbyPlacesByLatLon(latitude, longitude)
+    .then((data) => {
+     setData(data);
+    })
+    .catch((err) => {
+     console.error('Échec du chargement des détails du lieu.');
+    });
+  }
+ }, []);
 
  useEffect(() => {
   filterPlaces();
@@ -63,8 +71,19 @@ const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
    return 1;
   }
   const totalSlides = filteredPlaces.length;
-  return screens.xs ? Math.min(1, totalSlides) : Math.min(5, totalSlides);
+  return screens.xs ? Math.min(2, totalSlides) : Math.min(5, totalSlides);
  };
+
+ // Check if there are no places to display
+ if (filteredPlaces.length === 0) {
+  return (
+   <div style={{ textAlign: 'center', padding: '50px' }}>
+    <Button type="primary" onClick={() => navigate('/createnearbyplace')}>
+     Enregistrer un lieu à proximité
+    </Button>
+   </div>
+  );
+ }
 
  return (
   <div style={{ position: 'relative' }}>
@@ -99,22 +118,23 @@ const Place = React.memo(({ place }) => {
  return (
   <Card
    cover={
-    <div
-     className="nearbyplacescarousel"
-     style={{ borderTopLeftRadius: '12px', borderTopRightRadius: '12px' }}
-    >
+    <div className="nearbyplacescarousel" hoverable={false}>
      <Image
       alt={place.name}
       src={place.photo}
       style={{
-       objectFit: 'cover',
+       position: 'absolute',
+       top: 0,
+       left: 0,
        width: '100%',
        height: '100%',
+       objectFit: 'cover',
+       borderRadius: 'inherit',
       }}
      />
     </div>
    }
-   style={{ width: 'calc(100% - 16px)' }}
+   style={{ width: 'calc(100% - 16px)', position: 'relative' }}
   >
    <Card.Meta
     title={place.name}

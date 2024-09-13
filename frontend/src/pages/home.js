@@ -69,7 +69,7 @@ const Home = () => {
  ];
 
  const handleCityChange = (city) => {
-  setSearchCity(city);
+  setSearchCity(city || '');
  };
  const handlePlaceSelect = () => {
   if (autocomplete.current !== null) {
@@ -170,40 +170,67 @@ const Home = () => {
       )}
       <Col xs={24} sm={24}>
        <div className="horizontal-scroll-container">
-        <Button size="large" onClick={() => handleCityChange('Casablanca')}>
+        <Button
+         size="large"
+         onClick={() => handleCityChange('Casablanca, Morocco')}
+        >
          Casablanca
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Rabat')}>
+        <Button size="large" onClick={() => handleCityChange('Rabat, Morocco')}>
          Rabat
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Marrakesh')}>
+        <Button
+         size="large"
+         onClick={() => handleCityChange('Marrakesh, Morocco')}
+        >
          Marrakesh
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Agadir')}>
+        <Button
+         size="large"
+         onClick={() => handleCityChange('Agadir, Morocco')}
+        >
          Agadir
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Tangier')}>
+        <Button
+         size="large"
+         onClick={() => handleCityChange('Tangier, Morocco')}
+        >
          Tangier
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Fes')}>
+        <Button size="large" onClick={() => handleCityChange('Fes, Morocco')}>
          Fes
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Bouznika')}>
+        <Button
+         size="large"
+         onClick={() => handleCityChange('Bouznika, Morocco')}
+        >
          Bouznika
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Kénitra')}>
+        <Button
+         size="large"
+         onClick={() => handleCityChange('Kénitra, Morocco')}
+        >
          Kénitra
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Oujda')}>
+        <Button size="large" onClick={() => handleCityChange('Oujda, Morocco')}>
          Oujda
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Tetouan')}>
+        <Button
+         size="large"
+         onClick={() => handleCityChange('Tetouan, Morocco')}
+        >
          Tetouan
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Al Hoceima')}>
+        <Button
+         size="large"
+         onClick={() => handleCityChange('Al Hoceima, Morocco')}
+        >
          Al Hoceima
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Ouarzazate')}>
+        <Button
+         size="large"
+         onClick={() => handleCityChange('Ouarzazate, Morocco')}
+        >
          Ouarzazate
         </Button>
        </div>

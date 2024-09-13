@@ -68,7 +68,6 @@ const deleteProperty = async (req, res) => {
 };
 
 const getPropertiesbyLatLon = async (propertyLat, propertyLon) => {
- console.log(JSON.stringify({ latitude: propertyLat, longitude: propertyLon }));
  const RADIUS = 10000; // Radius in meters (10 kilometers)
  // Parse latitude and longitude as floats
  const lat = parseFloat(propertyLat);
@@ -77,7 +76,6 @@ const getPropertiesbyLatLon = async (propertyLat, propertyLon) => {
  let places;
  try {
   places = await Property.findAll();
-  console.log(JSON.stringify(`Found ${places.length} places`)); // Log the number of places found
  } catch (error) {
   console.error('Error fetching places:', error); // Log any errors
   return [];
@@ -104,7 +102,6 @@ const getPropertiesbyLatLon = async (propertyLat, propertyLon) => {
 
 const getPropertiesByPlaceLatLon = async (req, res) => {
  const { latitude, longitude } = req.query;
- console.log(JSON.stringify(`Latitude: ${latitude}, Longitude: ${longitude}`)); // Add this line
 
  if (!latitude || !longitude) {
   return res.status(400).json({ error: 'Latitude and longitude are required' });

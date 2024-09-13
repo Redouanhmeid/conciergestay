@@ -24,6 +24,7 @@ const PasswordReset = PasswordResetModel(db, Sequelize);
 PropertyManager.hasMany(Property, {
  foreignKey: 'propertyManagerId',
  as: 'properties',
+ onDelete: 'CASCADE',
 });
 Property.belongsTo(PropertyManager, {
  foreignKey: 'propertyManagerId',
@@ -40,7 +41,7 @@ Amenity.belongsTo(Property, {
 });
 
 // generate tables in DB
-db.sync({ alter: true }).then(() => {
+db.sync({ alter: false }).then(() => {
  console.log('Tables Altered and Synced!');
 });
 

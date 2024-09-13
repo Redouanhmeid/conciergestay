@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
  Carousel,
  Card,
@@ -9,9 +9,10 @@ import {
  Typography,
  Rate,
  Grid,
+ message,
 } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import useNearbyPlaces from '../../hooks/useNearbyPlaces';
+import useNearbyPlace from '../../hooks/useNearbyPlace';
 
 const { Title } = Typography;
 const { useBreakpoint } = Grid;
@@ -20,7 +21,24 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
  const slider1 = useRef(null);
  const slider2 = useRef(null);
  const slider3 = useRef(null);
- const { loading, error, data } = useNearbyPlaces(latitude, longitude);
+ const slider4 = useRef(null);
+
+ const [data, setData] = useState(null);
+
+ const { loading, error, getNearbyPlacesByLatLon } = useNearbyPlace();
+
+ useEffect(() => {
+  if (latitude && longitude) {
+   getNearbyPlacesByLatLon(latitude, longitude)
+    .then((data) => {
+     setData(data);
+    })
+    .catch((err) => {
+     message.error('Échec du chargement des détails des lieux à proximité.');
+    });
+  }
+ }, [latitude, longitude]);
+
  const dataArray = data ? Object.values(data) : [];
  const screens = useBreakpoint();
 
@@ -31,16 +49,19 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
    </div>
   );
  }
- if (error) return <div>Error: {error.message}</div>;
+ if (error) return <div></div>;
 
- const PlacesToEat = dataArray.filter(
-  (place) => place.types.includes('restaurant') || place.types.includes('food')
+ const PlacesToEat = dataArray.filter((place) =>
+  place.types.includes('Restaurant & Café')
  );
  const Activities = dataArray.filter((place) =>
-  place.types.includes('point_of_interest')
+  place.types.includes('Activité')
  );
  const Attractions = dataArray.filter((place) =>
-  place.types.includes('natural_feature')
+  place.types.includes('Attraction')
+ );
+ const Malls = dataArray.filter((place) =>
+  place.types.includes('Centre commercial')
  );
 
  const getSlidesToShow = (dataArray) => {
@@ -57,82 +78,126 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
 
  return (
   <>
-   <Title level={3}>
-    <i className="fa-light fa-plate-utensils"></i> Restaurants & Cafés
-   </Title>
-   <div style={{ position: 'relative' }}>
-    <div className="nearbyplacescarouselarrow left">
-     <LeftOutlined onClick={() => slider1.current.prev()} />
-    </div>
+   {PlacesToEat.length > 0 && (
+    <>
+     <Title level={3}>
+      <i className="fa-light fa-plate-utensils"></i> Restaurants & Cafés
+     </Title>
+     <div style={{ position: 'relative' }}>
+      <div className="nearbyplacescarouselarrow left">
+       <LeftOutlined onClick={() => slider1.current.prev()} />
+      </div>
 
-    <Carousel
-     ref={slider1}
-     slidesToShow={getSlidesToShow(PlacesToEat)}
-     dots={false}
-     autoplay
-     style={{ padding: '0 28px' }}
-    >
-     {PlacesToEat.map((place, index) => (
-      <div key={index} style={{ margin: '0 12px' }}>
-       <Place place={place} />
-      </div>
-     ))}
-    </Carousel>
+      <Carousel
+       ref={slider1}
+       slidesToShow={getSlidesToShow(PlacesToEat)}
+       dots={false}
+       autoplay
+       style={{ padding: '0 28px' }}
+      >
+       {PlacesToEat.map((place, index) => (
+        <div key={index} style={{ margin: '0 12px' }}>
+         <Place place={place} />
+        </div>
+       ))}
+      </Carousel>
 
-    <div className="nearbyplacescarouselarrow right">
-     <RightOutlined onClick={() => slider1.current.next()} />
-    </div>
-   </div>
-   <br />
-   <Title level={3}>
-    <i className="fa-light fa-sun-cloud"></i> Activités
-   </Title>
-   <div style={{ position: 'relative' }}>
-    <div className="nearbyplacescarouselarrow left">
-     <LeftOutlined onClick={() => slider2.current.prev()} />
-    </div>
-    <Carousel
-     ref={slider2}
-     slidesToShow={getSlidesToShow(Activities)}
-     dots={false}
-     autoplay
-     style={{ padding: '0 28px' }}
-    >
-     {Activities.map((place, index) => (
-      <div key={index} style={{ margin: '0 12px' }}>
-       <Place place={place} />
+      <div className="nearbyplacescarouselarrow right">
+       <RightOutlined onClick={() => slider1.current.next()} />
       </div>
-     ))}
-    </Carousel>
-    <div className="nearbyplacescarouselarrow right">
-     <RightOutlined onClick={() => slider2.current.next()} />
-    </div>
-   </div>
-   <br />
-   <Title level={3}>
-    <i className="fa-light fa-camera"></i> Attractions
-   </Title>
-   <div style={{ position: 'relative' }}>
-    <div className="nearbyplacescarouselarrow left">
-     <LeftOutlined onClick={() => slider3.current.prev()} />
-    </div>
-    <Carousel
-     ref={slider3}
-     slidesToShow={getSlidesToShow(Attractions)}
-     dots={false}
-     autoplay
-     style={{ padding: '0 28px' }}
-    >
-     {Attractions.map((place, index) => (
-      <div key={index} style={{ margin: '0 12px' }}>
-       <Place place={place} />
+     </div>
+     <br />
+    </>
+   )}
+
+   {Activities.length > 0 && (
+    <>
+     <Title level={3}>
+      <i className="fa-light fa-sun-cloud"></i> Activités
+     </Title>
+     <div style={{ position: 'relative' }}>
+      <div className="nearbyplacescarouselarrow left">
+       <LeftOutlined onClick={() => slider2.current.prev()} />
       </div>
-     ))}
-    </Carousel>
-    <div className="nearbyplacescarouselarrow right">
-     <RightOutlined onClick={() => slider3.current.next()} />
-    </div>
-   </div>
+      <Carousel
+       ref={slider2}
+       slidesToShow={getSlidesToShow(Activities)}
+       dots={false}
+       autoplay
+       style={{ padding: '0 28px' }}
+      >
+       {Activities.map((place, index) => (
+        <div key={index} style={{ margin: '0 12px' }}>
+         <Place place={place} />
+        </div>
+       ))}
+      </Carousel>
+      <div className="nearbyplacescarouselarrow right">
+       <RightOutlined onClick={() => slider2.current.next()} />
+      </div>
+     </div>
+     <br />
+    </>
+   )}
+
+   {Attractions.length > 0 && (
+    <>
+     <Title level={3}>
+      <i className="fa-light fa-camera"></i> Attractions
+     </Title>
+     <div style={{ position: 'relative' }}>
+      <div className="nearbyplacescarouselarrow left">
+       <LeftOutlined onClick={() => slider3.current.prev()} />
+      </div>
+      <Carousel
+       ref={slider3}
+       slidesToShow={getSlidesToShow(Attractions)}
+       dots={false}
+       autoplay
+       style={{ padding: '0 28px' }}
+      >
+       {Attractions.map((place, index) => (
+        <div key={index} style={{ margin: '0 12px' }}>
+         <Place place={place} />
+        </div>
+       ))}
+      </Carousel>
+      <div className="nearbyplacescarouselarrow right">
+       <RightOutlined onClick={() => slider3.current.next()} />
+      </div>
+     </div>
+     <br />
+    </>
+   )}
+
+   {Malls.length > 0 && (
+    <>
+     <Title level={3}>
+      <i className="fa-light fa-store"></i> Centres commerciaux
+     </Title>
+     <div style={{ position: 'relative' }}>
+      <div className="nearbyplacescarouselarrow left">
+       <LeftOutlined onClick={() => slider4.current.prev()} />
+      </div>
+      <Carousel
+       ref={slider4}
+       slidesToShow={getSlidesToShow(Malls)}
+       dots={false}
+       autoplay
+       style={{ padding: '0 28px' }}
+      >
+       {Malls.map((place, index) => (
+        <div key={index} style={{ margin: '0 12px' }}>
+         <Place place={place} />
+        </div>
+       ))}
+      </Carousel>
+      <div className="nearbyplacescarouselarrow right">
+       <RightOutlined onClick={() => slider4.current.next()} />
+      </div>
+     </div>
+    </>
+   )}
   </>
  );
 };

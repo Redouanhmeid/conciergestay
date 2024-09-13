@@ -24,7 +24,7 @@ module.exports = (db, type) => {
    allowNull: false,
   },
   photo: {
-   type: type.STRING(90),
+   type: type.STRING(400),
    allowNull: true,
   },
   url: {

@@ -12,22 +12,22 @@ const AddPropertyCard = ({ userData }) => {
  return (
   <Card
    style={{ textAlign: 'center' }}
-   cover={<img alt="example" src={PropertyImg} />}
-   actions={[
-    <Button
-     type="primary"
-     icon={<PlusOutlined />}
-     size="large"
-     onClick={handleClick}
-    >
-     Ajoutez votre propriété
-    </Button>,
-   ]}
+   bordered={false}
+   cover={
+    <i
+     className="fa-duotone fa-light fa-house fa-6x"
+     style={{ color: '#cfaf83' }}
+    ></i>
+   }
   >
-   <Card.Meta
-    title="Ajoutez votre propriété"
-    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut placerat mi quis massa dictum, id ultrices justo malesuada."
-   />
+   <Button
+    type="primary"
+    icon={<PlusOutlined />}
+    size="large"
+    onClick={handleClick}
+   >
+    Ajoutez votre propriété
+   </Button>
   </Card>
  );
 };

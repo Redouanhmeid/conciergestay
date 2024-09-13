@@ -12,20 +12,14 @@ import {
  Upload,
  Image,
  Rate,
- Flex,
  Select,
 } from 'antd';
-import {
- ArrowLeftOutlined,
- UploadOutlined,
- PlusOutlined,
-} from '@ant-design/icons';
+import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
-import SideMenu from '../../components/sidemenu';
 import MapPicker from './propertypost/MapPicker';
 import { useNavigate } from 'react-router-dom';
-import useCreateNearbyPlace from '../../hooks/useCreateNearbyPlace';
+import useNearbyPlace from '../../hooks/useNearbyPlace';
 import useUploadPhotos from '../../hooks/useUploadPhotos';
 import ImgCrop from 'antd-img-crop';
 
@@ -39,35 +33,25 @@ const getBase64 = (file) =>
   reader.onload = () => resolve(reader.result);
   reader.onerror = (error) => reject(error);
  });
-
+const OPTIONS = [
+ 'Restaurant & Café',
+ 'Activité',
+ 'Attraction',
+ 'Centre commercial',
+];
 const CreateNearbyPlace = () => {
- const { loading, error, success, createNearbyPlace } = useCreateNearbyPlace();
+ const { loading, error, createNearbyPlace } = useNearbyPlace();
  const { uploadPlace } = useUploadPhotos();
  const navigate = useNavigate();
  const [form] = Form.useForm();
  const [Latitude, setLatitude] = useState(null);
  const [Longitude, setLongitude] = useState(null);
- const [placeName, setPlaceName] = useState('');
- const [placeURL, setPlaceURL] = useState('');
- const [placeAddress, setPlaceAddress] = useState('');
- const [placeRating, setPlaceRating] = useState(0);
  const [placePhoto, setPlacePhoto] = useState('');
- const [placeTypes, setPlaceTypes] = useState([]);
- const [Photo, setPhoto] = useState({});
+ const [filelist, setFileList] = useState([]);
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
- const [fileList, setFileList] = useState([]);
- const [disabled, setDisabled] = useState(false);
  const [selectedItems, setSelectedItems] = useState([]);
- const [OPTIONS, setOPTIONS] = useState([
-  'Restaurant & Café',
-  'Activité',
-  'Attraction',
-  'Centre commercial',
- ]);
- const filteredOptions = OPTIONS.filter((o) => !selectedItems.includes(o));
- const [submitted, setSubmitted] = useState(false);
- const [placeExists, setPlaceExists] = useState(false); // State to track if place already exists
+ const [placeExists, setPlaceExists] = useState(false);
 
  const handlePlaceSelected = ({
   latitude,
@@ -82,28 +66,21 @@ const CreateNearbyPlace = () => {
   form.resetFields();
   setLatitude(latitude);
   setLongitude(longitude);
-  setPlaceName(placeName);
-  setPlaceURL(placeURL);
-  setPlaceAddress(placeAddress);
-  setPlaceRating(placeRating);
   setPlacePhoto(placePhoto);
 
-  setDisabled(placeName || placeAddress || placeURL);
-  setFileList([]);
-  if (placeRating) {
-   setPlaceRating(placeRating);
-  } else {
-   setPlaceRating(0);
-  }
-
-  // Update form fields with the new place values
   form.setFieldsValue({
    name: placeName,
    address: placeAddress,
-   photo: placePhoto,
    url: placeURL,
-   rating: placeRating || 0,
+   rating: placeRating,
   });
+
+  // If placePhoto exists, don't allow file upload
+  if (placePhoto) {
+   setFileList([]);
+  } else {
+   setFileList([]);
+  }
  };
 
  const handlePreview = async (file) => {
@@ -113,43 +90,39 @@ const CreateNearbyPlace = () => {
   setPreviewImage(file.url || file.preview);
   setPreviewOpen(true);
  };
+
  const handleChange = ({ fileList: newFileList }) => {
   setFileList(newFileList);
-  setPhoto(newFileList);
  };
+
  const uploadButton = (
-  <button
-   style={{
-    border: 0,
-    background: 'none',
-   }}
-   type="button"
-  >
+  <div>
    <PlusOutlined />
-   <div
-    style={{
-     marginTop: 8,
-    }}
-   >
-    Charger
-   </div>
-  </button>
+   <div style={{ marginTop: 8 }}>Charger</div>
+  </div>
  );
 
  const onFinish = async (values) => {
-  const photoUrls = await uploadPlace(Photo);
-  values.photo = photoUrls;
+  if (placePhoto) {
+   values.photo = placePhoto;
+  } else {
+   const photoUrls =
+    filelist.length > 0 ? await uploadPlace(filelist) : [placePhoto];
+   values.photo = photoUrls;
+  }
   const mergedValues = {
    ...values,
    latitude: Latitude,
    longitude: Longitude,
   };
   try {
-   const isSuccess = await createNearbyPlace(mergedValues);
-   if (isSuccess) {
-    message.success('Lieu à proximité créé avec succès');
-    setFileList([]);
-   }
+   await createNearbyPlace(mergedValues);
+   message.success('Lieu à proximité créé avec succès');
+   form.resetFields();
+   setFileList([]);
+   setLatitude(null);
+   setLongitude(null);
+   setPlacePhoto('');
   } catch (error) {
    if (error.message === 'Le lieu existe déjà') {
     setPlaceExists(true);
@@ -160,20 +133,15 @@ const CreateNearbyPlace = () => {
  };
 
  useEffect(() => {
-  if (success && submitted) {
-   message.success('Lieu à proximité créé avec succès');
-   form.resetFields();
-   setFileList([]);
-   setSubmitted(false); // Reset the submitted state
+  if (placeExists) {
+   setTimeout(() => setPlaceExists(false), 3000);
   }
- }, [success, submitted]);
+ }, [placeExists]);
 
- const handleOpenImage = () => {
-  window.open(placePhoto, '_blank');
- };
  const goBack = () => {
   navigate(-1);
  };
+
  return (
   <Layout className="contentStyle">
    <Head />
@@ -194,7 +162,7 @@ const CreateNearbyPlace = () => {
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        onFinishFailed={(errorInfo) => {
+        onFinishFailed={() => {
          message.error('Veuillez remplir tous les champs requis!');
         }}
        >
@@ -205,158 +173,64 @@ const CreateNearbyPlace = () => {
           </Form.Item>
          </Col>
          <Col xs={24} md={8}>
-          <Form.Item
-           name="name"
-           label="Nom"
-           initialValue={placeName}
-           rules={[{ required: true, message: 'Veuillez entrer le nom' }]}
-          >
-           <Input disabled={disabled} />
+          <Form.Item name="name" label="Nom">
+           <Input />
           </Form.Item>
          </Col>
          <Col xs={24} md={8}>
-          <Form.Item
-           name="address"
-           label="Adress"
-           initialValue={placeAddress}
-           rules={[{ required: true, message: "Veuillez entrer l'adresse" }]}
-          >
-           <Input disabled={disabled} />
+          <Form.Item name="address" label="Adresse">
+           <Input />
           </Form.Item>
          </Col>
          <Col xs={24} md={8}>
-          <Form.Item
-           name="url"
-           label="URL de la place dans Google"
-           initialValue={placeURL}
-          >
-           <Input disabled={disabled} />
+          <Form.Item name="url" label="URL de la place dans Google">
+           <Input />
           </Form.Item>
          </Col>
          <Col xs={24} md={4}>
           <Form.Item name="rating" label="Note">
-           <Flex gap="middle">
-            <Rate
-             allowHalf
-             disabled
-             value={placeRating}
-             style={{ color: '#aa7e42' }}
-            />
-
-            {placeRating > 0 && (
-             <span style={{ fontSize: 16 }}> {placeRating}</span>
-            )}
-           </Flex>
+           <Rate allowHalf style={{ color: '#aa7e42' }} />
           </Form.Item>
          </Col>
-         <Col xs={24} md={16}>
-          <Form.Item
-           name="types"
-           label="Types"
-           rules={[
-            {
-             required: true,
-             message: 'Please select at least one type!',
-            },
-           ]}
-          >
+         <Col xs={24} md={14}>
+          <Form.Item name="types" label="Types">
            <Select
+            mode="multiple"
             value={selectedItems}
             onChange={setSelectedItems}
-            style={{
-             width: '100%',
-            }}
-            options={filteredOptions.map((item) => ({
+            style={{ width: '100%' }}
+            options={OPTIONS.map((item) => ({
              value: item,
              label: item,
             }))}
            />
           </Form.Item>
          </Col>
-         <Col xs={24} md={4}>
+         <Col xs={24} md={6}>
           <Form.Item
            name="photo"
            label="Photo"
-           valuePropName="fileList"
-           getValueFromEvent={(e) => e.fileList}
-           rules={[
-            {
-             required: true,
-             message: 'Veuillez charger une photo!',
-             validator: (_, value) =>
-              value && value.length > 0
-               ? Promise.resolve()
-               : Promise.reject('Veuillez charger une photo!'),
-            },
-           ]}
+           valuePropName="filelist"
+           getValueFromEvent={(e) => e.filelist}
           >
-           <div>
+           {placePhoto ? (
+            <Image src={placePhoto} alt="Place" style={{ width: '100%' }} />
+           ) : (
             <ImgCrop rotationSlider>
              <Upload
-              action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
               listType="picture-card"
-              fileList={fileList}
+              fileList={filelist}
               onPreview={handlePreview}
               onChange={handleChange}
              >
-              {fileList.length >= 1 ? null : uploadButton}
+              {filelist.length >= 1 ? null : uploadButton}
              </Upload>
             </ImgCrop>
-            {previewImage && (
-             <Image
-              style={{
-               width: '100%', // Ensure the image fills the circular area
-               height: '100%', // Ensure the image fills the circular area
-               objectFit: 'cover', // Crop the image to fit within the circular area
-              }}
-              wrapperStyle={{
-               display: 'none',
-              }}
-              preview={{
-               visible: previewOpen,
-               onVisibleChange: (visible) => setPreviewOpen(visible),
-               afterOpenChange: (visible) => !visible && setPreviewImage(''),
-              }}
-              src={previewImage}
-             />
-            )}
-           </div>
+           )}
           </Form.Item>
          </Col>
-
-         {placePhoto && (
-          <Col xs={24} md={24}>
-           <Title level={5}>
-            C'est la photo de couverture définie par Google{' '}
-           </Title>
-           <Row gutter={[24, 0]}>
-            <Col
-             xs={24}
-             md={10}
-             style={{
-              marginBottom: 12,
-              textAlign: 'center',
-             }}
-            >
-             <Image style={{ maxHeight: 360 }} src={placePhoto} />
-            </Col>
-            <Col xs={24} md={14}>
-             <Flex gap="middle" vertical>
-              <Text>
-               Si vous souhaitez télécharger cette photo comme couverture pour
-               votre lieu à proximité, veuillez la télécharger sur votre
-               appareil, puis la télécharger dans la section Photo.
-              </Text>
-              <Button type="dashed" onClick={handleOpenImage}>
-               Ouvrir l'image dans un nouvel onglet
-              </Button>
-             </Flex>
-            </Col>
-           </Row>
-          </Col>
-         )}
         </Row>
-        <br />
+
         {placeExists && (
          <Row justify="center">
           <Col xs={24} md={6}>
@@ -371,7 +245,6 @@ const CreateNearbyPlace = () => {
          </Row>
         )}
 
-        <br />
         <Row justify="center">
          <Col xs={24} md={6}>
           <Form.Item>

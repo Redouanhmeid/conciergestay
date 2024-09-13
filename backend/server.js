@@ -18,8 +18,56 @@ app.use(
  helmet.contentSecurityPolicy({
   directives: {
    defaultSrc: ["'self'"],
-   scriptSrc: ["'self'", "'unsafe-inline'"],
-   imgSrc: ["'self'"],
+   scriptSrc: [
+    "'self'",
+    "'unsafe-inline'",
+    "'unsafe-eval'",
+    'blob:',
+    'https://firebase.googleapis.com',
+    'https://*.firebaseio.com',
+    'https://maps.googleapis.com',
+    'https://www.googletagmanager.com',
+    'https://apis.google.com',
+   ],
+   scriptSrcElem: [
+    "'self'",
+    "'unsafe-inline'",
+    'https://firebase.googleapis.com',
+    'https://*.firebaseio.com',
+    'https://maps.googleapis.com',
+    'https://www.googletagmanager.com',
+    'https://apis.google.com',
+   ],
+   connectSrc: [
+    "'self'",
+    'https://firebase.googleapis.com',
+    'https://*.firebaseio.com',
+    'wss://*.firebaseio.com',
+    'https://*.googleapis.com',
+    'https://www.gstatic.com',
+   ],
+   imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
+   styleSrc: [
+    "'self'",
+    "'unsafe-inline'",
+    'https://fonts.googleapis.com',
+    'https://site-assets.fontawesome.com',
+   ],
+   fontSrc: [
+    "'self'",
+    'https:',
+    'data:',
+    'https://fonts.gstatic.com',
+    'https://site-assets.fontawesome.com',
+   ],
+   workerSrc: ["'self'", 'blob:'],
+   frameSrc: [
+    "'self'",
+    'https://*.firebaseapp.com',
+    'https://*.firebaseapp.com',
+   ],
+   objectSrc: ["'none'"],
+   upgradeInsecureRequests: [],
   },
  })
 );
@@ -55,20 +103,17 @@ const storage = (directory) =>
 // Determine the correct path based on the environment
 const UPLOADS_PATH =
  process.env.UPLOADS_PATH || path.join(__dirname, 'uploads');
-const PLACES_PATH = process.env.PLACES_PATH || path.join(__dirname, 'places');
 const AVATARS_PATH =
  process.env.AVATARS_PATH || path.join(__dirname, 'avatars');
+const AMENITIES_PATH =
+ process.env.AMENITIES_PATH || path.join(__dirname, 'amenities');
+const FRONTPHOTOS_PATH =
+ process.env.FRONTPHOTOS_PATH || path.join(__dirname, 'frontphotos');
+const PLACES_PATH = process.env.PLACES_PATH || path.join(__dirname, 'places');
 
 // Configure multer instances
 const upload = multer({
  storage: storage(UPLOADS_PATH),
- limits: { fileSize: 15 * 1024 * 1024 },
- fileFilter: function (req, file, cb) {
-  checkFileType(file, cb);
- },
-});
-const singleUpload = multer({
- storage: storage(PLACES_PATH),
  limits: { fileSize: 15 * 1024 * 1024 },
  fileFilter: function (req, file, cb) {
   checkFileType(file, cb);
@@ -82,15 +127,24 @@ const avatars = multer({
  },
 });
 const amenitiesUpload = multer({
- storage: storage(path.join(__dirname, 'amenities')),
- limits: { fileSize: 15 * 1024 * 1024 },
+ storage: storage(AMENITIES_PATH),
+ limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit
  fileFilter: function (req, file, cb) {
   checkFileType(file, cb);
  },
 });
+
 const frontPhotoUpload = multer({
- storage: storage(path.join(__dirname, 'frontphotos')),
- limits: { fileSize: 15 * 1024 * 1024 },
+ storage: storage(FRONTPHOTOS_PATH),
+ limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit
+ fileFilter: function (req, file, cb) {
+  checkFileType(file, cb);
+ },
+});
+
+const singleUpload = multer({
+ storage: storage(PLACES_PATH),
+ limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit
  fileFilter: function (req, file, cb) {
   checkFileType(file, cb);
  },
@@ -166,7 +220,7 @@ app.post('/amenities', amenitiesUpload.single('photo'), (req, res) => {
 
  res.json({ file: file });
 });
-app.use('/amenities', express.static(path.join(__dirname, 'amenities')));
+app.use('/amenities', express.static(AMENITIES_PATH));
 
 app.post('/frontphotos', frontPhotoUpload.single('photo'), (req, res) => {
  if (!req.file) {
@@ -180,7 +234,7 @@ app.post('/frontphotos', frontPhotoUpload.single('photo'), (req, res) => {
 
  res.json({ file: file });
 });
-app.use('/frontphotos', express.static(path.join(__dirname, 'frontphotos')));
+app.use('/frontphotos', express.static(FRONTPHOTOS_PATH));
 
 console.log('Server setup complete.');
 

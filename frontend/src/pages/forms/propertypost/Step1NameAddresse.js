@@ -51,7 +51,6 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
    airbnbUrl: values.airbnbUrl,
    bookingUrl: values.bookingUrl,
   });
-  console.log(values);
   next();
  };
 

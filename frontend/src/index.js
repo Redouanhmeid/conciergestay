@@ -8,7 +8,12 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import NotFoundPage from './pages/notfoundpage';
-import AdminPanel from './pages/adminpanel';
+import AdminPanel from './pages/admin/adminpanel';
+import Managers from './pages/admin/managers';
+import Properties from './pages/admin/properties';
+import NearbyPlaces from './pages/admin/nearbyplaces';
+import Manager from './pages/admin/manager';
+import NearbyPlace from './pages/admin/nearbyplace';
 import Login from './pages/forms/sign/login';
 import Signup from './pages/forms/sign/signup';
 import Account from './pages/forms/account';
@@ -31,6 +36,11 @@ const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
  { path: '/dashboard', element: <PropertyManagerHome /> },
  { path: '/adminpanel', element: <AdminPanel /> },
+ { path: '/managers', element: <Managers /> },
+ { path: '/properties', element: <Properties /> },
+ { path: '/nearbyplaces', element: <NearbyPlaces /> },
+ { path: '/nearbyplace', element: <NearbyPlace /> },
+ { path: '/manager', element: <Manager /> },
  { path: '/login', element: <Login /> },
  { path: '/signup', element: <Signup /> },
  { path: '/account', element: <Account /> },

@@ -3,6 +3,7 @@ import axios from 'axios';
 
 export const useUserData = () => {
  const [userData, setUserData] = useState({});
+ const [Managers, setManagers] = useState({});
  const [isLoading, setIsLoading] = useState(true);
  const [success, setSuccess] = useState(false);
  const [error, setError] = useState(false);
@@ -34,14 +35,13 @@ export const useUserData = () => {
     requestCert: false, // Add when working with HTTPS sites
     agent: false, // Add when working with HTTPS sites
    });
-
    setUserData(response.data);
+   setIsLoading(false);
   } catch (error) {
    console.error('Error fetching user data:', error);
    setError(true);
    setErrorMsg(error.message);
-  } finally {
-   setIsLoading(false); // End loading state here
+   setIsLoading(false);
   }
  });
 
@@ -187,9 +187,74 @@ export const useUserData = () => {
   }
  };
 
+ const fetchAllManagers = async () => {
+  try {
+   const response = await axios.get(`/api/v1/propertymanagers`);
+   setManagers(response.data);
+   setIsLoading(false);
+  } catch (err) {
+   console.error('Error fetching managers:', err);
+   setError(err.message);
+   setIsLoading(false);
+  }
+ };
+
+ const fetchManagerById = async (id) => {
+  try {
+   const response = await axios.get(`/api/v1/propertymanagers/${id}`);
+   return response.data;
+  } catch (err) {
+   console.error('Error fetching manager:', err);
+   return null;
+  }
+ };
+
+ const deleteManagerById = async (id) => {
+  setIsLoading(true);
+  setSuccess(false);
+  setError(null);
+  try {
+   await axios.delete(`/api/v1/propertymanagers/${id}`);
+   setSuccess(true);
+   setIsLoading(false);
+  } catch (err) {
+   setError(err);
+   setIsLoading(false);
+  }
+ };
+
+ // New function to verify a manager
+ const verifyManager = async (id) => {
+  setIsLoading(true);
+  setSuccess(false);
+  setError(false);
+  setErrorMsg('');
+
+  try {
+   const response = await axios.patch(`/api/v1/propertymanagers/${id}/verify`, {
+    rejectUnauthorized: false, // Add when working with HTTPS sites
+    requestCert: false, // Add when working with HTTPS sites
+    agent: false, // Add when working with HTTPS sites
+   });
+
+   if (response.status === 200) {
+    setSuccess(true);
+   } else {
+    throw new Error('Failed to verify the manager');
+   }
+  } catch (err) {
+   console.error('Error verifying the manager:', err);
+   setError(true);
+   setErrorMsg(err.message || 'An error occurred while verifying the manager');
+  } finally {
+   setIsLoading(false);
+  }
+ };
+
  return {
   isLoading,
   userData,
+  Managers,
   getUserData,
   getUserDataById,
   updatePropertyManager,
@@ -198,6 +263,10 @@ export const useUserData = () => {
   requestPasswordReset,
   verifyResetCode,
   resetPassword,
+  fetchAllManagers,
+  fetchManagerById,
+  deleteManagerById,
+  verifyManager,
   success,
   error,
   errorMsg,

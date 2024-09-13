@@ -180,10 +180,6 @@ const PropertyDetails = () => {
  const [isFixed, setIsFixed] = useState(false);
  const [isOwner, setIsOwner] = useState(false);
 
- const handleDeleteClick = () => {
-  deleteProperty(id);
- };
-
  const confirmDelete = async () => {
   await deleteProperty(id);
   if (!deleteerror) {
@@ -215,7 +211,7 @@ const PropertyDetails = () => {
   },
   {
    key: '2',
-   label: isOwner ? (
+   label: (
     <Button
      type="text"
      icon={<i className="fa-light fa-pen-to-square"></i>}
@@ -223,11 +219,11 @@ const PropertyDetails = () => {
     >
      Modifier
     </Button>
-   ) : null,
+   ),
   },
   {
    key: '3',
-   label: isOwner ? (
+   label: (
     <Popconfirm
      title="Supprimer la propriété"
      description="Etes-vous sûr de vouloir supprimer cette propriété ?"
@@ -240,7 +236,7 @@ const PropertyDetails = () => {
       Supprimer
      </Button>
     </Popconfirm>
-   ) : null,
+   ),
   },
  ];
 
@@ -475,7 +471,7 @@ const PropertyDetails = () => {
            }}
           >
            <i className="Anchoricon fa-light fa-wifi"></i>
-           <span>Commodités</span>
+           <span>Manuelle de la maison</span>
           </div>
          ),
         },
@@ -491,7 +487,7 @@ const PropertyDetails = () => {
            }}
           >
            <i className="Anchoricon fa-light fa-map-marker-alt"></i>
-           <span>Lieux</span>
+           <span>Lieux à proximité</span>
           </div>
          ),
         },
@@ -523,7 +519,7 @@ const PropertyDetails = () => {
            }}
           >
            <i className="Anchoricon fa-light fa-ban-smoking"></i>
-           <span>Règles</span>
+           <span>Reglement intérieur</span>
           </div>
          ),
         },
@@ -541,14 +537,16 @@ const PropertyDetails = () => {
         Retour
        </Button>
        <div>
-        <Dropdown.Button
-         menu={{
-          items: actionsItems,
-         }}
-         className="right-button"
-        >
-         Actions
-        </Dropdown.Button>
+        {isOwner && (
+         <Dropdown.Button
+          menu={{
+           items: actionsItems,
+          }}
+          className="right-button"
+         >
+          Actions
+         </Dropdown.Button>
+        )}
         {deletesuccess && <p>Propriété supprimée avec succès.</p>}
         {deleteerror && (
          <p>
@@ -600,26 +598,30 @@ const PropertyDetails = () => {
          style={{ width: '100%', marginTop: 16 }}
          loading={loading}
          actions={[
-          <Tooltip title={`+${userData.phone}`}>
+          <Tooltip title={`${userData.phone}`}>
            <i
             key="Phone"
             className="Hosticon fa-light fa-mobile"
             onClick={() => window.open(`tel:+${userData.phone}`)}
            />
           </Tooltip>,
-          <Image
-           width={32}
-           src={airbnb}
-           preview={false}
-           onClick={() => window.open(property.airbnbUrl, '_blank')}
-          />,
-          <Image
-           width={32}
-           src={booking}
-           preview={false}
-           onClick={() => window.open(property.bookingUrl, '_blank')}
-          />,
-         ]}
+          property.airbnbUrl && (
+           <Image
+            width={32}
+            src={airbnb}
+            preview={false}
+            onClick={() => window.open(property.airbnbUrl, '_blank')}
+           />
+          ),
+          property.bookingUrl && (
+           <Image
+            width={32}
+            src={booking}
+            preview={false}
+            onClick={() => window.open(property.bookingUrl, '_blank')}
+           />
+          ),
+         ].filter(Boolean)}
         >
          <Meta
           avatar={
@@ -660,24 +662,7 @@ const PropertyDetails = () => {
              <Card
               bordered={false}
               hoverable={false}
-              cover={
-               <div
-                onClick={() =>
-                 amenityExists &&
-                 (userData.role === 'manager' || userData.role === 'admin') &&
-                 showModal(amenity)
-                }
-                style={{
-                 cursor:
-                  amenityExists &&
-                  (userData.role === 'manager' || userData.role === 'admin')
-                   ? 'pointer'
-                   : 'default',
-                }}
-               >
-                {avatar}
-               </div>
-              }
+              cover={avatar}
               style={{
                textAlign: 'center',
                width: '90%',
@@ -689,7 +674,7 @@ const PropertyDetails = () => {
               <Meta
                title={title}
                description={
-                (userData.role === 'manager' || userData.role === 'admin') && (
+                isOwner && (
                  <>
                   {amenityExists ? (
                    <Button
@@ -698,14 +683,14 @@ const PropertyDetails = () => {
                    >
                     Voir la carte
                    </Button>
-                  ) : isOwner ? (
+                  ) : (
                    <Button
                     icon={<PlusOutlined />}
                     onClick={() => AddAmenity(amenity)}
                    >
                     Ajouter une carte
                    </Button>
-                  ) : null}
+                  )}
                  </>
                 )
                }
@@ -722,8 +707,7 @@ const PropertyDetails = () => {
            onOk={handleOk}
            onCancel={handleCancel}
            footer={
-            ((isOwner && userData.role === 'manager') ||
-             userData.role === 'admin') && (
+            isOwner && (
              <Button
               icon={<SettingOutlined />}
               type="primary"

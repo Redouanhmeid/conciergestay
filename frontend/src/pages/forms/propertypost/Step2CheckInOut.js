@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
  Layout,
  Form,
@@ -11,6 +11,7 @@ import {
  TimePicker,
  Upload,
  Image,
+ Spin,
 } from 'antd';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
@@ -53,24 +54,34 @@ const Step2CheckInOut = ({ next, prev, values }) => {
  const [VideoCheckIn, setVideoCheckIn] = useState('');
  const [AdditionalCheckOutInfo, setAdditionalCheckOutInfo] = useState('');
  const [frontPhoto, setFrontPhoto] = useState('');
+ const [loading, setLoading] = useState(false);
 
  const submitFormData = async () => {
-  values.checkInTime = CheckInTime || dayjs().hour(12).minute(0);
-  values.earlyCheckIn = EarlyCheckIn;
-  values.accessToProperty = AccessToProperty;
-  values.checkOutTime = CheckOutTime || dayjs().hour(12).minute(0);
-  values.lateCheckOutPolicy = LateCheckOutPolicy;
-  values.beforeCheckOut = BeforeCheckOut;
-  values.guestAccessInfo = GuestAccessInfo;
-  values.additionalCheckOutInfo = AdditionalCheckOutInfo;
-  values.videoCheckIn = VideoCheckIn;
+  try {
+   setLoading(true); // Start loading
 
-  if (frontPhoto) {
-   const photoUrl = await uploadFrontPhoto(frontPhoto);
-   values.frontPhoto = photoUrl;
+   values.checkInTime = CheckInTime || dayjs().hour(12).minute(0);
+   values.earlyCheckIn = EarlyCheckIn;
+   values.accessToProperty = AccessToProperty;
+   values.checkOutTime = CheckOutTime || dayjs().hour(12).minute(0);
+   values.lateCheckOutPolicy = LateCheckOutPolicy;
+   values.beforeCheckOut = BeforeCheckOut;
+   values.guestAccessInfo = GuestAccessInfo;
+   values.additionalCheckOutInfo = AdditionalCheckOutInfo;
+   values.videoCheckIn = VideoCheckIn;
+
+   if (frontPhoto) {
+    const photoUrl = await uploadFrontPhoto(frontPhoto);
+    values.frontPhoto = photoUrl;
+   }
+   console.log(values);
+
+   next(); // Proceed to the next step
+  } catch (error) {
+   console.error('Error submitting form:', error);
+  } finally {
+   setLoading(false); // End loading
   }
-  console.log(values);
-  next();
  };
 
  return (
@@ -78,54 +89,56 @@ const Step2CheckInOut = ({ next, prev, values }) => {
    <Head />
    <Layout>
     <Content className="container">
-     <Form
-      name="step2"
-      layout="vertical"
-      onFinish={submitFormData}
-      size="large"
-      form={form}
-      initialValues={{
-       ['checkInTime']: dayjs().hour(12).minute(0),
-       ['checkOutTime']: dayjs().hour(12).minute(0),
-      }}
-     >
-      <CheckInForm
+     <Spin spinning={loading} tip="Soumission en cours...">
+      <Form
+       name="step2"
+       layout="vertical"
+       onFinish={submitFormData}
+       size="large"
        form={form}
-       setCheckInTime={setCheckInTime}
-       setEarlyCheckIn={setEarlyCheckIn}
-       setAccessToProperty={setAccessToProperty}
-       setGuestAccessInfo={setGuestAccessInfo}
-       setVideoCheckIn={setVideoCheckIn}
-       setFrontPhoto={setFrontPhoto}
-      />
-      <CheckOutForm
-       form={form}
-       setCheckOutTime={setCheckOutTime}
-       setBeforeCheckOut={setBeforeCheckOut}
-       setLateCheckOutPolicy={setLateCheckOutPolicy}
-       setAdditionalCheckOutInfo={setAdditionalCheckOutInfo}
-      />
-      <br />
-      <Row justify="end">
-       <Col xs={8} md={1}>
-        <Form.Item>
-         <Button
-          htmlType="submit"
-          shape="circle"
-          onClick={prev}
-          icon={<ArrowLeftOutlined />}
-         />
-        </Form.Item>
-       </Col>
-       <Col xs={16} md={3}>
-        <Form.Item>
-         <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-          Continue {<ArrowRightOutlined />}
-         </Button>
-        </Form.Item>
-       </Col>
-      </Row>
-     </Form>
+       initialValues={{
+        ['checkInTime']: dayjs().hour(12).minute(0),
+        ['checkOutTime']: dayjs().hour(12).minute(0),
+       }}
+      >
+       <CheckInForm
+        form={form}
+        setCheckInTime={setCheckInTime}
+        setEarlyCheckIn={setEarlyCheckIn}
+        setAccessToProperty={setAccessToProperty}
+        setGuestAccessInfo={setGuestAccessInfo}
+        setVideoCheckIn={setVideoCheckIn}
+        setFrontPhoto={setFrontPhoto}
+       />
+       <CheckOutForm
+        form={form}
+        setCheckOutTime={setCheckOutTime}
+        setBeforeCheckOut={setBeforeCheckOut}
+        setLateCheckOutPolicy={setLateCheckOutPolicy}
+        setAdditionalCheckOutInfo={setAdditionalCheckOutInfo}
+       />
+       <br />
+       <Row justify="end">
+        <Col xs={8} md={1}>
+         <Form.Item>
+          <Button
+           htmlType="submit"
+           shape="circle"
+           onClick={prev}
+           icon={<ArrowLeftOutlined />}
+          />
+         </Form.Item>
+        </Col>
+        <Col xs={16} md={3}>
+         <Form.Item>
+          <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+           Continue {<ArrowRightOutlined />}
+          </Button>
+         </Form.Item>
+        </Col>
+       </Row>
+      </Form>
+     </Spin>
     </Content>
    </Layout>
    <Foot />
@@ -149,13 +162,13 @@ const CheckInForm = ({
  const [previewImage, setPreviewImage] = useState('');
  const [previewOpen, setPreviewOpen] = useState(false);
 
- const handlePreview = async (file) => {
+ const handlePreview = useCallback(async (file) => {
   if (!file.url && !file.preview) {
    file.preview = await getBase64(file.originFileObj);
   }
   setPreviewImage(file.url || file.preview);
   setPreviewOpen(true);
- };
+ }, []);
  const handleChange = ({ fileList: newFileList }) => {
   setFileList(newFileList);
   setFrontPhoto(newFileList);
@@ -302,7 +315,6 @@ const CheckInForm = ({
      <div>
       <ImgCrop rotationSlider>
        <Upload
-        action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
         listType="picture-card"
         fileList={fileList}
         onPreview={handlePreview}

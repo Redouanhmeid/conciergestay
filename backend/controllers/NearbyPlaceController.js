@@ -97,8 +97,11 @@ const deleteNearbyPlace = async (req, res) => {
  }
 };
 
-const getNearbyPlacesbyLatLon = async (propertyLat, propertyLon) => {
- console.log(JSON.stringify({ latitude: propertyLat, longitude: propertyLon }));
+const getNearbyPlacesbyLatLon = async (
+ propertyLat,
+ propertyLon,
+ isVerified = true
+) => {
  const RADIUS = 10000; // Radius in meters (10 kilometers)
  // Parse latitude and longitude as floats
  const lat = parseFloat(propertyLat);
@@ -106,8 +109,11 @@ const getNearbyPlacesbyLatLon = async (propertyLat, propertyLon) => {
  // Get all places
  let places;
  try {
-  places = await NearbyPlace.findAll();
-  console.log(JSON.stringify(`Found ${places.length} places`)); // Log the number of places found
+  places = await NearbyPlace.findAll({
+   where: {
+    isVerified: isVerified, // This will filter places based on the isVerified status
+   },
+  });
  } catch (error) {
   console.error('Error fetching places:', error); // Log any errors
   return [];
@@ -134,7 +140,6 @@ const getNearbyPlacesbyLatLon = async (propertyLat, propertyLon) => {
 
 const getNearbyPlacesByPlaceLatLon = async (req, res) => {
  const { latitude, longitude } = req.query;
- console.log(JSON.stringify(`Latitude: ${latitude}, Longitude: ${longitude}`)); // Add this line
 
  if (!latitude || !longitude) {
   return res.status(400).json({ error: 'Latitude and longitude are required' });

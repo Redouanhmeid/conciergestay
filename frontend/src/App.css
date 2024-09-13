@@ -93,11 +93,13 @@ body {
   right: 0;
 }
 .nearbyplacescarousel{
+  position: relative;
   height: 180px;
   overflow: hidden;
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
+  border-radius: 12px 12px 0 0;
+}
+.nearbyplacescarousel .ant-image{
+  position: initial;
 }
 .pin {
   cursor: 'pointer';
@@ -136,11 +138,13 @@ body {
     height: 44px !important;
   }
   .nearbyplacescarousel{
+    position: relative;
     height: 120px;
     overflow: hidden;
-    display: flex !important;
-    justify-content: center;
-    align-items: center;
+    border-radius: 12px 12px 0 0;
+  }
+  .nearbyplacescarousel .ant-image{
+    position: initial;
   }
   .container {
     padding: 2em 2em;
@@ -328,7 +332,7 @@ body {
 
 .Hosticon {
   color: #2b2c32;
-  font-size: 36px;
+  font-size: 32px;
 }
 
 .Dashicon {
@@ -361,13 +365,26 @@ body {
   .host-card-mobile {
     display: none;
   }
+  
 }
 @media (max-width: 767px) {
   .host-card {
     display: none;
   }
+  
 }
-
+.host-card-mobile .ant-card-body {
+  padding: 12px;
+}
+.host-card .ant-card-body {
+  padding: 12px;
+}
+.host-card-mobile .ant-card-actions li {
+  margin: 8px 0;
+}
+.host-card .ant-card-actions li {
+  margin: 8px 0;
+}
 
 /* Login.css */
 .sign-layout {
@@ -427,28 +444,23 @@ body {
   margin-bottom: 15px;
 }
 
-.dashboard-container {
-  padding: 2rem;
-  background-color: #f5f5f5;
-}
-
-.ant-card {
+.custom-stat-card {
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.ant-card-head {
+.custom-stat-card .ant-card-head {
   font-weight: bold;
 }
 
-.ant-card-body {
+.custom-stat-card .ant-card-body {
   padding: 16px;
 }
 
-.ant-typography {
+.custom-stat-card .ant-typography {
   color: #2b2c32;
 }
 
-.ant-divider {
+.custom-stat-card .ant-divider {
   margin: 8px 0;
 }

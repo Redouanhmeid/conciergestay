@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Spin, Space, Image, Typography, Button } from 'antd';
+import { Spin, Space, Image, Typography, Button, Alert, message } from 'antd';
 import MapConfig from '../../mapconfig';
 import {
  APIProvider,
@@ -8,7 +8,7 @@ import {
  InfoWindow,
 } from '@vis.gl/react-google-maps';
 import { useGoogleMapsLoader } from '../../services/GoogleMapService';
-import useNearbyPlaces from '../../hooks/useNearbyPlaces';
+import useNearbyPlace from '../../hooks/useNearbyPlace';
 
 // Define libraries as a const variable outside of the component
 const libraries = ['places', 'geometry'];
@@ -16,7 +16,10 @@ const { Text, Paragraph } = Typography;
 
 const MapNearbyPlaces = React.memo(({ latitude, longitude, type }) => {
  const isLoaded = useGoogleMapsLoader();
- const { data: places = [], loading } = useNearbyPlaces(latitude, longitude);
+
+ const { loading, error, getNearbyPlacesByLatLon } = useNearbyPlace();
+
+ const [places, setPlaces] = useState(null);
  const [selectedPlace, setSelectedPlace] = useState(null);
  const [filteredPlaces, setFilteredPlaces] = useState([]);
 
@@ -37,14 +40,24 @@ const MapNearbyPlaces = React.memo(({ latitude, longitude, type }) => {
  };
 
  useEffect(() => {
+  if (latitude && longitude) {
+   console.log('places : ', places);
+   getNearbyPlacesByLatLon(latitude, longitude)
+    .then((data) => {
+     setPlaces(data);
+    })
+    .catch((err) => {
+     message.error('Échec du chargement des détails du lieu.');
+    });
+  }
+ }, [latitude, longitude]);
+
+ useEffect(() => {
   if (places && places.length > 0) {
    if (type && type !== 'Tous') {
-    if (type === 'food') {
+    if (type === 'Restaurant & Café') {
      setFilteredPlaces(
-      places.filter(
-       (place) =>
-        place.types.includes('restaurant') || place.types.includes('food')
-      )
+      places.filter((place) => place.types.includes('Restaurant & Café'))
      );
     } else {
      setFilteredPlaces(places.filter((place) => place.types.includes(type)));
@@ -54,6 +67,7 @@ const MapNearbyPlaces = React.memo(({ latitude, longitude, type }) => {
    }
   }
  }, [places, type]);
+
  if (!isLoaded || loading) {
   return (
    <div className="loading">
@@ -61,6 +75,16 @@ const MapNearbyPlaces = React.memo(({ latitude, longitude, type }) => {
    </div>
   );
  }
+
+ // Check if there are no places to display
+ if (filteredPlaces.length === 0) {
+  return (
+   <div style={{ textAlign: 'center', padding: '50px' }}>
+    <Alert description="Aucun lieu à proximité n'est enregistré" />
+   </div>
+  );
+ }
+
  return (
   <APIProvider>
    <div

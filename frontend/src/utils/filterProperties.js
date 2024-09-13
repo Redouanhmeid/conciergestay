@@ -12,7 +12,7 @@ export const filterProperties = (
 
  let filtered = properties;
 
- if (city.trim()) {
+ if (typeof city === 'string' && city.trim()) {
   filtered = filtered.filter(
    (property) =>
     property.placeName &&

@@ -47,7 +47,8 @@ const Signup = () => {
  };
 
  const handleSubmit = async (e) => {
-  await signup(email, password, firstname, lastname, phone);
+  const fullPhoneNumber = `${countryCode}${phone}`;
+  await signup(email, password, firstname, lastname, fullPhoneNumber);
  };
 
  const handleGoogleSignup = async () => {

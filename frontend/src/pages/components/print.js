@@ -13,6 +13,7 @@ import {
  Divider,
  Avatar,
  Button,
+ message,
 } from 'antd';
 import Logo from '../../assets/logo.png';
 import ClientConfig from '../../ClientConfig';
@@ -37,7 +38,7 @@ import {
 } from '../../utils/iconMappings';
 import ReactPlayer from 'react-player';
 import ReactToPrint from 'react-to-print';
-import useNearbyPlaces from '../../hooks/useNearbyPlaces';
+import useNearbyPlace from '../../hooks/useNearbyPlace';
 
 const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -77,12 +78,22 @@ const Print = ({ property, amenities }) => {
  const [isLoaded, setIsLoaded] = useState(false);
  const { userData, getUserDataById } = useUserData();
  const [staticMapUrl, setStaticMapUrl] = useState('');
- const { loading, error, data } = useNearbyPlaces(
-  property.latitude,
-  property.longitude
- );
+ const { loading, error, getNearbyPlacesByLatLon } = useNearbyPlace();
 
  const apiKey = MapConfig.REACT_APP_GOOGLE_MAP_API_KEY;
+ const [data, setData] = useState(null);
+
+ useEffect(() => {
+  if (property.latitude && property.longitude) {
+   getNearbyPlacesByLatLon(property.latitude, property.longitude)
+    .then((data) => {
+     setData(data);
+    })
+    .catch((err) => {
+     message.error('Échec du chargement des détails du lieu.');
+    });
+  }
+ }, [property.latitude, property.longitude]);
 
  useEffect(() => {
   if (property.propertyManagerId) {
@@ -167,7 +178,7 @@ const Print = ({ property, amenities }) => {
     <Button
      onClick={generatePdf}
      disabled={!isLoaded}
-     icon={<i class="fa-light fa-download"></i>}
+     icon={<i className="fa-light fa-download"></i>}
      type="primary"
     >
      Télécharger PDF
@@ -190,6 +201,7 @@ const Print = ({ property, amenities }) => {
      <RestaurantsCafes nearbyPlaces={data} />
      <Activities nearbyPlaces={data} />
      <Attractions nearbyPlaces={data} />
+     <Malls nearbyPlaces={data} />
     </Content>
     <br />
     <Footer style={{ textAlign: 'center' }}>
@@ -836,12 +848,7 @@ const RestaurantsCafes = React.memo(({ nearbyPlaces }) => {
  const filterPlaces = useCallback(() => {
   if (Array.isArray(nearbyPlaces) && nearbyPlaces.length > 0) {
    setFilteredPlaces(
-    nearbyPlaces.filter(
-     (place) =>
-      place.types.includes('restaurant') ||
-      place.types.includes('food') ||
-      place.types.includes('cafe')
-    )
+    nearbyPlaces.filter((place) => place.types.includes('Restaurant & Café'))
    );
   } else {
    setFilteredPlaces([]);
@@ -853,42 +860,56 @@ const RestaurantsCafes = React.memo(({ nearbyPlaces }) => {
  }, [filterPlaces]);
 
  return (
-  <Col xs={{ span: 20, offset: 2 }}>
-   <Row gutter={[16, 16]}>
-    <Col xs={24}>
-     <Divider>
-      <Title level={2}>
-       <i className="fa-light fa-plate-utensils"></i> Restaurants & Cafés
-      </Title>
-     </Divider>
+  <>
+   {filteredPlaces.length > 0 && (
+    <Col xs={{ span: 20, offset: 2 }}>
      <Row gutter={[16, 16]}>
-      {filteredPlaces.slice(0, 6).map((place, index) => (
-       <Col xs={8}>
-        <Card
-         hoverable={false}
-         style={{
-          width: '100%',
-         }}
-         cover={<Image src={place.photo} preview={false} />}
-        >
-         <Meta
-          title={
-           <Flex justify="space-between">
-            <Text strong>{place.name}</Text>
-            <Text strong style={{ color: '#cfaf83' }}>
-             {place.rating}
-            </Text>
-           </Flex>
-          }
-          description={place.address}
-         />
-        </Card>
-       </Col>
-      ))}
+      <Col xs={24}>
+       <Divider>
+        <Title level={2}>
+         <i className="fa-light fa-plate-utensils"></i> Restaurants & Cafés
+        </Title>
+       </Divider>
+       <Row gutter={[16, 16]}>
+        {filteredPlaces.slice(0, 6).map((place, index) => (
+         <Col xs={8}>
+          <Card
+           hoverable={false}
+           style={{
+            width: '100%',
+           }}
+           cover={
+            <Image
+             src={place.photo}
+             preview={false}
+             style={{
+              width: '100%',
+              height: '184px',
+              objectFit: 'cover',
+             }}
+            />
+           }
+          >
+           <Meta
+            title={
+             <Flex justify="space-between">
+              <Text strong>{place.name}</Text>
+              <Text strong style={{ color: '#cfaf83' }}>
+               {place.rating}
+              </Text>
+             </Flex>
+            }
+            description={place.address}
+           />
+          </Card>
+         </Col>
+        ))}
+       </Row>
+      </Col>
      </Row>
     </Col>
-   </Row>
-  </Col>
+   )}
+  </>
  );
 });
 
@@ -897,7 +918,7 @@ const Activities = React.memo(({ nearbyPlaces }) => {
  const filterPlaces = useCallback(() => {
   if (Array.isArray(nearbyPlaces) && nearbyPlaces.length > 0) {
    setFilteredPlaces(
-    nearbyPlaces.filter((place) => place.types.includes('point_of_interest'))
+    nearbyPlaces.filter((place) => place.types.includes('Activité'))
    );
   } else {
    setFilteredPlaces([]);
@@ -909,42 +930,56 @@ const Activities = React.memo(({ nearbyPlaces }) => {
  }, [filterPlaces]);
 
  return (
-  <Col xs={{ span: 20, offset: 2 }}>
-   <Row gutter={[16, 16]}>
-    <Col xs={24}>
-     <Divider>
-      <Title level={2}>
-       <i className="fa-light fa-sun-cloud"></i> Activités
-      </Title>
-     </Divider>
+  <>
+   {filteredPlaces.length > 0 && (
+    <Col xs={{ span: 20, offset: 2 }}>
      <Row gutter={[16, 16]}>
-      {filteredPlaces.slice(0, 6).map((place, index) => (
-       <Col xs={8}>
-        <Card
-         hoverable={false}
-         style={{
-          width: '100%',
-         }}
-         cover={<Image src={place.photo} preview={false} />}
-        >
-         <Meta
-          title={
-           <Flex justify="space-between">
-            <Text strong>{place.name}</Text>
-            <Text strong style={{ color: '#cfaf83' }}>
-             {place.rating}
-            </Text>
-           </Flex>
-          }
-          description={place.address}
-         />
-        </Card>
-       </Col>
-      ))}
+      <Col xs={24}>
+       <Divider>
+        <Title level={2}>
+         <i className="fa-light fa-sun-cloud"></i> Activités
+        </Title>
+       </Divider>
+       <Row gutter={[16, 16]}>
+        {filteredPlaces.slice(0, 6).map((place, index) => (
+         <Col xs={8}>
+          <Card
+           hoverable={false}
+           style={{
+            width: '100%',
+           }}
+           cover={
+            <Image
+             src={place.photo}
+             preview={false}
+             style={{
+              width: '100%',
+              height: '184px',
+              objectFit: 'cover',
+             }}
+            />
+           }
+          >
+           <Meta
+            title={
+             <Flex justify="space-between">
+              <Text strong>{place.name}</Text>
+              <Text strong style={{ color: '#cfaf83' }}>
+               {place.rating}
+              </Text>
+             </Flex>
+            }
+            description={place.address}
+           />
+          </Card>
+         </Col>
+        ))}
+       </Row>
+      </Col>
      </Row>
     </Col>
-   </Row>
-  </Col>
+   )}
+  </>
  );
 });
 
@@ -953,7 +988,7 @@ const Attractions = React.memo(({ nearbyPlaces }) => {
  const filterPlaces = useCallback(() => {
   if (Array.isArray(nearbyPlaces) && nearbyPlaces.length > 0) {
    setFilteredPlaces(
-    nearbyPlaces.filter((place) => place.types.includes('natural_feature'))
+    nearbyPlaces.filter((place) => place.types.includes('Attraction'))
    );
   } else {
    setFilteredPlaces([]);
@@ -965,41 +1000,125 @@ const Attractions = React.memo(({ nearbyPlaces }) => {
  }, [filterPlaces]);
 
  return (
-  <Col xs={{ span: 20, offset: 2 }}>
-   <Row gutter={[16, 16]}>
-    <Col xs={24}>
-     <Divider>
-      <Title level={2}>
-       <i className="fa-light fa-camera"></i> Attractions
-      </Title>
-     </Divider>
+  <>
+   {filteredPlaces.length > 0 && (
+    <Col xs={{ span: 20, offset: 2 }}>
      <Row gutter={[16, 16]}>
-      {filteredPlaces.slice(0, 6).map((place, index) => (
-       <Col xs={8}>
-        <Card
-         hoverable={false}
-         style={{
-          width: '100%',
-         }}
-         cover={<Image src={place.photo} preview={false} />}
-        >
-         <Meta
-          title={
-           <Flex justify="space-between">
-            <Text strong>{place.name}</Text>
-            <Text strong style={{ color: '#cfaf83' }}>
-             {place.rating}
-            </Text>
-           </Flex>
-          }
-          description={place.address}
-         />
-        </Card>
-       </Col>
-      ))}
+      <Col xs={24}>
+       <Divider>
+        <Title level={2}>
+         <i className="fa-light fa-camera"></i> Attractions
+        </Title>
+       </Divider>
+       <Row gutter={[16, 16]}>
+        {filteredPlaces.slice(0, 6).map((place, index) => (
+         <Col xs={8}>
+          <Card
+           hoverable={false}
+           style={{
+            width: '100%',
+           }}
+           cover={
+            <Image
+             src={place.photo}
+             preview={false}
+             style={{
+              width: '100%',
+              height: '184px',
+              objectFit: 'cover',
+             }}
+            />
+           }
+          >
+           <Meta
+            title={
+             <Flex justify="space-between">
+              <Text strong>{place.name}</Text>
+              <Text strong style={{ color: '#cfaf83' }}>
+               {place.rating}
+              </Text>
+             </Flex>
+            }
+            description={place.address}
+           />
+          </Card>
+         </Col>
+        ))}
+       </Row>
+      </Col>
      </Row>
     </Col>
-   </Row>
-  </Col>
+   )}
+  </>
+ );
+});
+
+const Malls = React.memo(({ nearbyPlaces }) => {
+ const [filteredPlaces, setFilteredPlaces] = useState([]);
+ const filterPlaces = useCallback(() => {
+  if (Array.isArray(nearbyPlaces) && nearbyPlaces.length > 0) {
+   setFilteredPlaces(
+    nearbyPlaces.filter((place) => place.types.includes('Centre commercial'))
+   );
+  } else {
+   setFilteredPlaces([]);
+  }
+ }, [nearbyPlaces]);
+
+ useEffect(() => {
+  filterPlaces();
+ }, [filterPlaces]);
+
+ return (
+  <>
+   {filteredPlaces.length > 0 && (
+    <Col xs={{ span: 20, offset: 2 }}>
+     <Row gutter={[16, 16]}>
+      <Col xs={24}>
+       <Divider>
+        <Title level={2}>
+         <i className="fa-light fa-store"></i> Centres commerciaux
+        </Title>
+       </Divider>
+       <Row gutter={[16, 16]}>
+        {filteredPlaces.slice(0, 6).map((place, index) => (
+         <Col xs={8}>
+          <Card
+           hoverable={false}
+           style={{
+            width: '100%',
+           }}
+           cover={
+            <Image
+             src={place.photo}
+             preview={false}
+             style={{
+              width: '100%',
+              height: '184px',
+              objectFit: 'cover',
+             }}
+            />
+           }
+          >
+           <Meta
+            title={
+             <Flex justify="space-between">
+              <Text strong>{place.name}</Text>
+              <Text strong style={{ color: '#cfaf83' }}>
+               {place.rating}
+              </Text>
+             </Flex>
+            }
+            description={place.address}
+           />
+          </Card>
+         </Col>
+        ))}
+       </Row>
+      </Col>
+     </Row>
+    </Col>
+   )}
+  </>
  );
 });

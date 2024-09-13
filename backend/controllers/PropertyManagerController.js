@@ -87,11 +87,9 @@ const postPropertyManager = async (req, res) => {
     console.log('User updated:', JSON.stringify(user, null, 2));
     return res.status(200).json(user);
    } else {
-    // Log and return error response
-    console.log('User already exists and is not verified');
     return res
      .status(400)
-     .json({ error: 'User already exists and is not verified' });
+     .json({ error: "L'utilisateur existe déjà et n'est pas vérifié" });
    }
   } else {
    // Create a new user
@@ -111,7 +109,6 @@ const postPropertyManager = async (req, res) => {
 
    // Ensure user is properly created
    if (!user) {
-    console.log('User creation failed.');
     return res.status(500).json({ error: 'User creation failed.' });
    }
 
@@ -130,7 +127,6 @@ const postPropertyManager = async (req, res) => {
       );
      })
      .catch((error) => {
-      console.log(error);
       res.json({
        status: 'ÉCHOUÉ',
        message: 'la vérification a échoué!',
@@ -156,6 +152,45 @@ const postPropertyManager = async (req, res) => {
  } catch (error) {
   console.error('Error in postPropertyManager:', error);
   return res.status(400).json({ error: error.message });
+ }
+};
+
+const verifyPropertyManager = async (req, res) => {
+ const { id } = req.params;
+
+ try {
+  const propertyManager = await PropertyManager.findByPk(id);
+
+  if (!propertyManager) {
+   return res.status(404).json({ message: 'Manager non trouvé' });
+  }
+
+  // Update the isVerified status to true
+  await propertyManager.update({ isVerified: true });
+
+  return res.status(200).json({ message: 'Manager vérifié avec succès' });
+ } catch (error) {
+  console.error('Erreur lors de la vérification du manager:', error);
+  return res.status(500).json({ message: 'Erreur interne du serveur' });
+ }
+};
+
+// Delete a property manager
+const deletePropertyManager = async (req, res) => {
+ const { id } = req.params;
+
+ try {
+  const propertyManager = await PropertyManager.findByPk(id);
+
+  if (!propertyManager) {
+   return res.status(404).json({ message: 'Manager non trouvé' });
+  }
+
+  await propertyManager.destroy();
+  return res.status(200).json({ message: 'Manager supprimé avec succès' });
+ } catch (error) {
+  console.error('Erreur lors de la suppression du Manager:', error);
+  return res.status(500).json({ message: 'Internal server error' });
  }
 };
 
@@ -228,7 +263,7 @@ const verifyEmail = async (req, res) => {
    }
   }
  } catch (error) {
-  console.log(error);
+  console.error(error);
  }
 };
 
@@ -420,11 +455,13 @@ module.exports = {
  getPropertyManagerByEmail,
  getPropertyManagers,
  postPropertyManager,
+ verifyPropertyManager,
  loginPropertyManager,
  verifyEmail,
  updatePropertyManagerDetails,
  updatePropertyManagerAvatar,
  updatePassword,
+ deletePropertyManager,
  resetPasswordRequest,
  verifyResetCode,
  resetPassword,
