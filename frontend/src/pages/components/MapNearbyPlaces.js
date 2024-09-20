@@ -41,7 +41,6 @@ const MapNearbyPlaces = React.memo(({ latitude, longitude, type }) => {
 
  useEffect(() => {
   if (latitude && longitude) {
-   console.log('places : ', places);
    getNearbyPlacesByLatLon(latitude, longitude)
     .then((data) => {
      setPlaces(data);
@@ -91,7 +90,7 @@ const MapNearbyPlaces = React.memo(({ latitude, longitude, type }) => {
     style={{
      display: 'inline-block',
      width: '100%',
-     height: '600px',
+     height: '360px',
      borderRadius: '12px',
      overflow: 'hidden',
     }}

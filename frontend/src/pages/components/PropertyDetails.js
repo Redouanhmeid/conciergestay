@@ -395,26 +395,32 @@ const PropertyDetails = () => {
       style={{ width: '100%', marginTop: 16 }}
       loading={loading}
       actions={[
-       <Tooltip title={`+${userData.phone}`}>
-        <i
-         key="Phone"
-         className="Hosticon fa-light fa-mobile"
-         onClick={() => window.open(`tel:+${userData.phone}`)}
+       userData.phone !== 'N/A' && (
+        <Tooltip title={`${userData.phone}`}>
+         <i
+          key="Phone"
+          className="Hosticon fa-light fa-mobile"
+          onClick={() => window.open(`tel:+${userData.phone}`)}
+         />
+        </Tooltip>
+       ),
+       property.airbnbUrl && (
+        <Image
+         width={32}
+         src={airbnb}
+         preview={false}
+         onClick={() => window.open(property.airbnbUrl, '_blank')}
         />
-       </Tooltip>,
-       <Image
-        width={32}
-        src={airbnb}
-        preview={false}
-        onClick={() => window.open(property.airbnbUrl, '_blank')}
-       />,
-       <Image
-        width={32}
-        src={booking}
-        preview={false}
-        onClick={() => window.open(property.bookingUrl, '_blank')}
-       />,
-      ]}
+       ),
+       property.bookingUrl && (
+        <Image
+         width={32}
+         src={booking}
+         preview={false}
+         onClick={() => window.open(property.bookingUrl, '_blank')}
+        />
+       ),
+      ].filter(Boolean)}
      >
       <Meta
        avatar={
@@ -598,13 +604,15 @@ const PropertyDetails = () => {
          style={{ width: '100%', marginTop: 16 }}
          loading={loading}
          actions={[
-          <Tooltip title={`${userData.phone}`}>
-           <i
-            key="Phone"
-            className="Hosticon fa-light fa-mobile"
-            onClick={() => window.open(`tel:+${userData.phone}`)}
-           />
-          </Tooltip>,
+          userData.phone !== 'N/A' && (
+           <Tooltip title={`${userData.phone}`}>
+            <i
+             key="Phone"
+             className="Hosticon fa-light fa-mobile"
+             onClick={() => window.open(`tel:+${userData.phone}`)}
+            />
+           </Tooltip>
+          ),
           property.airbnbUrl && (
            <Image
             width={32}

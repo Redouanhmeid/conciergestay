@@ -74,8 +74,6 @@ const Step2CheckInOut = ({ next, prev, values }) => {
     const photoUrl = await uploadFrontPhoto(frontPhoto);
     values.frontPhoto = photoUrl;
    }
-   console.log(values);
-
    next(); // Proceed to the next step
   } catch (error) {
    console.error('Error submitting form:', error);

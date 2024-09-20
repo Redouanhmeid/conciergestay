@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Spin, Space, Tag, Typography, Button, message } from 'antd';
+import { Spin, Space, Flex, Tag, Typography, Button, message } from 'antd';
 import { RightOutlined } from '@ant-design/icons';
 import MapConfig from '../../mapconfig';
 import {
@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import pinIcon from '../../assets/position.gif';
 import { filterProperties } from '../../utils/filterProperties';
 
-const { Text } = Typography;
+const { Text, Link } = Typography;
 // Fallback center (e.g., center of Rabat)
 const FALLBACK_CENTER = { lat: 34.0209, lng: -6.8416 };
 
@@ -148,20 +148,6 @@ const MapHome = React.memo(
    }
   }, [city]);
 
-  const memoizedMarkers = useMemo(() => {
-   return filteredProperties.map((place) => (
-    <AdvancedMarker
-     key={place.id}
-     position={{ lat: place.latitude, lng: place.longitude }}
-     onClick={() => toggleInfoWindow(place)}
-    >
-     <div className="pin">
-      <img src={place.photos[0]} alt={place.name} />
-     </div>
-    </AdvancedMarker>
-   ));
-  }, [filteredProperties]);
-
   if (!isLoaded) {
    return (
     <div className="loading">
@@ -188,46 +174,76 @@ const MapHome = React.memo(
       if (map) {
        const newCenter = map.getCenter();
        setMapCenter({ lat: newCenter.lat(), lng: newCenter.lng() });
+       closeInfoWindow();
       }
      }}
     >
      <AdvancedMarker position={currentPosition}>
       <img src={pinIcon} alt="Position actuelle" />
      </AdvancedMarker>
-     {memoizedMarkers}
+
+     {filteredProperties.map((place, index) => (
+      <AdvancedMarker
+       key={index}
+       position={{ lat: place.latitude, lng: place.longitude }}
+       onClick={() => toggleInfoWindow(place)}
+      >
+       <div className="pin">
+        <img src={place.photos[0]} alt={place.name} />
+       </div>
+      </AdvancedMarker>
+     ))}
 
      {selectedPlace && (
       <InfoWindow
        position={{ lat: selectedPlace.latitude, lng: selectedPlace.longitude }}
-       pixelOffset={new window.google.maps.Size(0, -80)}
-       onCloseClick={closeInfoWindow}
+       pixelOffset={new window.google.maps.Size(0, -75)}
       >
-       <Space direction="vertical" style={{ margin: 4 }}>
-        <Text size={18}>
+       <Flex
+        justify="space-between"
+        style={{
+         display: 'flex',
+         paddingBottom: '4px',
+         borderBottom: '1px solid #ddd',
+        }}
+       >
+        <Link
+         href={`/propertydetails?id=${selectedPlace.id}`}
+         style={{
+          fontWeight: 'bold',
+          fontSize: '16px',
+          cursor: 'pointer',
+          color: '#2b2c32',
+         }}
+        >
          {selectedPlace.name}
-         {' | '}
+        </Link>
+        <Button
+         size="small"
+         icon={<RightOutlined />}
+         onClick={() => display(selectedPlace.id)}
+         style={{
+          backgroundColor: '#2b2c32',
+          color: '#faf6f1',
+          borderRadius: 0,
+         }}
+        />
+       </Flex>
+       <Space direction="vertical" style={{ paddingTop: '4px' }}>
+        <Text size={18}>
          <span style={{ color: '#aa7e42', fontWeight: 'bold' }}>
           {selectedPlace.price}
          </span>{' '}
          Dh / Nuit
         </Text>
-        <Space wrap>
+        <Flex justify="space-between">
          <Tag>
           <Text size={16}>{selectedPlace.rooms} Chambres</Text>
          </Tag>
          <Tag>
-          <Text size={16}>
-           {selectedPlace.capacity} Capacité Personne {selectedPlace.id}
-          </Text>
+          <Text size={16}>{selectedPlace.capacity} Capacité Personne</Text>
          </Tag>
-         <Button
-          type="primary"
-          size="small"
-          shape="round"
-          icon={<RightOutlined />}
-          onClick={() => display(selectedPlace.id)}
-         />
-        </Space>
+        </Flex>
        </Space>
       </InfoWindow>
      )}

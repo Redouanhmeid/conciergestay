@@ -215,31 +215,6 @@ const DigitalGuidebook = () => {
        {property.guestAccessInfo}
       </Paragraph>
      )}
-     {wifiAmenity && (
-      <>
-       <Divider>
-        <i className="fa-light fa-wifi"></i>
-        <Text strong> Accès Wi-Fi</Text>
-       </Divider>
-       <Row gutter={[16, 16]}>
-        <Col xs={24} md={6}>
-         <Image src={wifiAmenity.media} />
-        </Col>
-        <Col xs={24} md={18}>
-         <br />
-         <Paragraph>
-          <Text strong>Nom Wi-Fi: </Text>
-          {wifiAmenity.wifiName}
-         </Paragraph>
-         <Paragraph>
-          <Text strong>Mot de passe Wi-Fi: </Text>
-          <Text copyable>{wifiAmenity.wifiPassword}</Text>
-         </Paragraph>
-         <Paragraph>{wifiAmenity.description}</Paragraph>
-        </Col>
-       </Row>
-      </>
-     )}
 
      {validLatitude && validLongitude ? (
       <Divider>
@@ -297,7 +272,13 @@ const DigitalGuidebook = () => {
            height={240}
           />
          ) : (
-          <Image src={wifiAmenity.media} />
+          <Image
+           src={wifiAmenity.media}
+           style={{
+            height: 240,
+            objectFit: 'cover',
+           }}
+          />
          )
         }
        >
@@ -337,10 +318,16 @@ const DigitalGuidebook = () => {
            url={tvAmenity.media}
            controls
            width={'100%'}
-           height={300}
+           height={240}
           />
          ) : (
-          <Image src={tvAmenity.media} />
+          <Image
+           src={tvAmenity.media}
+           style={{
+            height: 240,
+            objectFit: 'cover',
+           }}
+          />
          )
         }
        >
@@ -369,7 +356,13 @@ const DigitalGuidebook = () => {
            height={240}
           />
          ) : (
-          <Image src={kitchenAmenity.media} />
+          <Image
+           src={kitchenAmenity.media}
+           style={{
+            height: 240,
+            objectFit: 'cover',
+           }}
+          />
          )
         }
        >
@@ -411,7 +404,13 @@ const DigitalGuidebook = () => {
            height={240}
           />
          ) : (
-          <Image src={airConditioningAmenity.media} />
+          <Image
+           src={airConditioningAmenity.media}
+           style={{
+            height: 240,
+            objectFit: 'cover',
+           }}
+          />
          )
         }
        >
@@ -453,7 +452,13 @@ const DigitalGuidebook = () => {
            height={240}
           />
          ) : (
-          <Image src={washingMachineAmenity.media} />
+          <Image
+           src={washingMachineAmenity.media}
+           style={{
+            height: 240,
+            objectFit: 'cover',
+           }}
+          />
          )
         }
        >
@@ -495,7 +500,13 @@ const DigitalGuidebook = () => {
            height={240}
           />
          ) : (
-          <Image src={poolAmenity.media} />
+          <Image
+           src={poolAmenity.media}
+           style={{
+            height: 240,
+            objectFit: 'cover',
+           }}
+          />
          )
         }
        >
@@ -537,7 +548,13 @@ const DigitalGuidebook = () => {
            height={240}
           />
          ) : (
-          <Image src={garbageCanAmenity.media} />
+          <Image
+           src={garbageCanAmenity.media}
+           style={{
+            height: 240,
+            objectFit: 'cover',
+           }}
+          />
          )
         }
        >
@@ -559,7 +576,7 @@ const DigitalGuidebook = () => {
       </Col>
      )}
      <Col xs={24}></Col>
-     {property.houseRules && (
+     {property.houseRules && Object.keys(property.houseRules).length > 0 && (
       <Col xs={24} md={12}>
        <Divider>
         <i className="fa-light fa-ban"></i>
@@ -585,7 +602,7 @@ const DigitalGuidebook = () => {
       </Col>
      )}
      <Col xs={24} md={12}>
-      {property.elements && (
+      {property.elements && Object.keys(property.elements).length > 0 && (
        <Col xs={24}>
         <Divider>
          <i className="fa-light fa-bell-plus"></i>
@@ -604,25 +621,26 @@ const DigitalGuidebook = () => {
         </Flex>
        </Col>
       )}
-      {property.safetyFeatures && (
-       <Col xs={24}>
-        <Divider>
-         <i className="fa-light fa-shield-check"></i>
-         <Text strong> Équipement de sécurité</Text>
-        </Divider>
-        <Flex gap="middle" vertical>
-         {ensureArray(property.safetyFeatures).map((feature, index) => {
-          const { icon, title } = getSafetyFeaturesDetails(feature);
-          return (
-           <Col key={index} xs={24}>
-            {icon}
-            <Text> {title}</Text>
-           </Col>
-          );
-         })}
-        </Flex>
-       </Col>
-      )}
+      {property.safetyFeatures &&
+       Object.keys(property.safetyFeatures).length > 0 && (
+        <Col xs={24}>
+         <Divider>
+          <i className="fa-light fa-shield-check"></i>
+          <Text strong> Équipement de sécurité</Text>
+         </Divider>
+         <Flex gap="middle" vertical>
+          {ensureArray(property.safetyFeatures).map((feature, index) => {
+           const { icon, title } = getSafetyFeaturesDetails(feature);
+           return (
+            <Col key={index} xs={24}>
+             {icon}
+             <Text> {title}</Text>
+            </Col>
+           );
+          })}
+         </Flex>
+        </Col>
+       )}
      </Col>
     </Row>
    ),
