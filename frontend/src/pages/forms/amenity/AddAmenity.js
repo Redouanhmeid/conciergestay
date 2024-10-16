@@ -32,6 +32,39 @@ const getBase64 = (file) =>
   reader.onerror = (error) => reject(error);
  });
 
+const amenityTitles = {
+ shower: 'Douche',
+ jacuzzi: 'Jacuzzi',
+ bathtub: 'Baignoire',
+ washingMachine: 'Machine à laver',
+ dryerheat: 'Sèche-linge',
+ vacuum: 'Aspirateur',
+ vault: 'Coffre-fort',
+ babybed: 'Lit bébé',
+ television: 'Télévision',
+ speaker: 'Système audio',
+ gameconsole: 'Console de jeux',
+ oven: 'Four',
+ microwave: 'Micro-ondes',
+ coffeemaker: 'Cafétière',
+ fridge: 'Réfrigérateur',
+ fireburner: 'Cuisinière',
+ heating: 'Chauffage',
+ airConditioning: 'Climatisation',
+ fireplace: 'Cheminée',
+ ceilingfan: 'Ventilateur de plafond',
+ tablefan: 'Ventilateur de table',
+ fingerprint: 'Serrure biometrique à empreinte digitale',
+ lockbox: 'Boite à serrure',
+ parkingaccess: 'Accès parking',
+ wifi: 'Wifi',
+ dedicatedworkspace: 'Espace dédié de travail',
+ freeParking: 'Parking gratuit',
+ paidParking: 'Stationnement payant',
+ pool: 'Piscine',
+ garbageCan: 'Benne à ordures',
+};
+
 const AddAmenity = () => {
  const location = useLocation();
  const { amenity, id } = location.state;
@@ -47,35 +80,7 @@ const AddAmenity = () => {
  const [fileList, setFileList] = useState([]);
 
  useEffect(() => {
-  switch (amenity) {
-   case 'wifi':
-    setName('WIFI');
-    break;
-   case 'television':
-    setName('Télévision');
-    break;
-   case 'kitchen':
-    setName('Cuisine');
-    break;
-   case 'washingMachine':
-    setName('Machine à laver');
-    break;
-   case 'freeParking':
-    setName('Parking gratuit');
-    break;
-   case 'airConditioning':
-    setName('Climatisation');
-    break;
-   case 'pool':
-    setName('Piscine');
-    break;
-   case 'garbageCan':
-    setName('Benne à ordures');
-    break;
-   default:
-    setName('');
-    break;
-  }
+  setName(amenityTitles[amenity] || '');
  }, [amenity]);
 
  const goBack = () => {

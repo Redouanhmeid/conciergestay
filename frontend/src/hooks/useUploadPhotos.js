@@ -44,7 +44,6 @@ const useUploadPhotos = () => {
  };
 
  const uploadPlace = async (photo) => {
-  console.log(photo);
   const formData = new FormData();
   formData.append('photo', photo[0].originFileObj); // Use the original file
 
@@ -99,7 +98,6 @@ const useUploadPhotos = () => {
  };
 
  const uploadFrontPhoto = async (photo) => {
-  console.log(photo);
   const formData = new FormData();
 
   try {

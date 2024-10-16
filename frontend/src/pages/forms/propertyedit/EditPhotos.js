@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
+ Spin,
  Layout,
+ Typography,
  Form,
  Row,
  Col,
  Upload,
- Modal,
- Image,
  Button,
+ Image,
  Alert,
- Typography,
 } from 'antd';
 import {
  DndContext,
@@ -25,15 +25,15 @@ import {
  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
+import { useLocation, useNavigate } from 'react-router-dom';
+import queryString from 'query-string';
+import useUpdateProperty from '../../../hooks/useUpdateProperty';
+import useGetProperty from '../../../hooks/useGetProperty';
+import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
-import {
- ArrowLeftOutlined,
- ArrowRightOutlined,
- PlusOutlined,
-} from '@ant-design/icons';
 import ImgCrop from 'antd-img-crop';
-import useUploadPhotos from '../../../hooks/useUploadPhotos';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -63,12 +63,19 @@ const DraggableUploadListItem = ({ originNode, file }) => {
  );
 };
 
-const Step4Photos = ({ next, prev, values }) => {
- const { uploadPhotos, uploading } = useUploadPhotos();
+const EditPhotos = () => {
+ const location = useLocation();
+ const { id } = queryString.parse(location.search);
+ const navigate = useNavigate();
+ const [form] = Form.useForm();
+ const { property, loading } = useGetProperty(id);
+ const { updatePropertyPhotos, isLoading, success } = useUpdateProperty(id);
+ const { uploadPhotos } = useUploadPhotos();
+
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
  const [fileList, setFileList] = useState([]);
- const [upload, setUpload] = useState(false);
+ const [uploading, setUploading] = useState(false);
 
  const sensors = useSensors(
   useSensor(PointerSensor, {
@@ -78,36 +85,53 @@ const Step4Photos = ({ next, prev, values }) => {
   })
  );
 
+ const handleSubmit = async () => {
+  if (!fileList.length) {
+   console.error('No files to upload');
+   return;
+  }
+  const filesWithOriginFileObj = fileList.filter((file) => file.originFileObj);
+  const newFileList = filesWithOriginFileObj.reduce((acc, file, index) => {
+   acc[index] = file;
+   return acc;
+  }, []);
+  const urlsArray = fileList
+   .filter((file) => !file.originFileObj)
+   .map((file) => file.url);
+  /* updatePropertyPhotos({ photos: files }); */
+  try {
+   const photoUrls = await uploadPhotos(newFileList);
+   photoUrls.unshift(...urlsArray);
+   await updatePropertyPhotos({ photos: photoUrls });
+  } catch (error) {
+   console.error('Error updating property:', error);
+  }
+ };
+
  const handlePreview = async (file) => {
   if (!file.url && !file.preview) {
    file.preview = await getBase64(file.originFileObj);
   }
-  file.error = false;
   setPreviewImage(file.url || file.preview);
   setPreviewOpen(true);
  };
-
- const handleChange = async ({ fileList: newFileList }) => {
+ const handleChange = ({ fileList: newFileList }) => {
   setFileList(newFileList);
-
-  if (newFileList.length === 0) {
-   setUpload(false);
-  }
-
-  // Upload files
-  if (newFileList.length > fileList.length) {
-   setUpload(true);
-   // Simulate uploading
-   setTimeout(() => {
-    setUpload(false);
-   }, 2000);
-  }
+  setUploading(newFileList.some((file) => file.status === 'uploading'));
  };
 
- const handleRemove = (file) => {
-  const newFileList = fileList.filter((item) => item !== file);
-  setFileList(newFileList);
- };
+ useEffect(() => {
+  if (!loading && property && property.photos) {
+   setFileList(
+    property.photos.map((url, index) => ({
+     uid: `existing-${index}`,
+     name: url.substring(url.lastIndexOf('/') + 1),
+     status: 'done',
+     url: url,
+    }))
+   );
+  }
+ }, [loading, property]);
 
  const onDragEnd = (event) => {
   const { active, over } = event;
@@ -130,53 +154,47 @@ const Step4Photos = ({ next, prev, values }) => {
     alignItems: 'center',
    }}
   >
-   {upload ? (
-    <div style={{ marginTop: 8 }}>Téléchargement en cours...</div>
+   {uploading ? (
+    <div>Téléchargement en cours...</div>
    ) : (
-    <button
-     style={{
-      border: 0,
-      background: 'none',
-     }}
-     type="button"
-    >
+    <>
      <PlusOutlined />
-     <div
-      style={{
-       marginTop: 8,
-      }}
-     >
-      Ajouter des Photos
-     </div>
-    </button>
+     <div style={{ marginTop: 8 }}>Ajouter des Photos</div>
+    </>
    )}
   </div>
  );
- const submitFormData = async () => {
-  try {
-   const photoUrls = await uploadPhotos(fileList);
-   values.photos = photoUrls;
-  } catch (error) {
-   console.error('Error uploading photos:', error);
-  }
-  next();
- };
+
+ if (loading) {
+  return (
+   <div className="loading">
+    <Spin size="large" />
+   </div>
+  );
+ }
  return (
   <Layout className="contentStyle">
    <Head />
    <Layout>
-    <Content className="container">
+    <Content className="container-fluid">
+     <Button
+      type="default"
+      shape="round"
+      icon={<ArrowLeftOutlined />}
+      onClick={() => navigate(-1)}
+     >
+      Retour
+     </Button>
+     <Title level={3}>Modifier les photos de votre logement</Title>
      <Form
-      name="step4"
+      name="editBasicInfo"
+      form={form}
+      onFinish={handleSubmit}
+      initialValues={property}
       layout="vertical"
-      onFinish={submitFormData}
-      size="large"
      >
       <Row gutter={[24, 0]}>
-       <Col xs={24} md={24}>
-        <Title level={2}>Ajouter des Photos de votre logement</Title>
-       </Col>
-       <Col xs={24} md={24}>
+       <Col xs={24}>
         <DndContext
          sensors={sensors}
          collisionDetection={closestCenter}
@@ -209,9 +227,7 @@ const Step4Photos = ({ next, prev, values }) => {
 
         {previewOpen && (
          <Image
-          wrapperStyle={{
-           display: 'none',
-          }}
+          wrapperStyle={{ display: 'none' }}
           preview={{
            visible: previewOpen,
            onVisibleChange: (visible) => setPreviewOpen(visible),
@@ -220,40 +236,21 @@ const Step4Photos = ({ next, prev, values }) => {
          />
         )}
        </Col>
-      </Row>
-      <br />
-      {fileList.length === 16 && (
-       <>
-        <Alert
-         message="Vous avez atteint le nombre maximum de photos."
-         type="info"
-        />
-        <br />
-       </>
-      )}
 
-      <Row justify="end">
-       <Col xs={8} md={1}>
-        <Form.Item>
-         <Button
-          htmlType="submit"
-          shape="circle"
-          onClick={prev}
-          icon={<ArrowLeftOutlined />}
+       {fileList.length === 16 && (
+        <Col xs={24}>
+         <Alert
+          message="Vous avez atteint le nombre maximum de photos."
+          type="info"
          />
-        </Form.Item>
-       </Col>
-       <Col xs={16} md={3}>
-        <Form.Item>
-         <Button
-          type="primary"
-          htmlType="submit"
-          style={{ width: '100%' }}
-          loading={uploading}
-         >
-          Continue {<ArrowRightOutlined />}
-         </Button>
-        </Form.Item>
+         <br />
+        </Col>
+       )}
+
+       <Col xs={24}>
+        <Button type="primary" htmlType="submit" loading={isLoading}>
+         {success ? 'Mis à jour!' : 'Enregistrer les photos'}
+        </Button>
        </Col>
       </Row>
      </Form>
@@ -264,4 +261,4 @@ const Step4Photos = ({ next, prev, values }) => {
  );
 };
 
-export default Step4Photos;
+export default EditPhotos;

@@ -36,6 +36,7 @@ import { useUserData } from '../../hooks/useUserData';
 import ImgCrop from 'antd-img-crop';
 import useUploadPhotos from '../../hooks/useUploadPhotos';
 import { countries } from '../../utils/countries';
+import ShareModal from '../../components/common/ShareModal';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -90,16 +91,28 @@ const Account = () => {
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
  const [fileList, setFileList] = useState([]);
+ const [isShareModalVisible, setIsShareModalVisible] = useState(false);
  const [countryCode, setCountryCode] = useState(
   countries.find((country) => country.name === 'Maroc').dialCode
  ); // Default to first country
 
- const showModal = () => {
+ const showPWDModal = () => {
   setIsModalOpen(true);
  };
- const handleCancel = () => {
+ const handlePWDCancel = () => {
   setIsModalOpen(false);
  };
+
+ const showShareModal = () => {
+  setIsShareModalVisible(true);
+ };
+
+ const hideShareModal = () => {
+  setIsShareModalVisible(false);
+ };
+
+ const pageUrl = window.location.href;
+
  const onFinish = (values) => {
   const fullPhoneNumber = `${countryCode}${values.phone}`;
   updatePropertyManager(
@@ -297,17 +310,10 @@ const Account = () => {
           <Link to="/">Gérer l'abonnement</Link>
          </p> */}
          <p>
-          <Link onClick={showModal}>Modifier le mot de passe</Link>
+          <Link onClick={showPWDModal}>Modifier le mot de passe</Link>
          </p>
          <div id="qrcode">
-          <QRCode
-           errorLevel="H"
-           color="#2b2c32"
-           size={220}
-           iconSize={64}
-           value="https://ant.design/"
-           icon={Logo}
-          />
+          <QRCode size={220} value={pageUrl} />
          </div>
          <br />
          <Flex gap="small" wrap="wrap">
@@ -318,10 +324,14 @@ const Account = () => {
            type="link"
            icon={<CopyOutlined />}
            onClick={() => {
-            navigator.clipboard.writeText('texttt');
+            navigator.clipboard.writeText({ pageUrl });
            }}
           />
-          <Button type="link" icon={<ShareAltOutlined />} />
+          <Button
+           type="link"
+           icon={<ShareAltOutlined />}
+           onClick={showShareModal}
+          />
          </Flex>
         </Space>
        </Card>
@@ -329,7 +339,7 @@ const Account = () => {
        <Modal
         title="Modifier le mot de passe"
         open={isModalOpen}
-        onCancel={handleCancel}
+        onCancel={handlePWDCancel}
         footer={null}
        >
         <Changepassword Id={userData.id} />
@@ -339,6 +349,11 @@ const Account = () => {
     </Row>
    </Content>
    <Foot />
+   <ShareModal
+    isVisible={isShareModalVisible}
+    onClose={hideShareModal}
+    pageUrl={pageUrl}
+   />
   </Layout>
  );
 };

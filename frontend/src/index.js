@@ -25,12 +25,18 @@ import PropertyDetails from './pages/components/PropertyDetails';
 import CreateNearbyPlace from './pages/forms/createnearbyplace';
 import AddProperty from './pages/forms/propertypost/AddProperty';
 import EditProperty from './pages/forms/propertyedit/EditProperty';
+import EditBasicInfo from './pages/forms/propertyedit/EditBasicInfo';
+import EditEquipement from './pages/forms/propertyedit/EditEquipement';
+import EditPhotos from './pages/forms/propertyedit/EditPhotos';
+import EditHouseRules from './pages/forms/propertyedit/EditHouseRules';
+import EditCheckIn from './pages/forms/propertyedit/EditCheckIn';
 import AddAmenity from './pages/forms/amenity/AddAmenity';
 import EditAmenity from './pages/forms/amenity/EditAmenity';
 import DigitalGuidebook from './pages/components/DigitalGuidebook';
 import ResetPasswordRequest from './pages/forms/sign/ResetPasswordRequest';
 import VerifyResetCode from './pages/forms/sign/VerifyResetCode';
 import NewPassword from './pages/forms/sign/NewPassword';
+import EditCheckOut from './pages/forms/propertyedit/EditCheckOut';
 
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
@@ -53,6 +59,12 @@ const router = createBrowserRouter([
  { path: '/propertydetails', element: <PropertyDetails /> },
  { path: '/createnearbyplace', element: <CreateNearbyPlace /> },
  { path: '/editproperty', element: <EditProperty /> },
+ { path: '/editbasicinfo', element: <EditBasicInfo /> },
+ { path: '/editequipements', element: <EditEquipement /> },
+ { path: '/editphotos', element: <EditPhotos /> },
+ { path: '/edithouserules', element: <EditHouseRules /> },
+ { path: '/editcheckin', element: <EditCheckIn /> },
+ { path: '/editcheckout', element: <EditCheckOut /> },
  { path: '/addamenity', element: <AddAmenity /> },
  { path: '/editamenity', element: <EditAmenity /> },
  { path: '/digitalguidebook', element: <DigitalGuidebook /> },

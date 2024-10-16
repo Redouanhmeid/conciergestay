@@ -16,12 +16,11 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
  const isLoaded = useGoogleMapsLoader();
 
  const [position, setPosition] = useState({ lat: 34.0083637, lng: -6.8538748 });
-
  const [placeName, setPlaceName] = useState('Rabat');
  const [placeURL, setPlaceURL] = useState('');
  const [placeAddress, setPlaceAddress] = useState('');
  const [placeRating, setPlaceRating] = useState(0);
- const [placePhoto, setPlacePhoto] = useState('');
+ const [placePhotos, setPlacePhotos] = useState([]);
  const [placeTypes, setPlaceTypes] = useState([]);
 
  const autocompleteRef = useRef(null);
@@ -33,21 +32,21 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
    );
    return; // Exit the function if no valid place data is available
   }
-
   // Extract location coordinates
   const latitude = place.geometry.location.lat();
   const longitude = place.geometry.location.lng();
 
   // Update the position and marker key
   setPosition({ lat: latitude, lng: longitude });
-  // Extract additional place details, providing fallbacks where necessary
   setPlaceName(place.name || 'Name not available');
   setPlaceURL(place.url || '');
   setPlaceAddress(place.formatted_address || 'Address not available');
   setPlaceRating(place.rating || 0);
-  setPlacePhoto(
-   place.photos && place.photos.length > 0 ? place.photos[0].getUrl() : ''
-  );
+  // Handle photos: get up to 10 photo URLs
+  const photoUrls = place.photos
+   ? place.photos.slice(0, 8).map((photo) => photo.getUrl())
+   : [];
+  setPlacePhotos(photoUrls);
   setPlaceTypes(place.types || []);
 
   // Prepare the selectedPlace object for callback
@@ -58,11 +57,9 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
    placeURL: place.url || '',
    placeAddress: place.formatted_address || 'Address not available',
    placeRating: place.rating || 0,
-   placePhoto:
-    place.photos && place.photos.length > 0 ? place.photos[0].getUrl() : '',
+   placePhotos: photoUrls,
    placeTypes: place.types || [],
   };
-
   // Trigger the callback with the selected place data
   onPlaceSelected(selectedPlace);
  };
@@ -93,7 +90,7 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
     setPlaceAddress(place.formatted_address || 'Address not available');
     setPlaceURL(place.url || '');
     setPlaceRating(0); // Optional, depends on geocoding result
-    setPlacePhoto(''); // Optional, depends on your requirements
+    setPlacePhotos([]); // Optional, depends on your requirements
     setPlaceTypes(place.types || []);
 
     // Trigger the callback with the updated data
@@ -104,7 +101,7 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
      placeAddress: place.formatted_address || 'Address not available',
      placeURL: '',
      placeRating: 0, // Optional
-     placePhoto: '', // Optional
+     placePhotos: [], // Optional
      placeTypes: place.types || [],
     });
    } else {

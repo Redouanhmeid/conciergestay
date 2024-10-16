@@ -4,13 +4,12 @@ import axios from 'axios';
 const API_BASE_URL = '/api/v1/nearbyplaces';
 
 const useNearbyPlace = () => {
- const [loading, setLoading] = useState(false);
+ const [loading, setLoading] = useState(true);
  const [error, setError] = useState(null);
 
  // 1. Get all nearby places
  const getAllNearbyPlaces = async () => {
   try {
-   setLoading(true);
    const response = await axios.get(`${API_BASE_URL}`);
    return response.data;
   } catch (err) {
@@ -24,7 +23,6 @@ const useNearbyPlace = () => {
  // 2. Get a nearby place by ID
  const getNearbyPlaceById = async (id) => {
   try {
-   setLoading(true);
    const response = await axios.get(`${API_BASE_URL}/${id}`);
    return response.data;
   } catch (err) {
@@ -37,51 +35,49 @@ const useNearbyPlace = () => {
 
  // 3. Create a new nearby place
  const createNearbyPlace = async (placeData) => {
+  setLoading(false);
   try {
-   setLoading(true);
    const response = await axios.post(`${API_BASE_URL}`, placeData);
    return response.data;
   } catch (err) {
    setError(err);
-   console.log(err);
    throw err;
   } finally {
-   setLoading(false);
+   setLoading(true);
   }
  };
 
  // 4. Update a nearby place by ID
  const updateNearbyPlace = async (id, placeData) => {
+  setLoading(false);
   try {
-   setLoading(true);
    const response = await axios.put(`${API_BASE_URL}/${id}`, placeData);
    return response.data;
   } catch (err) {
    setError(err);
    throw err;
   } finally {
-   setLoading(false);
+   setLoading(true);
   }
  };
 
  // 5. Delete a nearby place by ID
  const deleteNearbyPlace = async (id) => {
+  setLoading(false);
   try {
-   setLoading(true);
    await axios.delete(`${API_BASE_URL}/${id}`);
    return true;
   } catch (err) {
    setError(err);
    throw err;
   } finally {
-   setLoading(false);
+   setLoading(true);
   }
  };
 
  // 6. Get nearby places by latitude and longitude
  const getNearbyPlacesByLatLon = async (lat, lon) => {
   try {
-   setLoading(true);
    const response = await axios.get(`${API_BASE_URL}/nearby-places`, {
     params: {
      latitude: lat,

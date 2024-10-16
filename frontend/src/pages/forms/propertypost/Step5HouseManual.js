@@ -117,58 +117,53 @@ const Step5HouseManual = ({ prev, values }) => {
          <InputNumber min={0} onChange={(value) => setBeds(value)} />
         </Form.Item>
        </Col>
-       <Col xs={24} md={12}>
-        <Form.Item
-         label="Votre logement possède-t-il ces éléments ?"
-         name="elements"
-        >
-         <Checkbox.Group onChange={onChangeElements}>
-          <Row>
-           <Col span={24}>
-            <Checkbox value="cameras">
-             Caméras de surveillance extérieures
-            </Checkbox>
-           </Col>
-           <Col span={24}>
-            <Checkbox value="sonometers">Sonomètres</Checkbox>
-           </Col>
-          </Row>
-         </Checkbox.Group>
-        </Form.Item>
-       </Col>
-       <Col xs={24} md={12}>
+
+       <Col xs={24} md={24}>
         <Form.Item label="Règles de la maison:" name="houseRules">
          <Checkbox.Group onChange={onChangehouseRules}>
-          <Row>
-           <Col span={24}>
-            <Checkbox value="noNoise">Pas de bruit après 23h</Checkbox>
+          <Row gutter={[24, 0]}>
+           <Col xs={24}>
+            <Checkbox value="noNoise">
+             <i className="fa-light fa-volume-slash fa-xl" /> Pas de bruit après
+             23h
+            </Checkbox>
            </Col>
-           <Col span={24}>
+           <Col xs={24}>
             <Checkbox value="noFoodDrinks">
-             Pas de nourriture ni de boissons dans les chambres à coucher
+             <i className="fa-light fa-utensils-slash fa-xl" /> Pas de
+             nourriture ni de boissons dans les chambres à coucher
             </Checkbox>
            </Col>
-           <Col span={24}>
-            <Checkbox value="noParties">Pas de fêtes ni d'événements</Checkbox>
+           <Col xs={24}>
+            <Checkbox value="noParties">
+             <i className="fa-light fa-champagne-glasses fa-xl" /> Pas de fêtes
+             ni d'événements
+            </Checkbox>
            </Col>
-           <Col span={24}>
-            <Checkbox value="noSmoking">Défense de fumer</Checkbox>
+           <Col xs={24}>
+            <Checkbox value="noSmoking">
+             <i className="fa-light fa-ban-smoking fa-xl" /> Défense de fumer
+            </Checkbox>
            </Col>
-           <Col span={24}>
-            <Checkbox value="noPets">Pas d'animaux de compagnie</Checkbox>
+           <Col xs={24}>
+            <Checkbox value="noPets">
+             <i className="fa-light fa-paw-simple fa-xl" /> Pas d'animaux de
+             compagnie
+            </Checkbox>
            </Col>
-           <Col span={24}>
+           <Col xs={24}>
             <Checkbox value="noUnmarriedCouple">
-             Pas de couple non marié
+             <i className="fa-light fa-ban fa-xl" /> Pas de couple non marié
             </Checkbox>
            </Col>
-           <Col span={24}>
+           <Col xs={24}>
             <Checkbox
              value="additionalRules"
              checked={showAdditionalRules}
              onChange={(e) => setShowAdditionalRules(e.target.checked)}
             >
-             Règles supplémentaires
+             <i className="fa-light fa-circle-info fa-xl" /> Règles
+             supplémentaires
             </Checkbox>
            </Col>
           </Row>

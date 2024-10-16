@@ -3,8 +3,10 @@ import {
  Alert,
  Row,
  Col,
+ Grid,
  Layout,
  Form,
+ Flex,
  Input,
  Button,
  message,
@@ -14,7 +16,11 @@ import {
  Rate,
  Select,
 } from 'antd';
-import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+ ArrowLeftOutlined,
+ PlusOutlined,
+ DownloadOutlined,
+} from '@ant-design/icons';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import MapPicker from './propertypost/MapPicker';
@@ -22,8 +28,11 @@ import { useNavigate } from 'react-router-dom';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
 import useUploadPhotos from '../../hooks/useUploadPhotos';
 import ImgCrop from 'antd-img-crop';
+import MapConfig from '../../mapconfig';
 
-const { Title, Text } = Typography;
+const { useBreakpoint } = Grid;
+
+const { Paragraph, Title, Text } = Typography;
 const { Content } = Layout;
 
 const getBase64 = (file) =>
@@ -39,6 +48,7 @@ const OPTIONS = [
  'Attraction',
  'Centre commercial',
 ];
+
 const CreateNearbyPlace = () => {
  const { loading, error, createNearbyPlace } = useNearbyPlace();
  const { uploadPlace } = useUploadPhotos();
@@ -46,12 +56,24 @@ const CreateNearbyPlace = () => {
  const [form] = Form.useForm();
  const [Latitude, setLatitude] = useState(null);
  const [Longitude, setLongitude] = useState(null);
+ const [placePhotos, setPlacePhotos] = useState([]);
  const [placePhoto, setPlacePhoto] = useState('');
  const [filelist, setFileList] = useState([]);
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
  const [selectedItems, setSelectedItems] = useState([]);
  const [placeExists, setPlaceExists] = useState(false);
+
+ const screens = useBreakpoint();
+ const getImageSize = () => {
+  if (screens.xs) {
+   return { width: 100, height: 100 }; // Small size for mobile (xs)
+  } else if (screens.md) {
+   return { width: 240, height: 240 }; // Medium size for tablet and up (md and larger)
+  }
+  return { width: 240, height: 240 }; // Default size for larger screens
+ };
+ const imageSize = getImageSize();
 
  const handlePlaceSelected = ({
   latitude,
@@ -60,27 +82,21 @@ const CreateNearbyPlace = () => {
   placeURL,
   placeAddress,
   placeRating,
-  placePhoto,
+  placePhotos,
   placeTypes,
  }) => {
   form.resetFields();
+  setPlacePhotos([]);
   setLatitude(latitude);
   setLongitude(longitude);
-  setPlacePhoto(placePhoto);
-
+  setPlacePhotos(placePhotos || []);
   form.setFieldsValue({
    name: placeName,
    address: placeAddress,
    url: placeURL,
    rating: placeRating,
   });
-
-  // If placePhoto exists, don't allow file upload
-  if (placePhoto) {
-   setFileList([]);
-  } else {
-   setFileList([]);
-  }
+  setFileList([]);
  };
 
  const handlePreview = async (file) => {
@@ -103,11 +119,9 @@ const CreateNearbyPlace = () => {
  );
 
  const onFinish = async (values) => {
-  if (placePhoto) {
-   values.photo = placePhoto;
-  } else {
-   const photoUrls =
-    filelist.length > 0 ? await uploadPlace(filelist) : [placePhoto];
+  let photoUrl = '';
+  if (filelist.length > 0) {
+   const photoUrls = await uploadPlace(filelist);
    values.photo = photoUrls;
   }
   const mergedValues = {
@@ -122,9 +136,9 @@ const CreateNearbyPlace = () => {
    setFileList([]);
    setLatitude(null);
    setLongitude(null);
-   setPlacePhoto('');
+   setPlacePhotos([]);
   } catch (error) {
-   if (error.message === 'Le lieu existe déjà') {
+   if (error.response.data.error === 'Place already exists') {
     setPlaceExists(true);
    } else {
     message.error('Échec de la création du lieu à proximité');
@@ -206,6 +220,7 @@ const CreateNearbyPlace = () => {
            />
           </Form.Item>
          </Col>
+
          <Col xs={24} md={6}>
           <Form.Item
            name="photo"
@@ -213,27 +228,55 @@ const CreateNearbyPlace = () => {
            valuePropName="filelist"
            getValueFromEvent={(e) => e.filelist}
           >
-           {placePhoto ? (
-            <Image src={placePhoto} alt="Place" style={{ width: '100%' }} />
-           ) : (
-            <ImgCrop rotationSlider>
-             <Upload
-              listType="picture-card"
-              fileList={filelist}
-              onPreview={handlePreview}
-              onChange={handleChange}
-             >
-              {filelist.length >= 1 ? null : uploadButton}
-             </Upload>
-            </ImgCrop>
-           )}
+           <ImgCrop rotationSlider>
+            <Upload
+             listType="picture-card"
+             fileList={filelist}
+             onPreview={handlePreview}
+             onChange={handleChange}
+            >
+             {filelist.length >= 1 ? null : uploadButton}
+            </Upload>
+           </ImgCrop>
           </Form.Item>
          </Col>
         </Row>
 
+        {placePhotos && placePhotos.length > 0 && (
+         <Row gutter={[1, 16]}>
+          <Col xs={24}>
+           <Paragraph>
+            <Text>
+             <Text strong>Astuce:</Text> Téléchargez l'une des photo sur votre
+             appareil et téléchargez-la à nouveau pour personnaliser votre de
+             lieu à proximité! 🎉
+            </Text>
+            <br />
+            <Text>
+             Enregistrez-la sur votre appareil, puis utilisez la fonction{' '}
+             <Text strong>Charger</Text> pour ajouter votre propre touche !
+            </Text>
+           </Paragraph>
+          </Col>
+          {placePhotos.map((photo, index) => (
+           <Col key={index} xs={8} md={6}>
+            <Flex gap="small" align="center" vertical>
+             <Image
+              src={photo}
+              width={imageSize.width}
+              height={imageSize.height}
+              objectfit="cover"
+             />
+            </Flex>
+           </Col>
+          ))}
+         </Row>
+        )}
+
         {placeExists && (
          <Row justify="center">
           <Col xs={24} md={6}>
+           <br />
            <Alert
             message="Le lieu existe déjà"
             type="warning"
@@ -244,7 +287,7 @@ const CreateNearbyPlace = () => {
           </Col>
          </Row>
         )}
-
+        <br />
         <Row justify="center">
          <Col xs={24} md={6}>
           <Form.Item>
@@ -252,7 +295,7 @@ const CreateNearbyPlace = () => {
             style={{ width: '100%' }}
             type="primary"
             htmlType="submit"
-            loading={loading}
+            loading={!loading}
            >
             Ajouter un lieu à proximité
            </Button>

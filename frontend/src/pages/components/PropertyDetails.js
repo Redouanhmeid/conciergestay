@@ -14,6 +14,7 @@ import {
  FloatButton,
  Button,
  Card,
+ List,
  Modal,
  Avatar,
  Tooltip,
@@ -50,94 +51,158 @@ const { Meta } = Card;
 const getAmenityDetails = (type, item, showARulesModal) => {
  const details = {
   basic: {
-   wifi: {
-    avatar: <i className="icon-style fa-light fa-wifi"></i>,
-    title: 'Wifi',
+   /* Salle de bain */
+   shower: {
+    avatar: <i className="fa-light fa-shower fa-xl" />,
+    title: 'Douche',
    },
-   television: {
-    avatar: <i className="icon-style fa-light fa-tv"></i>,
-    title: 'Télévision',
+   jacuzzi: {
+    avatar: <i className="fa-light fa-hot-tub-person fa-xl" />,
+    title: 'Jacuzzi',
    },
-   kitchen: {
-    avatar: <i className="icon-style fa-light fa-microwave"></i>,
-    title: 'Cuisine',
+   bathtub: {
+    avatar: <i className="fa-light fa-bath fa-xl" />,
+    title: 'Baignoire',
    },
+   /* Chambre et linge */
    washingMachine: {
-    avatar: <i className="icon-style fa-light fa-washing-machine"></i>,
+    avatar: <i className="fa-light fa-washing-machine fa-xl" />,
     title: 'Machine à laver',
    },
-   freeParking: {
-    avatar: <i className="icon-style fa-light fa-square-parking"></i>,
-    title: 'Parking gratuit',
+   dryerheat: {
+    avatar: <i className="fa-light fa-dryer-heat fa-xl" />,
+    title: 'Sèche-linge',
+   },
+   vacuum: {
+    avatar: <i className="fa-light fa-vacuum fa-xl" />,
+    title: 'Aspirateur',
+   },
+   vault: {
+    avatar: <i className="fa-light fa-vault fa-xl" />,
+    title: 'Coffre-fort',
+   },
+   babybed: {
+    avatar: <i className="fa-light fa-baby fa-xl" />,
+    title: 'Lit bébé',
+   },
+   /* Divertissement */
+   television: {
+    avatar: <i className="fa-light fa-tv fa-xl" />,
+    title: 'Télévision',
+   },
+   speaker: {
+    avatar: <i className="fa-light fa-speaker fa-xl" />,
+    title: 'Système audio',
+   },
+   gameconsole: {
+    avatar: <i className="fa-light fa-gamepad-modern fa-xl" />,
+    title: 'Console de jeux',
+   },
+   /* Cuisine et salle à manger */
+   oven: {
+    avatar: <i className="fa-light fa-oven fa-xl" />,
+    title: 'Four',
+   },
+   microwave: {
+    avatar: <i className="fa-light fa-microwave fa-xl" />,
+    title: 'Micro-ondes',
+   },
+   coffeemaker: {
+    avatar: <i className="fa-light fa-coffee-pot fa-xl" />,
+    title: 'cafétière',
+   },
+   fridge: {
+    avatar: <i className="fa-light fa-refrigerator fa-xl" />,
+    title: 'Réfrigérateur',
+   },
+   fireburner: {
+    avatar: <i className="fa-light fa-fire-burner fa-xl" />,
+    title: 'Cuisinière',
+   },
+   /* Chauffage et climatisation */
+   heating: {
+    avatar: <i className="fa-light fa-temperature-arrow-up fa-xl" />,
+    title: 'Chauffage',
    },
    airConditioning: {
-    avatar: <i className="icon-style fa-light fa-snowflake"></i>,
+    avatar: <i className="fa-light fa-snowflake fa-xl" />,
     title: 'Climatisation',
    },
+   fireplace: {
+    avatar: <i className="fa-light fa-fireplace fa-xl" />,
+    title: 'Cheminée',
+   },
+   ceilingfan: {
+    avatar: <i className="fa-light fa-fan fa-xl" />,
+    title: 'Ventilateur de plafond',
+   },
+   tablefan: {
+    avatar: <i className="fa-light fa-fan-table fa-xl" />,
+    title: 'Ventilateur de table',
+   },
+   /* Sécurité à la maison */
+   fingerprint: {
+    avatar: <i className="fa-light fa-fingerprint fa-xl" />,
+    title: 'Serrure biometrique à empreinte digitale',
+   },
+   lockbox: {
+    avatar: <i className="fa-light fa-lock-hashtag fa-xl" />,
+    title: 'Boite à serrure',
+   },
+   parkingaccess: {
+    avatar: <i className="fa-light fa-square-parking fa-xl" />,
+    title: 'Accès parking',
+   },
+   /* Internet et bureau  */
+   wifi: {
+    avatar: <i className="fa-light fa-wifi fa-xl" />,
+    title: 'Wifi',
+   },
+   dedicatedworkspace: {
+    avatar: <i className="fa-light fa-chair-office fa-xl" />,
+    title: 'Espace dédié de travail',
+   },
+   /* Parking et installations */
+   freeParking: {
+    avatar: <i className="fa-light fa-circle-parking fa-xl" />,
+    title: 'Parking gratuit',
+   },
+   paidParking: {
+    avatar: <i className="fa-light fa-square-parking fa-xl" />,
+    title: 'Stationnement payant',
+   },
    pool: {
-    avatar: <i className="icon-style fa-light fa-water-ladder"></i>,
+    avatar: <i className="fa-light fa-water-ladder fa-xl" />,
     title: 'Piscine',
    },
    garbageCan: {
-    avatar: <i className="icon-style fa-light fa-trash-can"></i>,
+    avatar: <i className="fa-light fa-trash-can fa-xl" />,
     title: 'Benne à ordures',
-   },
-  },
-  security: {
-   smokeDetector: {
-    avatar: <i className="icon-style fa-light fa-sensor-cloud"></i>,
-    title: 'Détecteur de fumée',
-   },
-   firstAidKit: {
-    avatar: <i className="icon-style fa-light fa-suitcase-medical"></i>,
-    title: 'Kit de premiers secours',
-   },
-   fireExtinguisher: {
-    avatar: <i className="icon-style fa-light fa-fire-extinguisher"></i>,
-    title: 'Extincteur',
-   },
-   carbonMonoxideDetector: {
-    avatar: <i className="icon-style fa-light fa-sensor"></i>,
-    title: 'Détecteur de monoxyde de carbone',
-   },
-  },
-  elements: {
-   cameras: {
-    avatar: <i className="icon-style fa-light fa-camera-cctv"></i>,
-    title: 'Caméras de surveillance extérieures',
-   },
-   sonometers: {
-    avatar: <i className="icon-style fa-light fa-gauge-low"></i>,
-    title: 'Sonomètres',
-   },
-   weapons: {
-    avatar: <i className="icon-style fa-light fa-crosshairs"></i>,
-    title: 'Armes',
    },
   },
   houseRules: {
    noNoise: {
-    avatar: <i className="icon-style fa-light fa-volume-slash"></i>,
+    avatar: <i className="fa-light fa-volume-slash fa-xl" />,
     title: 'Pas de bruit après 23h',
    },
    noFoodDrinks: {
-    avatar: <i className="icon-style fa-light fa-utensils-slash"></i>,
+    avatar: <i className="fa-light fa-utensils-slash fa-xl" />,
     title: 'Pas de nourriture ni de boissons dans les chambres à coucher',
    },
    noParties: {
-    avatar: <i className="icon-style fa-light fa-champagne-glasses"></i>,
+    avatar: <i className="fa-light fa-champagne-glasses fa-xl" />,
     title: "Pas de fêtes ni d'événements",
    },
    noSmoking: {
-    avatar: <i className="icon-style fa-light fa-ban-smoking"></i>,
+    avatar: <i className="fa-light fa-ban-smoking fa-xl" />,
     title: 'Défense de fumer',
    },
    noPets: {
-    avatar: <i className="icon-style fa-light fa-paw-simple"></i>,
+    avatar: <i className="fa-light fa-paw-simple fa-xl" />,
     title: "Pas d'animaux de compagnie",
    },
    noUnmarriedCouple: {
-    avatar: <i className="icon-style fa-light fa-ban"></i>,
+    avatar: <i className="fa-light fa-ban fa-xl" />,
     title: 'Pas de couple non marié',
    },
    additionalRules: {
@@ -145,8 +210,8 @@ const getAmenityDetails = (type, item, showARulesModal) => {
      <i
       onClick={showARulesModal}
       style={{ color: '#aa7e42', cursor: 'pointer' }}
-      className="icon-style fa-light fa-circle-info"
-     ></i>
+      className="fa-light fa-circle-info fa-xl"
+     />
     ),
     title: (
      <span
@@ -176,8 +241,8 @@ const PropertyDetails = () => {
  const [amenities, setAmenities] = useState([]);
  const [selectedAmenityDetails, setSelectedAmenityDetails] = useState(null);
  const [isModalVisible, setIsModalVisible] = useState(false);
+ const [isAmenitiesModalVisible, setIsAmenitiesModalVisible] = useState(false);
  const [isARulesModalOpen, setIsARulesModalOpen] = useState(false);
- const [isFixed, setIsFixed] = useState(false);
  const [isOwner, setIsOwner] = useState(false);
 
  const confirmDelete = async () => {
@@ -200,29 +265,13 @@ const PropertyDetails = () => {
   {
    key: '1',
    label: (
-    <Button
-     type="text"
-     icon={<i className="fa-light fa-house-lock"></i>}
-     onClick={() => navigate(`/digitalguidebook?id=${id}`)}
-    >
-     Accéder au guidebook digital
-    </Button>
+    <a href={`/digitalguidebook?id=${id}`}>
+     <i className="fa-light fa-house-lock" /> Accéder au guidebook digital
+    </a>
    ),
   },
   {
    key: '2',
-   label: (
-    <Button
-     type="text"
-     icon={<i className="fa-light fa-pen-to-square"></i>}
-     onClick={() => navigate(`/editproperty?id=${id}`)}
-    >
-     Modifier
-    </Button>
-   ),
-  },
-  {
-   key: '3',
    label: (
     <Popconfirm
      title="Supprimer la propriété"
@@ -232,31 +281,13 @@ const PropertyDetails = () => {
      okText="Oui"
      cancelText="Non"
     >
-     <Button type="text" icon={<i className="fa-light fa-trash-can"></i>}>
-      Supprimer
-     </Button>
+     <a>
+      <i className="fa-light fa-trash-can" /> Supprimer
+     </a>
     </Popconfirm>
    ),
   },
  ];
-
- const handleScroll = () => {
-  const scrollTop = window.scrollY;
-  const threshold = 200; // Threshold in pixels from the top to fix the card
-
-  if (scrollTop > threshold) {
-   setIsFixed(true);
-  } else {
-   setIsFixed(false);
-  }
- };
-
- useEffect(() => {
-  window.addEventListener('scroll', handleScroll);
-  return () => {
-   window.removeEventListener('scroll', handleScroll);
-  };
- }, [handleScroll]);
 
  const showARulesModal = () => {
   setIsARulesModalOpen(true);
@@ -329,6 +360,18 @@ const PropertyDetails = () => {
   setIsModalVisible(false);
  };
 
+ const showAmenitiesModal = () => {
+  setIsAmenitiesModalVisible(true);
+ };
+
+ // Hide modal handler
+ const handleAmenitiesOk = () => {
+  setIsAmenitiesModalVisible(false);
+ };
+
+ const handleAmenitiesCancel = () => {
+  setIsAmenitiesModalVisible(false);
+ };
  // Utility to parse JSON strings safely
  const parseJSON = (str) => {
   try {
@@ -356,14 +399,6 @@ const PropertyDetails = () => {
    typeof property.basicAmenities === 'string'
     ? parseJSON(property.basicAmenities)
     : property.basicAmenities,
-  safetyFeatures:
-   typeof property.safetyFeatures === 'string'
-    ? parseJSON(property.safetyFeatures)
-    : property.safetyFeatures,
-  elements:
-   typeof property.elements === 'string'
-    ? parseJSON(property.elements)
-    : property.elements,
   houseRules:
    typeof property.houseRules === 'string'
     ? parseJSON(property.houseRules)
@@ -389,19 +424,15 @@ const PropertyDetails = () => {
    <Layout className="contentStyle">
     {!isLoading && (
      <Card
-      className={
-       isFixed ? 'fixed-bottom-card host-card-mobile' : 'host-card-mobile'
-      }
+      className="fixed-bottom-card host-card-mobile"
       style={{ width: '100%', marginTop: 16 }}
       loading={loading}
       actions={[
        userData.phone !== 'N/A' && (
         <Tooltip title={`${userData.phone}`}>
-         <i
-          key="Phone"
-          className="Hosticon fa-light fa-mobile"
-          onClick={() => window.open(`tel:+${userData.phone}`)}
-         />
+         <a href={`tel:${userData.phone}`} style={{ textDecoration: 'none' }}>
+          <i className="Hosticon fa-light fa-mobile" />
+         </a>
         </Tooltip>
        ),
        property.airbnbUrl && (
@@ -432,13 +463,15 @@ const PropertyDetails = () => {
        title={`${userData.firstname} ${userData.lastname}`}
        description={
         <>
-         <i className="fa-light fa-envelope"></i> {userData.email}
+         <i className="fa-light fa-envelope" /> {userData.email}
         </>
        }
       />
      </Card>
     )}
-    <Head />
+    <div className="mobile-hide">
+     <Head />
+    </div>
     <Layout>
      <div style={{ padding: '20px' }}>
       <Anchor
@@ -460,14 +493,14 @@ const PropertyDetails = () => {
             alignItems: 'center',
            }}
           >
-           <i className="Anchoricon fa-light fa-square-info"></i>
+           <i className="Anchoricon fa-light fa-square-info" />
            <span>Informations</span>
           </div>
          ),
         },
         {
          key: '2',
-         href: '#basicamenities',
+         href: '#manuelle',
          title: (
           <div
            style={{
@@ -476,7 +509,7 @@ const PropertyDetails = () => {
             alignItems: 'center',
            }}
           >
-           <i className="Anchoricon fa-light fa-wifi"></i>
+           <i className="Anchoricon fa-light fa-wifi" />
            <span>Manuelle de la maison</span>
           </div>
          ),
@@ -492,29 +525,13 @@ const PropertyDetails = () => {
             alignItems: 'center',
            }}
           >
-           <i className="Anchoricon fa-light fa-map-marker-alt"></i>
+           <i className="Anchoricon fa-light fa-map-marker-alt" />
            <span>Lieux à proximité</span>
           </div>
          ),
         },
         {
          key: '4',
-         href: '#equipements',
-         title: (
-          <div
-           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-           }}
-          >
-           <i className="Anchoricon fa-light fa-tools"></i>
-           <span>Équipements</span>
-          </div>
-         ),
-        },
-        {
-         key: '5',
          href: '#rules',
          title: (
           <div
@@ -524,7 +541,7 @@ const PropertyDetails = () => {
             alignItems: 'center',
            }}
           >
-           <i className="Anchoricon fa-light fa-ban-smoking"></i>
+           <i className="Anchoricon fa-light fa-ban-smoking" />
            <span>Reglement intérieur</span>
           </div>
          ),
@@ -564,7 +581,7 @@ const PropertyDetails = () => {
       {!isLoading &&
        (userData.role === 'manager' || userData.role === 'admin') && (
         <FloatButton
-         icon={<i className="fa-light fa-location-plus"></i>}
+         icon={<i className="fa-light fa-location-plus" />}
          tooltip={<div>Ajouter un lieu à proximité</div>}
          type="primary"
          onClick={nearbyPlace}
@@ -582,18 +599,43 @@ const PropertyDetails = () => {
            ))}
          </Carousel>
         </div>
+        {isOwner && (
+         <Button
+          icon={<i className="fa-light fa-pen-to-square" />}
+          onClick={() => navigate(`/editphotos?id=${id}`)}
+          type="link"
+          style={{
+           position: 'absolute',
+           right: 15,
+           top: 15,
+           fontSize: 16,
+           color: '#fdfdfd',
+          }}
+         />
+        )}
        </Col>
        <Col xs={24} sm={12}>
-        <Title level={1}>{parsedProperty.name}</Title>
+        <Flex gap="middle" align="center" justify="space-between">
+         <Title level={1}>{parsedProperty.name}</Title>
+         {isOwner && (
+          <Button
+           icon={<i className="fa-light fa-pen-to-square" />}
+           onClick={() => navigate(`/editbasicinfo?id=${id}`)}
+           type="link"
+           size="Large"
+           style={{ fontSize: 16 }}
+          />
+         )}
+        </Flex>
         <Title level={3}>{parsedProperty.price} Dh / Nuit</Title>
         <Flex gap="4px 0" wrap>
-         <Tag icon={<i className="tag-icon-style fa-light fa-bed-front"></i>}>
+         <Tag icon={<i className="tag-icon-style fa-light fa-bed-front" />}>
           {parsedProperty.rooms} Chambres
          </Tag>
-         <Tag icon={<i className="tag-icon-style fa-light fa-users"></i>}>
+         <Tag icon={<i className="tag-icon-style fa-light fa-users" />}>
           {parsedProperty.capacity} Voyageurs
          </Tag>
-         <Tag icon={<i className="tag-icon-style fa-light fa-bed"></i>}>
+         <Tag icon={<i className="tag-icon-style fa-light fa-bed" />}>
           {parsedProperty.beds} Lit
          </Tag>
         </Flex>
@@ -606,11 +648,12 @@ const PropertyDetails = () => {
          actions={[
           userData.phone !== 'N/A' && (
            <Tooltip title={`${userData.phone}`}>
-            <i
-             key="Phone"
-             className="Hosticon fa-light fa-mobile"
-             onClick={() => window.open(`tel:+${userData.phone}`)}
-            />
+            <a
+             href={`tel:${userData.phone}`}
+             style={{ textDecoration: 'none' }}
+            >
+             <i className="Hosticon fa-light fa-mobile" />
+            </a>
            </Tooltip>
           ),
           property.airbnbUrl && (
@@ -641,73 +684,49 @@ const PropertyDetails = () => {
           title={`${userData.firstname} ${userData.lastname}`}
           description={
            <>
-            <i className="fa-light fa-envelope"></i> {userData.email}
+            <i className="fa-light fa-envelope" /> {userData.email}
            </>
           }
          />
         </Card>
        </Col>
-       <Divider id="basicamenities" />
+
+       <Divider id="manuelle" />
        {parsedProperty.basicAmenities && (
         <Col xs={24} sm={24}>
          <Title level={3}>Manuelle de la maison:</Title>
          <br />
-         <Row gutter={[16, 16]}>
-          {parsedProperty.basicAmenities.map((amenity, index) => {
+         <Row gutter={[16, 0]}>
+          {parsedProperty.basicAmenities.slice(0, 6).map((amenity, index) => {
            const { avatar, title } = getAmenityDetails('basic', amenity);
            const amenityExists = hasAmenity(amenity);
            return (
-            <Col
-             xs={12}
-             md={4}
-             key={index}
-             style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-             }}
-            >
+            <Col xs={24} md={8} key={index} style={{ textAlign: 'left' }}>
              <Card
               bordered={false}
-              hoverable={false}
               cover={avatar}
               style={{
-               textAlign: 'center',
-               width: '90%',
                display: 'flex',
-               flexDirection: 'column',
                alignItems: 'center',
               }}
              >
-              <Meta
-               title={title}
-               description={
-                isOwner && (
-                 <>
-                  {amenityExists ? (
-                   <Button
-                    icon={<EyeOutlined />}
-                    onClick={() => showModal(amenity)}
-                   >
-                    Voir la carte
-                   </Button>
-                  ) : (
-                   <Button
-                    icon={<PlusOutlined />}
-                    onClick={() => AddAmenity(amenity)}
-                   >
-                    Ajouter une carte
-                   </Button>
-                  )}
-                 </>
-                )
-               }
-              />
+              <Meta title={title} />
              </Card>
             </Col>
            );
           })}
+          <Col xs={24} md={24}>
+           <Button
+            style={{ marginTop: 24 }}
+            type="default"
+            size="large"
+            onClick={showAmenitiesModal}
+           >
+            Afficher tous les équipements
+           </Button>
+          </Col>
          </Row>
+
          {selectedAmenityDetails && (
           <Modal
            title="Commodité"
@@ -771,64 +790,24 @@ const PropertyDetails = () => {
          longitude={parsedProperty.longitude}
         />
        </Col>
-       <Divider id="equipements" />
-       <Col xs={24} sm={16}>
-        {parsedProperty.safetyFeatures && (
-         <Col xs={24} sm={24}>
-          <Title level={3}>Équipement de sécurité:</Title>
-          <br />
-          <Row gutter={[0, 16]}>
-           {parsedProperty.safetyFeatures.map((safetyFeature, index) => {
-            const { avatar, title } = getAmenityDetails(
-             'security',
-             safetyFeature
-            );
-            return (
-             <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
-              <Card
-               bordered={false}
-               hoverable={false}
-               cover={avatar}
-               style={{ width: '100%', textAlign: 'center' }}
-              >
-               <Meta title={title} />
-              </Card>
-             </Col>
-            );
-           })}
-          </Row>
-         </Col>
-        )}
-       </Col>
-       <Col xs={24} sm={8}>
-        {parsedProperty.elements && (
-         <Col xs={24} sm={24}>
-          <Title level={3}>Équipement supplémentaire:</Title>
-          <br />
-          <Row gutter={[0, 16]}>
-           {parsedProperty.elements.map((element, index) => {
-            const { avatar, title } = getAmenityDetails('elements', element);
-            return (
-             <Col xs={12} md={4} key={index} style={{ maxWidth: '100%' }}>
-              <Card
-               bordered={false}
-               hoverable={false}
-               cover={avatar}
-               style={{ width: '100%', textAlign: 'center' }}
-              >
-               <Meta title={title} />
-              </Card>
-             </Col>
-            );
-           })}
-          </Row>
-         </Col>
-        )}
-       </Col>
+
        <Divider id="rules" />
        {parsedProperty.houseRules && (
         <Col xs={24} sm={24}>
          <Title level={3}>Reglement intérieur:</Title>
+         {isOwner && (
+          <Button
+           icon={<i className="fa-light fa-pen-to-square" />}
+           onClick={() => navigate(`/edithouserules?id=${id}`)}
+           type="link"
+           style={{
+            position: 'absolute',
+            right: 15,
+            top: 15,
+            fontSize: 16,
+           }}
+          />
+         )}
          <br />
          <Row gutter={[0, 16]}>
           {parsedProperty.houseRules.map((houseRule, index) => {
@@ -875,6 +854,57 @@ const PropertyDetails = () => {
        : 'Aucune règle supplémentaire trouvée';
      })()}
     </p>
+   </Modal>
+
+   <Modal
+    title="Équipements"
+    open={isAmenitiesModalVisible}
+    onOk={handleAmenitiesOk}
+    onCancel={handleAmenitiesCancel}
+    footer={[
+     isOwner && (
+      <Button
+       key="edit"
+       type="primary"
+       onClick={() => navigate(`/editequipements?id=${id}`)}
+       icon={<i className="fa-light fa-pen-to-square" />}
+      >
+       Modifier les équipements
+      </Button>
+     ),
+     <Button key="back" onClick={handleAmenitiesCancel}>
+      OK
+     </Button>,
+    ]}
+   >
+    <List
+     itemLayout="horizontal"
+     dataSource={parsedProperty.basicAmenities}
+     renderItem={(amenity) => {
+      const { avatar, title } = getAmenityDetails('basic', amenity);
+      const amenityExists = hasAmenity(amenity);
+      return (
+       <List.Item
+        actions={[
+         <a
+          key="list-voir"
+          onClick={() =>
+           isOwner && (amenityExists ? showModal(amenity) : AddAmenity(amenity))
+          }
+         >
+          {isOwner && (amenityExists ? 'Voir la carte' : 'Ajouter une carte')}
+         </a>,
+        ]}
+       >
+        {isOwner ? (
+         <List.Item.Meta avatar={avatar} title={title} />
+        ) : (
+         <List.Item.Meta avatar={avatar} title={title} />
+        )}
+       </List.Item>
+      );
+     }}
+    />
    </Modal>
   </>
  );

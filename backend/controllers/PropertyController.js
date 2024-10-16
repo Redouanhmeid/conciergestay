@@ -118,6 +118,140 @@ const getPropertiesByPlaceLatLon = async (req, res) => {
  }
 };
 
+const updatePropertyBasicInfo = async (req, res) => {
+ try {
+  const { id } = req.params;
+  const { name, description, type, airbnbUrl, bookingUrl } = req.body;
+  const property = await Property.findByPk(id);
+  if (!property) {
+   return res.status(404).json({ error: 'Property not found' });
+  }
+  await property.update({ name, description, type, airbnbUrl, bookingUrl });
+  res.status(200).json(property);
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to update property basic info' });
+ }
+};
+
+const updatePropertyAmenities = async (req, res) => {
+ try {
+  const { id } = req.params;
+  const { basicAmenities } = req.body;
+  const property = await Property.findByPk(id);
+  if (!property) {
+   return res.status(404).json({ error: 'Property not found' });
+  }
+  await property.update({ basicAmenities });
+  res.status(200).json(property);
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to update property amenities' });
+ }
+};
+
+const updatePropertyCapacity = async (req, res) => {
+ try {
+  const { id } = req.params;
+  const { price, capacity, rooms, beds } = req.body;
+  const property = await Property.findByPk(id);
+  if (!property) {
+   return res.status(404).json({ error: 'Property not found' });
+  }
+  await property.update({ price, capacity, rooms, beds });
+  res.status(200).json(property);
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to update property capacity' });
+ }
+};
+
+const updatePropertyRules = async (req, res) => {
+ try {
+  const { id } = req.params;
+  const { houseRules } = req.body;
+  const property = await Property.findByPk(id);
+  if (!property) {
+   return res.status(404).json({ error: 'Property not found' });
+  }
+  await property.update({ houseRules });
+  res.status(200).json(property);
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to update property rules' });
+ }
+};
+
+const updatePropertyCheckIn = async (req, res) => {
+ try {
+  const { id } = req.params;
+  const {
+   checkInTime,
+   earlyCheckIn,
+   frontPhoto,
+   accessToProperty,
+   videoCheckIn,
+  } = req.body;
+  const property = await Property.findByPk(id);
+  if (!property) {
+   return res.status(404).json({ error: 'Property not found' });
+  }
+  await property.update({
+   checkInTime,
+   earlyCheckIn,
+   frontPhoto,
+   accessToProperty,
+   videoCheckIn,
+  });
+  res.status(200).json(property);
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to update property check-in info' });
+ }
+};
+
+const updatePropertyCheckOut = async (req, res) => {
+ try {
+  const { id } = req.params;
+  const {
+   checkOutTime,
+   lateCheckOutPolicy,
+   beforeCheckOut,
+   additionalCheckOutInfo,
+  } = req.body;
+  const property = await Property.findByPk(id);
+  if (!property) {
+   return res.status(404).json({ error: 'Property not found' });
+  }
+  await property.update({
+   checkOutTime,
+   lateCheckOutPolicy,
+   beforeCheckOut,
+   additionalCheckOutInfo,
+  });
+  res.status(200).json(property);
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to update property check-out info' });
+ }
+};
+
+const updatePropertyPhotos = async (req, res) => {
+ try {
+  const { id } = req.params;
+  const { photos } = req.body;
+  const property = await Property.findByPk(id);
+  if (!property) {
+   return res.status(404).json({ error: 'Property not found' });
+  }
+  await property.update({ photos });
+  res.status(200).json(property);
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to update property photos' });
+ }
+};
+
 module.exports = {
  getProperties,
  getProperty,
@@ -126,4 +260,11 @@ module.exports = {
  updateProperty,
  deleteProperty,
  getPropertiesByPlaceLatLon,
+ updatePropertyBasicInfo,
+ updatePropertyAmenities,
+ updatePropertyCapacity,
+ updatePropertyRules,
+ updatePropertyCheckIn,
+ updatePropertyCheckOut,
+ updatePropertyPhotos,
 };

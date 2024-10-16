@@ -118,7 +118,7 @@ const Place = React.memo(({ place }) => {
  return (
   <Card
    cover={
-    <div className="nearbyplacescarousel" hoverable={false}>
+    <div className="nearbyplacescarousel" hoverable="false">
      <Image
       alt={place.name}
       src={place.photo}

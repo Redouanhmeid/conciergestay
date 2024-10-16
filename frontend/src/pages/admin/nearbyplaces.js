@@ -23,26 +23,40 @@ const { Content } = Layout;
 const { Title } = Typography;
 
 const NearbyPlaces = () => {
- const { loading, error, getAllNearbyPlaces, deleteNearbyPlace } =
-  useNearbyPlace();
+ const { error, getAllNearbyPlaces, deleteNearbyPlace } = useNearbyPlace();
  const navigate = useNavigate();
- const [NearbyPlaces, setNearbyPlaces] = useState([]);
  const [searchText, setSearchText] = useState('');
  const [searchedColumn, setSearchedColumn] = useState('');
+ const [dataSource, setDataSource] = useState([]);
+ const [loading, setLoading] = useState(false);
+ const [pagination, setPagination] = useState({
+  current: 1, // Current page
+  pageSize: 15, // Items per page
+  total: 0, // Total number of items (from server response)
+ });
 
- const fetchNearbyPlaces = async () => {
+ const fetchData = async (page, pageSize) => {
   try {
+   setLoading(true);
    const data = await getAllNearbyPlaces(); // Properly calling the function
-   setNearbyPlaces(data);
+   setDataSource(data);
+   setPagination({
+    ...pagination,
+    total: data.totalCount, // Total count from server
+   });
+   setLoading(false);
   } catch (err) {
    message.error('Échec du chargement des détails du lieu.');
   }
  };
 
  useEffect(() => {
-  fetchNearbyPlaces();
- }, []);
+  fetchData(pagination.current, pagination.pageSize);
+ }, [pagination.current, pagination.pageSize]);
 
+ const handleTableChange = (pagination) => {
+  setPagination(pagination); // This triggers useEffect to load the new page
+ };
  const handleSearch = (selectedKeys, confirm, dataIndex) => {
   confirm();
   setSearchText(selectedKeys[0]);
@@ -103,7 +117,9 @@ const NearbyPlaces = () => {
    title: 'Photo',
    dataIndex: 'photo',
    key: 'photo',
-   render: (photo) => <Image src={photo} shape="square" width={64} />,
+   render: (photo) => (
+    <Image src={photo} shape="square" width={64} height={64} />
+   ),
   },
   {
    title: 'Nom',
@@ -179,7 +195,7 @@ const NearbyPlaces = () => {
  const confirmDelete = async (id) => {
   await deleteNearbyPlace(id);
   if (!error) {
-   fetchNearbyPlaces();
+   fetchData();
    message.success('Lieu supprimée avec succès.');
   } else {
    message.error(`Erreur lors de la suppression du lieu: ${error.message}`);
@@ -203,9 +219,11 @@ const NearbyPlaces = () => {
      <Col xs={24} md={24}>
       <Table
        columns={columns}
-       dataSource={NearbyPlaces}
+       dataSource={dataSource}
        loading={loading}
        rowKey="id"
+       pagination={pagination}
+       onChange={handleTableChange}
       />
      </Col>
     </Row>

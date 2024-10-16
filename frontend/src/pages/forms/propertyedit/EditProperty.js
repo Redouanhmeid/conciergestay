@@ -30,7 +30,7 @@ import ImgCrop from 'antd-img-crop';
 import ReactPlayer from 'react-player';
 
 const { Content } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const format = 'HH:mm';
 const { TextArea } = Input;
 
@@ -266,7 +266,7 @@ const EditProperty = () => {
      >
       <Title level={3}>Modifier les informations de votre propriété</Title>
       <Row gutter={[32, 32]}>
-       <Col xs={24} sm={12}>
+       <Col xs={24} xl={12}>
         <Row gutter={[24, 0]}>
          <Col xs={24}>
           <Form.Item
@@ -296,7 +296,7 @@ const EditProperty = () => {
          </Col>
         </Row>
        </Col>
-       <Col xs={24} sm={12}>
+       <Col xs={24} xl={12}>
         <Row gutter={[24, 0]}>
          <Col xs={24} md={9}>
           <Form.Item label="Fixez votre prix" name="price">
@@ -318,128 +318,360 @@ const EditProperty = () => {
            <InputNumber min={0} />
           </Form.Item>
          </Col>
-         <Col xs={24} md={12}>
-          <Col xs={24}>
-           <Form.Item label="Commodités de base:" name="basicAmenities">
-            <Checkbox.Group>
+         <Col xs={24} md={24}>
+          <Form.Item
+           label={<Title level={4}>Manuelle de la maison:</Title>}
+           name="basicAmenities"
+          >
+           <Checkbox.Group className="equipement-checkbox-group">
+            <Row gutter={[24, 0]}>
+             {/* Salle de bain */}
              <Row>
-              <Col span={24}>
-               <Checkbox value="wifi">Wifi</Checkbox>
+              <Col xs={24}>
+               <Text strong>
+                <br />
+                Salle de bain
+               </Text>
               </Col>
-              <Col span={24}>
-               <Checkbox value="television">Télévision</Checkbox>
-              </Col>
-              <Col span={24}>
-               <Checkbox value="kitchen">Cuisine</Checkbox>
-              </Col>
-              <Col span={24}>
-               <Checkbox value="washingMachine">Lave-linge</Checkbox>
-              </Col>
-              <Col span={24}>
-               <Checkbox value="freeParking">
-                Parking gratuit sur place
+              <Col xs={12}>
+               <Checkbox value="shower">
+                <i className="fa-light fa-shower fa-xl" /> Douche
                </Checkbox>
               </Col>
-              <Col span={24}>
-               <Checkbox value="airConditioning">Climatisation</Checkbox>
+              <Col xs={12}>
+               <Checkbox value="soap">
+                <i className="fa-light fa-soap fa-xl" /> Savon
+               </Checkbox>
               </Col>
-              <Col span={24}>
-               <Checkbox value="pool">Piscine</Checkbox>
+              <Col xs={12}>
+               <Checkbox value="hairdryer">
+                <i className="fa-light fa-gun-squirt fa-xl" /> Sèche-cheveux
+               </Checkbox>
               </Col>
-              <Col span={24}>
-               <Checkbox value="garbageCan">Benne à ordures</Checkbox>
+              <Col xs={12}>
+               <Checkbox value="shampoo">
+                <i className="fa-light fa-bottle-water fa-xl" /> Shampooing
+               </Checkbox>
               </Col>
-             </Row>
-            </Checkbox.Group>
-           </Form.Item>
-          </Col>
-          <Col xs={24}>
-           <Form.Item
-            label="Possédez-vous ces équipements de sécurité?"
-            name="safetyFeatures"
-           >
-            <Checkbox.Group>
-             <Row>
-              <Col span={24}>
-               <Checkbox value="smokeDetector">Détecteur de fumée</Checkbox>
-              </Col>
-              <Col span={24}>
-               <Checkbox value="firstAidKit">Kit de premiers secours</Checkbox>
-              </Col>
-              <Col span={24}>
-               <Checkbox value="fireExtinguisher">Extincteur</Checkbox>
-              </Col>
-              <Col span={24}>
-               <Checkbox value="carbonMonoxideDetector">
-                Détecteur de monoxyde de carbone
+              <Col xs={12}>
+               <Checkbox value="hotwater">
+                <i className="fa-light fa-tank-water fa-xl" /> Eau chaude
                </Checkbox>
               </Col>
              </Row>
-            </Checkbox.Group>
-           </Form.Item>
-          </Col>
-         </Col>
-         <Col xs={24} md={12}>
-          <Col xs={24}>
-           <Form.Item
-            label="Votre logement possède-t-il ces éléments ?"
-            name="elements"
-           >
-            <Checkbox.Group>
+             {/* Chambre et linge */}
              <Row>
-              <Col span={24}>
+              <Col xs={24}>
+               <Text strong>
+                <br />
+                Chambre et linge
+               </Text>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="washingMachine">
+                <i className="fa-light fa-washing-machine fa-xl" /> Machine à
+                laver
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="dryerheat">
+                <i className="fa-light fa-dryer-heat fa-xl" /> Sèche-linge
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="basicequipement" style={{ lineHeight: 1 }}>
+                <i className="fa-light fa-toilet-paper-blank fa-xl" />{' '}
+                Équipements de base
+                <br />
+                <Text type="secondary">
+                 Serviettes, draps, savon et papier toilette
+                </Text>
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="cabinetfiling">
+                <i className="fa-light fa-cabinet-filing fa-xl" /> Classeur
+                d'armoire
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="blankets">
+                <i className="fa-light fa-blanket fa-xl" /> Couvertures
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="vault">
+                <i className="fa-light fa-vault fa-xl" /> Coffre-fort
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="vacuum">
+                <i className="fa-light fa-vacuum fa-xl" /> Aspirateur
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="mattresspillow">
+                <i className="fa-light fa-mattress-pillow fa-xl" /> Matelas
+                oreiller
+               </Checkbox>
+              </Col>
+             </Row>
+             {/* Divertissement */}
+             <Row>
+              <Col xs={24}>
+               <Text strong>
+                <br />
+                Divertissement
+               </Text>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="television">
+                <i className="fa-light fa-tv fa-xl" /> Télévision
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="ethernet">
+                <i className="fa-light fa-ethernet fa-xl" /> Connexion Ethernet
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="speaker">
+                <i className="fa-light fa-speaker fa-xl" /> Système audio
+                Bluetooth
+               </Checkbox>
+              </Col>
+             </Row>
+             {/* Chauffage et climatisation */}
+             <Row>
+              <Col xs={24}>
+               <Text strong>
+                <br />
+                Chauffage et climatisation
+               </Text>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="heating">
+                <i className="fa-light fa-temperature-arrow-up fa-xl" />{' '}
+                Chauffage
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="airConditioning">
+                <i className="fa-light fa-snowflake fa-xl" /> Climatisation
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="fireplace">
+                <i className="fa-light fa-fireplace fa-xl" /> Cheminée
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="ceilingfan">
+                <i className="fa-light fa-fan fa-xl" /> Ventilateur de plafond
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="tablefan">
+                <i className="fa-light fa-fan-table fa-xl" /> Ventilateur de
+                table
+               </Checkbox>
+              </Col>
+             </Row>
+             {/* Sécurité à la maison */}
+             <Row>
+              <Col xs={24}>
+               <Text strong>
+                <br />
+                Sécurité à la maison
+               </Text>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="fingerprint">
+                <i className="fa-light fa-fingerprint fa-xl" /> Serrure
+                biometrique à empreinte digitale
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
                <Checkbox value="cameras">
-                Caméras de surveillance extérieures
+                <i className="fa-light fa-camera-cctv fa-xl" /> Caméras de
+                surveillance extérieures
                </Checkbox>
               </Col>
-              <Col span={24}>
-               <Checkbox value="sonometers">Sonomètres</Checkbox>
+              <Col xs={12}>
+               <Checkbox value="extinguisher">
+                <i className="fa-light fa-fire-extinguisher fa-xl" /> Extincteur
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="sensor">
+                <i className="fa-light fa-sensor fa-xl" /> Détecteur de fumée
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="kitmedical">
+                <i className="fa-light fa-kit-medical fa-xl" /> Kit de premiers
+                secours
+               </Checkbox>
               </Col>
              </Row>
-            </Checkbox.Group>
-           </Form.Item>
-          </Col>
-          <Col xs={24}>
-           <Form.Item label="Règles de la maison:" name="houseRules">
-            <Checkbox.Group>
+             {/* Cuisine et salle à manger */}
              <Row>
-              <Col span={24}>
-               <Checkbox value="noNoise">Pas de bruit après 23h</Checkbox>
+              <Col xs={24}>
+               <Text strong>
+                <br />
+                Cuisine et salle à manger
+               </Text>
               </Col>
-              <Col span={24}>
-               <Checkbox value="noFoodDrinks">
-                Pas de nourriture ni de boissons dans les chambres à coucher
+              <Col xs={12}>
+               <Checkbox value="kitchen" style={{ lineHeight: 1 }}>
+                <i className="fa-light fa-utensils fa-xl" /> Cuisine
+                <br />
+                <Text type="secondary">
+                 Espace où les voyageurs peuvent cuisiner
+                </Text>
                </Checkbox>
               </Col>
-              <Col span={24}>
-               <Checkbox value="noParties">
-                Pas de fêtes ni d'événements
+              <Col xs={12}>
+               <Checkbox value="fridge">
+                <i className="fa-light fa-refrigerator fa-xl" /> Réfrigérateur
                </Checkbox>
               </Col>
-              <Col span={24}>
-               <Checkbox value="noSmoking">Défense de fumer</Checkbox>
-              </Col>
-              <Col span={24}>
-               <Checkbox value="noPets">Pas d'animaux de compagnie</Checkbox>
-              </Col>
-              <Col span={24}>
-               <Checkbox value="noUnmarriedCouple">
-                Pas de couple non marié
+              <Col xs={12}>
+               <Checkbox value="microwave">
+                <i className="fa-light fa-microwave fa-xl" /> Microwave
                </Checkbox>
               </Col>
-              <Col span={24}>
-               <Checkbox
-                value="additionalRules"
-                checked={showAdditionalRules}
-                onChange={(e) => setShowAdditionalRules(e.target.checked)}
-               >
-                Règles supplémentaires
+              <Col xs={12}>
+               <Checkbox value="oven">
+                <i className="fa-light fa-oven fa-xl" /> Four à micro-ondes
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="kitchenset" style={{ lineHeight: 1 }}>
+                <i className="fa-light fa-kitchen-set fa-xl" /> Équipements de
+                cuisine de base
+                <br />
+                <Text type="secondary">
+                 Casseroles et poêles, Bols, tasses, etc
+                </Text>
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="blender">
+                <i className="fa-light fa-blender fa-xl" /> Mixeur
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="fireburner">
+                <i className="fa-light fa-fire-burner fa-xl" /> Cuisinière à gaz
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="coffeepot">
+                <i className="fa-light fa-coffee-pot fa-xl" /> Café
                </Checkbox>
               </Col>
              </Row>
-            </Checkbox.Group>
-           </Form.Item>
-          </Col>
+             {/* Internet et bureau  */}
+             <Row>
+              <Col xs={24}>
+               <Text strong>
+                <br />
+                Internet et bureau
+               </Text>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="wifi">
+                <i className="fa-light fa-wifi fa-xl" /> Wifi
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="dedicatedworkspace">
+                <i className="fa-light fa-chair-office fa-xl" /> Espace de
+                travail dédié
+               </Checkbox>
+              </Col>
+             </Row>
+             {/* Parking et installations */}
+             <Row>
+              <Col xs={24}>
+               <Text strong>
+                <br />
+                Parking et installations
+               </Text>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="freeParking">
+                <i className="fa-light fa-circle-parking fa-xl" /> Parking
+                gratuit
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="paidParking">
+                <i className="fa-light fa-square-parking fa-xl" /> Stationnement
+                payant dans la rue
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="pool">
+                <i className="fa-light fa-water-ladder fa-xl" /> Piscine
+               </Checkbox>
+              </Col>
+              <Col xs={12}>
+               <Checkbox value="garbageCan">
+                <i className="fa-light fa-trash-can fa-xl" /> Benne à ordures
+               </Checkbox>
+              </Col>
+             </Row>
+            </Row>
+           </Checkbox.Group>
+          </Form.Item>
+         </Col>
+
+         <Col xs={24} md={24}>
+          <Form.Item
+           label="Règles de la maison:"
+           name="houseRules"
+           className="houseRules-checkbox-group"
+          >
+           <Checkbox.Group>
+            <Row>
+             <Col xs={24}>
+              <Checkbox value="noNoise">Pas de bruit après 23h</Checkbox>
+             </Col>
+             <Col xs={24}>
+              <Checkbox value="noFoodDrinks">
+               Pas de nourriture ni de boissons dans les chambres à coucher
+              </Checkbox>
+             </Col>
+             <Col xs={24}>
+              <Checkbox value="noParties">
+               Pas de fêtes ni d'événements
+              </Checkbox>
+             </Col>
+             <Col xs={24}>
+              <Checkbox value="noSmoking">Défense de fumer</Checkbox>
+             </Col>
+             <Col xs={24}>
+              <Checkbox value="noPets">Pas d'animaux de compagnie</Checkbox>
+             </Col>
+             <Col xs={24}>
+              <Checkbox value="noUnmarriedCouple">
+               Pas de couple non marié
+              </Checkbox>
+             </Col>
+             <Col xs={24}>
+              <Checkbox
+               value="additionalRules"
+               checked={showAdditionalRules}
+               onChange={(e) => setShowAdditionalRules(e.target.checked)}
+              >
+               Règles supplémentaires
+              </Checkbox>
+             </Col>
+            </Row>
+           </Checkbox.Group>
+          </Form.Item>
           {showAdditionalRules && (
            <Col xs={24} md={24}>
             <Form.Item label="Règles supplémentaires" value="AdditionalRules">
@@ -506,7 +738,7 @@ const EditProperty = () => {
          )}
         </Row>
        </Col>
-       <Col xs={24} sm={12}>
+       <Col xs={24} xl={12}>
         <Row gutter={[24, 0]}>
          <Col xs={24}>
           <Divider orientation="left">
@@ -531,18 +763,18 @@ const EditProperty = () => {
           >
            <Checkbox.Group>
             <Row>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="heureNonFlexible">
                Malheureusement l'heure d'arrivée n'est pas flexible.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="ajustementHeure">
                À l'occasion il est possible d'ajuster votre heure d'arrivée si
                vous nous contactez.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="autreHeureArrivee">
                Lorsque que cela est possible, nous pouvons vous arranger en vous
                proposant une autre heure d’arrivée qui vous conviendrait mieux.
@@ -550,7 +782,7 @@ const EditProperty = () => {
                d’arrivée.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="laissezBagages">
                Vous pouvez laissez vos bagages pendant la journée.
               </Checkbox>
@@ -566,30 +798,30 @@ const EditProperty = () => {
           >
            <Checkbox.Group>
             <Row>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="cleDansBoite">
                La clé de la maison se trouve dans la boîte à clé
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="acceuilContactezMoi">
                On sera là pour vous accueillir, sinon, contactez moi quand vous
                arrivez.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="codesAccesCourriel">
                Nous vous enverrons vos codes d’accès par courriel avant votre
                arrivée.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="verifiezCourriel">
                Vérifiez votre courriel pour les instructions relatives à votre
                arrivée.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="serrureNumero">
                Nous avons une serrure à numéro.
               </Checkbox>
@@ -669,7 +901,7 @@ const EditProperty = () => {
          </Col>
         </Row>
        </Col>
-       <Col xs={24} sm={12}>
+       <Col xs={24} xl={12}>
         <Row gutter={[24, 0]}>
          <Col xs={24}>
           <Divider orientation="left">
@@ -694,24 +926,24 @@ const EditProperty = () => {
           >
            <Checkbox.Group>
             <Row>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="heureNonFlexible">
                Malheureusement l'heure de départ n'est pas flexible.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="heureDepartAlternative">
                Lorsque l'horaire le permet, il nous fait plaisir d'accommoder
                une heure de départ alternative. Contactez-nous à l'avance si
                vous souhaitez prendre un arrangement à cet effet.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="contactezNous">
                Communiquez avec nous si vous aimeriez quitter plus tard.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="optionDepartTardif">
                Montrer l’option du départ tardif (si ce n’est pas coché on ne va
                pas le mentionner)
@@ -728,75 +960,75 @@ const EditProperty = () => {
           >
            <Checkbox.Group>
             <Row>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="laissezBagages">
                Vous pouvez laissez vos bagages dans la propriété après l’heure
                du départ.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="signezLivreOr">
                S’il vous plait, signez notre livre d’or avant de partir.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="litsNonFaits">
                Laissez les lits que vous avez utilisés défaits.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="laverVaisselle">
                Merci de laver et ranger vaisselle et plats utilisés.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="vaisselleLaveVaisselle">
                Mettez la vaisselle de dernière minute dans le lave-vaisselle.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="eteindreAppareilsElectriques">
                Merci de vous assurer que vous avez bien éteint la cuisinière,
                lumières et autres appareils électriques.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="replacezMeubles">
                Replacez les meubles à leur endroit original.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="deposePoubelles">
                Merci de déposer poubelles et déchets dans les containers
                appropriés.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="serviettesDansBaignoire">
                Mettez vos serviettes utilisées dans la baignoire.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="serviettesParTerre">
                Laissez les serviettes utilisées par terre.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="porteNonVerrouillee">
                Laissez la porte déverrouillée.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="portesVerrouillees">
                Assurez-vous que les portes sont verrouillées.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="laissezCleMaison">
                Laissez la clé dans la maison.
               </Checkbox>
              </Col>
-             <Col span={24}>
+             <Col xs={24}>
               <Checkbox value="laissezCleBoiteCle">
                Laissez la clé dans la boîte à clef.
               </Checkbox>
@@ -805,7 +1037,7 @@ const EditProperty = () => {
            </Checkbox.Group>
           </Form.Item>
          </Col>
-         <Col sm={24}>
+         <Col xl={24}>
           <Form.Item
            label="Informations supplémentaires sur le départ :"
            name="additionalCheckOutInfo"

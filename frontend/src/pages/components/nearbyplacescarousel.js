@@ -37,7 +37,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
      message.error('Échec du chargement des détails des lieux à proximité.');
     });
   }
- }, [latitude, longitude]);
+ }, [latitude]);
 
  const dataArray = data ? Object.values(data) : [];
  const screens = useBreakpoint();
@@ -51,17 +51,19 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
  }
  if (error) return <div></div>;
 
- const PlacesToEat = dataArray.filter((place) =>
-  place.types.includes('Restaurant & Café')
+ const PlacesToEat = dataArray.filter(
+  (place) =>
+   Array.isArray(place.types) && place.types.includes('Restaurant & Café')
  );
- const Activities = dataArray.filter((place) =>
-  place.types.includes('Activité')
+ const Activities = dataArray.filter(
+  (place) => Array.isArray(place.types) && place.types.includes('Activité')
  );
- const Attractions = dataArray.filter((place) =>
-  place.types.includes('Attraction')
+ const Attractions = dataArray.filter(
+  (place) => Array.isArray(place.types) && place.types.includes('Attraction')
  );
- const Malls = dataArray.filter((place) =>
-  place.types.includes('Centre commercial')
+ const Malls = dataArray.filter(
+  (place) =>
+   Array.isArray(place.types) && place.types.includes('Centre commercial')
  );
 
  const getSlidesToShow = (dataArray) => {

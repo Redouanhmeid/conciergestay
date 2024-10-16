@@ -6,12 +6,11 @@ const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
 const axios = require('axios');
+const os = require('os');
 
 // Create our App
 const app = express();
 const port = process.env.PORT || 3000;
-
-console.log('Starting server setup...');
 
 // Use helmet middleware to set the Content Security Policy (CSP) header
 app.use(
@@ -74,11 +73,13 @@ app.use(
 
 // Enable CORS for both local and production frontend
 const corsOptions = {
- origin: ['http://localhost:3000', 'https://conciergestay.pro'],
+ origin: [
+  'http://localhost:3000',
+  'http://localhost:4000',
+  'https://conciergestay.pro',
+ ],
 };
 app.use(cors(corsOptions));
-
-console.log('CORS setup complete.');
 
 // Other middleware and route handlers
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -133,7 +134,6 @@ const amenitiesUpload = multer({
   checkFileType(file, cb);
  },
 });
-
 const frontPhotoUpload = multer({
  storage: storage(FRONTPHOTOS_PATH),
  limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit
@@ -141,7 +141,6 @@ const frontPhotoUpload = multer({
   checkFileType(file, cb);
  },
 });
-
 const singleUpload = multer({
  storage: storage(PLACES_PATH),
  limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit
@@ -149,8 +148,6 @@ const singleUpload = multer({
   checkFileType(file, cb);
  },
 });
-
-console.log('Multer configuration complete.');
 
 // Check file type
 function checkFileType(file, cb) {
@@ -164,8 +161,6 @@ function checkFileType(file, cb) {
   cb('Error: Images only!');
  }
 }
-
-console.log('File type check setup complete.');
 
 // Handle file upload
 app.post('/upload', upload.array('photos', 16), (req, res) => {
@@ -206,6 +201,7 @@ app.post('/upload/avatars', avatars.single('avatar'), (req, res) => {
 
  res.json({ file: file });
 });
+
 app.use('/avatars', express.static(AVATARS_PATH));
 
 app.post('/amenities', amenitiesUpload.single('photo'), (req, res) => {
@@ -220,6 +216,7 @@ app.post('/amenities', amenitiesUpload.single('photo'), (req, res) => {
 
  res.json({ file: file });
 });
+
 app.use('/amenities', express.static(AMENITIES_PATH));
 
 app.post('/frontphotos', frontPhotoUpload.single('photo'), (req, res) => {
@@ -236,8 +233,6 @@ app.post('/frontphotos', frontPhotoUpload.single('photo'), (req, res) => {
 });
 app.use('/frontphotos', express.static(FRONTPHOTOS_PATH));
 
-console.log('Server setup complete.');
-
 // require routes
 const PropertyManagerRouter = require('./routes/propertymanager');
 const PropertyRouter = require('./routes/property');
@@ -251,14 +246,10 @@ app.use('/api/v1/properties', PropertyRouter);
 app.use('/api/v1/nearbyplaces', NearbyPlaceRouter);
 app.use('/api/v1/amenities', AmenityRouter);
 
-console.log('Routes setup complete.');
-
 // Serve static files from the React app
 const REACT_APP_PATH =
  process.env.REACT_APP_PATH || path.join(__dirname, 'client/build');
 app.use(express.static(REACT_APP_PATH));
-
-console.log('Middleware setup complete.');
 
 // Proxy route for handling cross-origin images
 app.get('/proxy', async (req, res) => {
@@ -273,14 +264,10 @@ app.get('/proxy', async (req, res) => {
  }
 });
 
-console.log('Proxy route setup complete.');
-
 // Catch-all handler to serve index.html for any other routes
 app.get('*', (req, res) => {
  res.sendFile(path.join(REACT_APP_PATH, 'index.html'));
 });
-
-console.log('Home route setup complete.');
 
 // Start the server
 app.listen(port, () => console.log(`Server running on port ${port}`));
@@ -296,5 +283,3 @@ db
  .catch((err) => {
   console.error('Unable to connect to the database:', err);
  });
-
-console.log('Database connection setup complete.');

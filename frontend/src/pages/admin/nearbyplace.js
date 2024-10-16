@@ -15,6 +15,8 @@ import {
 } from 'antd';
 import { UploadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
+import useUploadPhotos from '../../hooks/useUploadPhotos';
+import ImgCrop from 'antd-img-crop';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 
@@ -33,6 +35,9 @@ const NearbyPlace = () => {
  const location = useLocation();
  const navigate = useNavigate();
  const { loading, getNearbyPlaceById, updateNearbyPlace } = useNearbyPlace();
+ const { uploadPlace } = useUploadPhotos();
+
+ const [filelist, setFileList] = useState([]);
 
  const placeId = new URLSearchParams(location.search).get('id');
 
@@ -46,10 +51,19 @@ const NearbyPlace = () => {
      message.error('Échec du chargement des détails du lieu.');
     });
   }
- }, [placeId]);
+ }, [loading]);
+
+ const handleChange = ({ fileList }) => {
+  setFileList(fileList);
+ };
 
  const handleFormSubmit = async (values) => {
   try {
+   let photoUrl = '';
+   if (filelist.length > 0) {
+    const photoUrls = await uploadPlace(filelist);
+    values.photo = photoUrls;
+   }
    await updateNearbyPlace(placeId, { ...place, ...values });
    message.success('Lieu mis à jour avec succès.');
    navigate(-1); // Redirect to nearby places list after update
@@ -114,19 +128,23 @@ const NearbyPlace = () => {
      </Form.Item>
 
      <Form.Item label="Photo" name="photo">
-      <Upload
-       listType="picture"
-       defaultFileList={[
-        {
-         uid: '-1',
-         name: 'photo.jpg',
-         status: 'done',
-         url: place.photo, // The URL of the uploaded photo
-        },
-       ]}
-      >
-       <Button icon={<UploadOutlined />}>Upload</Button>
-      </Upload>
+      <ImgCrop rotationSlider>
+       <Upload
+        listType="picture"
+        defaultFileList={[
+         {
+          uid: '-1',
+          name: 'photo.jpg',
+          status: 'done',
+          url: place.photo, // The URL of the uploaded photo
+         },
+        ]}
+        onChange={handleChange}
+        onPreview={null}
+       >
+        <Button icon={<UploadOutlined />}>Charger</Button>
+       </Upload>
+      </ImgCrop>
      </Form.Item>
 
      <Form.Item label="Vérifié" name="isVerified" valuePropName="checked">
@@ -134,7 +152,7 @@ const NearbyPlace = () => {
      </Form.Item>
 
      <Form.Item>
-      <Button type="primary" htmlType="submit">
+      <Button type="primary" htmlType="submit" loading={loading}>
        Enregistrer les modifications
       </Button>
      </Form.Item>

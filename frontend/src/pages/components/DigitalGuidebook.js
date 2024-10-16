@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
  Spin,
  Layout,
@@ -10,9 +10,12 @@ import {
  Divider,
  Image,
  Flex,
+ Button,
  Card,
+ Modal,
 } from 'antd';
-import { useLocation } from 'react-router-dom';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
@@ -33,6 +36,10 @@ import {
  getBeforeCheckOutDetails,
 } from '../../utils/iconMappings';
 import Print from './print';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useUserData } from '../../hooks/useUserData';
+import ShareModal from '../../components/common/ShareModal';
+import HouseManual from './HouseManual';
 
 const { Content } = Layout;
 const { Text, Paragraph } = Typography;
@@ -64,697 +71,384 @@ const DigitalGuidebook = () => {
  const screens = useBreakpoint();
  const location = useLocation();
  const { id } = queryString.parse(location.search);
+ const navigate = useNavigate();
+ const { user } = useAuthContext();
+ const storedUser = user || JSON.parse(localStorage.getItem('user'));
+ const { userData, getUserDataById, isLoading } = useUserData();
  const { property, loading } = useGetProperty(id);
  const { getAllAmenities } = useAmenity();
  const [amenities, setAmenities] = useState([]);
+ const [isOwner, setIsOwner] = useState(false);
+ const [isShareModalVisible, setIsShareModalVisible] = useState(false);
  const rows = 4;
 
- useEffect(() => {
-  const fetchData = async (ID) => {
-   try {
-    const response = await getAllAmenities(ID);
-    if (!response) {
-     throw new Error('No response received');
-    }
+ const fetchData = async (ID) => {
+  try {
+   const response = await getAllAmenities(ID);
+   if (!response) {
+    throw new Error('No response received');
+   }
 
-    let data;
+   let data;
 
-    // Check if the response is an HTTP response object
-    if (response.headers && response.headers.get) {
-     if (response.headers.get('content-type').includes('application/json')) {
-      data = await response.json();
-     } else {
-      const errorText = await response.text();
-      throw new Error(`Unexpected response format: ${errorText}`);
-     }
+   // Check if the response is an HTTP response object
+   if (response.headers && response.headers.get) {
+    if (response.headers.get('content-type').includes('application/json')) {
+     data = await response.json();
     } else {
-     // Assume response is already JSON if headers are not present
-     data = response;
+     const errorText = await response.text();
+     throw new Error(`Unexpected response format: ${errorText}`);
     }
+   } else {
+    // Assume response is already JSON if headers are not present
+    data = response;
+   }
 
-    setAmenities(data);
+   setAmenities(data);
+  } catch (error) {
+   console.error('Failed to fetch amenities:', error);
+  }
+ };
+
+ useEffect(() => {
+  if (property.propertyManagerId) {
+   getUserDataById(property.propertyManagerId);
+  }
+ }, [property.propertyManagerId]);
+
+ const fetchAmenities = useCallback(async () => {
+  if (id) {
+   try {
+    const response = await getAllAmenities(id);
+    setAmenities(response);
    } catch (error) {
     console.error('Failed to fetch amenities:', error);
    }
-  };
-
-  if (id) {
-   fetchData(id);
   }
- }, [id, loading]);
+ }, [id, amenities]);
+
+ useEffect(() => {
+  fetchAmenities();
+ }, []);
+
+ useEffect(() => {
+  if (storedUser && userData) {
+   if (String(storedUser.email) === String(userData.email)) {
+    setIsOwner(true);
+   }
+  }
+ }, [userData]);
 
  const parsedAmenities = useMemo(() => ensureArray(amenities), [amenities]);
- const wifiAmenity = useMemo(
-  () => parsedAmenities.find((amenity) => amenity.name === 'wifi'),
-  [parsedAmenities]
- );
  const parkingAmenity = useMemo(
   () => parsedAmenities.find((amenity) => amenity.name === 'freeParking'),
   [parsedAmenities]
  );
- const tvAmenity = useMemo(
-  () => parsedAmenities.find((amenity) => amenity.name === 'television'),
+ const paidparkingAmenity = useMemo(
+  () => parsedAmenities.find((amenity) => amenity.name === 'paidParking'),
   [parsedAmenities]
  );
- const kitchenAmenity = useMemo(
-  () => parsedAmenities.find((amenity) => amenity.name === 'kitchen'),
-  [parsedAmenities]
- );
- const airConditioningAmenity = useMemo(
-  () => parsedAmenities.find((amenity) => amenity.name === 'airConditioning'),
-  [parsedAmenities]
- );
- const washingMachineAmenity = useMemo(
-  () => parsedAmenities.find((amenity) => amenity.name === 'washingMachine'),
-  [parsedAmenities]
- );
- const poolAmenity = useMemo(
-  () => parsedAmenities.find((amenity) => amenity.name === 'pool'),
-  [parsedAmenities]
- );
- const garbageCanAmenity = useMemo(
-  () => parsedAmenities.find((amenity) => amenity.name === 'garbageCan'),
-  [parsedAmenities]
- );
-
- const additionalRules = getAdditionalRules(property?.houseRules);
  const earlyCheckInParagraphs = useMemo(
   () => ensureArray(property?.earlyCheckIn).map(getEarlyCheckInDetails),
-  [property]
+  [property?.earlyCheckIn]
  );
  const accessToPropertyParagraphs = useMemo(
   () => ensureArray(property?.accessToProperty).map(getAccessToPropertyDetails),
-  [property]
+  [property?.accessToProperty]
  );
  const lateCheckOutPolicyParagraphs = useMemo(
   () =>
    ensureArray(property?.lateCheckOutPolicy).map(getLateCheckOutPolicyDetails),
-  [property]
+  [property?.lateCheckOutPolicy]
  );
  const beforeCheckOutParagraphs = useMemo(
   () => ensureArray(property?.beforeCheckOut).map(getBeforeCheckOutDetails),
-  [property]
+  [property?.beforeCheckOut]
  );
 
  const validLatitude = isValidCoordinate(property?.latitude);
  const validLongitude = isValidCoordinate(property?.longitude);
 
- const innerTabs = [
-  {
-   key: '1',
-   icon: <i className="fa-light fa-key"></i>,
-   tab: 'Arrivée',
-   content: (
-    <div>
-     {earlyCheckInParagraphs.length > 0 && (
-      <div>
-       <Divider>
-        <i className="fa-light fa-key"></i>
-        <Text strong> Arrivée</Text>
-       </Divider>
-       <Row gutter={[16, 16]}>
-        <Col xs={24} md={16}>
-         <Paragraph>
-          L'heure d'enregistrement s'effectue à tout moment après{' '}
-          {formatTimeFromDatetime(property.checkInTime)}
-         </Paragraph>
-         {earlyCheckInParagraphs.map((paragraph, index) => (
-          <Paragraph key={index}>{paragraph}</Paragraph>
-         ))}
-        </Col>
-        <Col xs={24} md={8}>
-         {property.frontPhoto && <Image src={property.frontPhoto} />}
-        </Col>
-       </Row>
-      </div>
-     )}
-     {/* Display video if videoCheckIn is not null or empty */}
-     {property.videoCheckIn && (
-      <div>
-       <Divider>
-        <i className="fa-light fa-video"></i>
-        <Text strong> Vidéo d'enregistrement</Text>
-       </Divider>
-       <ReactPlayer url={property.videoCheckIn} controls width="100%" />
-      </div>
-     )}
-     {accessToPropertyParagraphs.length > 0 && (
-      <div>
-       <Divider>
-        <i className="fa-light fa-lock-keyhole-open"></i>
-        <Text strong> Obtenir l'accès</Text>
-       </Divider>
-       {accessToPropertyParagraphs.map((paragraph, index) => (
-        <Paragraph key={index}>{paragraph}</Paragraph>
-       ))}
-      </div>
-     )}
-     {property.guestAccessInfo && (
-      <Paragraph>
-       <Text strong>N.b : </Text>
-       {property.guestAccessInfo}
-      </Paragraph>
-     )}
+ const showShareModal = () => {
+  setIsShareModalVisible(true);
+ };
 
-     {validLatitude && validLongitude ? (
-      <Divider>
-       <i className="fa-light fa-map-location-dot"></i>
-       <Text strong> Arriver ici</Text>
-      </Divider>
-     ) : (
-      <div>Coordonnées fournies non valides.</div>
-     )}
-     {validLatitude && validLongitude && (
-      <Row gutter={[16, 16]}>
-       <Col xs={24} md={16}>
-        <MapMarker
-         latitude={property.latitude}
-         longitude={property.longitude}
-        />
-       </Col>
-       <Col xs={24} md={8}>
+ const hideShareModal = () => {
+  setIsShareModalVisible(false);
+ };
+
+ const pageUrl = window.location.href;
+
+ const memoizedAmenities = useMemo(() => {
+  // Transform amenities data into the required format
+  return amenities.reduce((acc, amenity) => {
+   acc[amenity.name] = {
+    description: amenity.description,
+    media: amenity.media,
+   };
+   return acc;
+  }, {});
+ }, [amenities]);
+
+ const innerTabs = useMemo(
+  () => [
+   {
+    key: '1',
+    icon: <i className="fa-light fa-key"></i>,
+    tab: 'Arrivée',
+    content: (
+     <div>
+      {earlyCheckInParagraphs.length > 0 && (
+       <div>
+        <Flex gap="middle" align="center" justify="space-between">
+         <Divider>
+          <Text strong>
+           <i className="fa-light fa-key"></i> Arrivée
+          </Text>
+          {isOwner && (
+           <Button
+            icon={<i className="fa-light fa-pen-to-square" />}
+            onClick={() => navigate(`/editcheckin?id=${id}`)}
+            type="link"
+            size="Large"
+            style={{ fontSize: 16 }}
+           />
+          )}
+         </Divider>
+        </Flex>
+        <Row gutter={[16, 16]}>
+         <Col xs={24} md={16}>
+          <Paragraph>
+           L'heure d'enregistrement s'effectue à tout moment après{' '}
+           {formatTimeFromDatetime(property.checkInTime)}
+          </Paragraph>
+          {earlyCheckInParagraphs.map((paragraph, index) => (
+           <Paragraph key={index}>{paragraph}</Paragraph>
+          ))}
+         </Col>
+         <Col xs={24} md={8}>
+          {property.frontPhoto && <Image src={property.frontPhoto} />}
+         </Col>
+        </Row>
+       </div>
+      )}
+      {/* Display video if videoCheckIn is not null or empty */}
+      {property.videoCheckIn && (
+       <div>
+        <Divider>
+         <i className="fa-light fa-video"></i>
+         <Text strong> Vidéo d'enregistrement</Text>
+        </Divider>
+        <ReactPlayer url={property.videoCheckIn} controls width="100%" />
+       </div>
+      )}
+      {accessToPropertyParagraphs.length > 0 && (
+       <div>
+        <Divider>
+         <i className="fa-light fa-lock-keyhole-open"></i>
+         <Text strong> Obtenir l'accès</Text>
+        </Divider>
+        {accessToPropertyParagraphs.map((paragraph, index) => (
+         <Paragraph key={index}>{paragraph}</Paragraph>
+        ))}
+       </div>
+      )}
+      {property.guestAccessInfo && (
+       <Paragraph>
+        <Text strong>N.b : </Text>
+        {property.guestAccessInfo}
+       </Paragraph>
+      )}
+
+      {validLatitude && validLongitude ? (
+       <Divider>
+        <i className="fa-light fa-map-location-dot"></i>
+        <Text strong> Arriver ici</Text>
+       </Divider>
+      ) : (
+       <div>Coordonnées fournies non valides.</div>
+      )}
+      {validLatitude && validLongitude && (
+       <Row gutter={[16, 16]}>
+        <Col
+         xs={24}
+         md={
+          parkingAmenity && paidparkingAmenity
+           ? 12 // both exist
+           : parkingAmenity || paidparkingAmenity
+           ? 16 // one exists
+           : 24 // none exist
+         }
+        >
+         <MapMarker
+          latitude={property.latitude}
+          longitude={property.longitude}
+         />
+        </Col>
+
         {parkingAmenity && (
-         <>
+         <Col xs={24} md={paidparkingAmenity ? 6 : 8}>
           <Image width={'100%'} src={parkingAmenity.media} />
           <br />
           <Paragraph>{parkingAmenity.description}</Paragraph>
-         </>
-        )}
-       </Col>
-      </Row>
-     )}
-    </div>
-   ),
-  },
-  {
-   key: '2',
-   icon: <i className="fa-light fa-door-open"></i>,
-   tab: 'Manuel de la maison',
-   content: (
-    <Row gutter={[16, 16]}>
-     {wifiAmenity && (
-      <Col xs={24} md={8}>
-       <Divider>
-        <i className="fa-light fa-wifi"></i>
-        <Text strong> Accès Wi-Fi</Text>
-       </Divider>
-       <Card
-        hoverable={false}
-        style={{
-         width: '100%',
-        }}
-        cover={
-         ReactPlayer.canPlay(wifiAmenity.media) ? (
-          <ReactPlayer
-           url={wifiAmenity.media}
-           controls
-           width={'100%'}
-           height={240}
-          />
-         ) : (
-          <Image
-           src={wifiAmenity.media}
-           style={{
-            height: 240,
-            objectFit: 'cover',
-           }}
-          />
-         )
-        }
-       >
-        <Meta
-         title={
-          <>
-           <Paragraph>
-            <Text strong>Nom Wi-Fi: </Text>
-            {wifiAmenity.wifiName}
-           </Paragraph>
-           <Paragraph>
-            <Text strong>Mot de passe Wi-Fi: </Text>
-            <Text copyable>{wifiAmenity.wifiPassword}</Text>
-           </Paragraph>
-          </>
-         }
-         description={wifiAmenity.description}
-        />
-       </Card>
-      </Col>
-     )}
-
-     {tvAmenity && (
-      <Col xs={24} md={8}>
-       <Divider>
-        <i className="fa-light fa-tv"></i>
-        <Text strong> Télévision</Text>
-       </Divider>
-       <Card
-        hoverable={false}
-        style={{
-         width: '100%',
-        }}
-        cover={
-         ReactPlayer.canPlay(tvAmenity.media) ? (
-          <ReactPlayer
-           url={tvAmenity.media}
-           controls
-           width={'100%'}
-           height={240}
-          />
-         ) : (
-          <Image
-           src={tvAmenity.media}
-           style={{
-            height: 240,
-            objectFit: 'cover',
-           }}
-          />
-         )
-        }
-       >
-        <Meta title="Télévision" description={tvAmenity.description} />
-       </Card>
-      </Col>
-     )}
-
-     {kitchenAmenity && (
-      <Col xs={24} md={8}>
-       <Divider>
-        <i className="fa-light fa-microwave"></i>
-        <Text strong> Cuisine</Text>
-       </Divider>
-       <Card
-        hoverable={false}
-        style={{
-         width: '100%',
-        }}
-        cover={
-         ReactPlayer.canPlay(kitchenAmenity.media) ? (
-          <ReactPlayer
-           url={kitchenAmenity.media}
-           controls
-           width={'100%'}
-           height={240}
-          />
-         ) : (
-          <Image
-           src={kitchenAmenity.media}
-           style={{
-            height: 240,
-            objectFit: 'cover',
-           }}
-          />
-         )
-        }
-       >
-        <Meta
-         title="Cuisine"
-         description={
-          <Paragraph
-           ellipsis={{
-            rows,
-            expandable: true,
-            symbol: 'lire plus',
-           }}
-          >
-           {kitchenAmenity.description}
-          </Paragraph>
-         }
-        />
-       </Card>
-      </Col>
-     )}
-
-     {airConditioningAmenity && (
-      <Col xs={24} md={8}>
-       <Divider>
-        <i className="fa-light fa-snowflake"></i>
-        <Text strong> Climatisation</Text>
-       </Divider>
-       <Card
-        hoverable={false}
-        style={{
-         width: '100%',
-        }}
-        cover={
-         ReactPlayer.canPlay(airConditioningAmenity.media) ? (
-          <ReactPlayer
-           url={airConditioningAmenity.media}
-           controls
-           width={'100%'}
-           height={240}
-          />
-         ) : (
-          <Image
-           src={airConditioningAmenity.media}
-           style={{
-            height: 240,
-            objectFit: 'cover',
-           }}
-          />
-         )
-        }
-       >
-        <Meta
-         title="Climatisation"
-         description={
-          <Paragraph
-           ellipsis={{
-            rows,
-            expandable: true,
-            symbol: 'lire plus',
-           }}
-          >
-           {airConditioningAmenity.description}
-          </Paragraph>
-         }
-        />
-       </Card>
-      </Col>
-     )}
-
-     {washingMachineAmenity && (
-      <Col xs={24} md={8}>
-       <Divider>
-        <i className="fa-light fa-washing-machine"></i>
-        <Text strong> Machine à laver</Text>
-       </Divider>
-       <Card
-        hoverable={false}
-        style={{
-         width: '100%',
-        }}
-        cover={
-         ReactPlayer.canPlay(washingMachineAmenity.media) ? (
-          <ReactPlayer
-           url={washingMachineAmenity.media}
-           controls
-           width={'100%'}
-           height={240}
-          />
-         ) : (
-          <Image
-           src={washingMachineAmenity.media}
-           style={{
-            height: 240,
-            objectFit: 'cover',
-           }}
-          />
-         )
-        }
-       >
-        <Meta
-         title="Machine à laver"
-         description={
-          <Paragraph
-           ellipsis={{
-            rows,
-            expandable: true,
-            symbol: 'lire plus',
-           }}
-          >
-           {washingMachineAmenity.description}
-          </Paragraph>
-         }
-        />
-       </Card>
-      </Col>
-     )}
-
-     {poolAmenity && (
-      <Col xs={24} md={8}>
-       <Divider>
-        <i className="fa-light fa-water-ladder"></i>
-        <Text strong> Piscine</Text>
-       </Divider>
-       <Card
-        hoverable={false}
-        style={{
-         width: '100%',
-        }}
-        cover={
-         ReactPlayer.canPlay(poolAmenity.media) ? (
-          <ReactPlayer
-           url={poolAmenity.media}
-           controls
-           width={'100%'}
-           height={240}
-          />
-         ) : (
-          <Image
-           src={poolAmenity.media}
-           style={{
-            height: 240,
-            objectFit: 'cover',
-           }}
-          />
-         )
-        }
-       >
-        <Meta
-         title="Piscine"
-         description={
-          <Paragraph
-           ellipsis={{
-            rows,
-            expandable: true,
-            symbol: 'lire plus',
-           }}
-          >
-           {poolAmenity.description}
-          </Paragraph>
-         }
-        />
-       </Card>
-      </Col>
-     )}
-
-     {garbageCanAmenity && (
-      <Col xs={24} md={8}>
-       <Divider>
-        <i className="fa-light fa-trash-can"></i>
-        <Text strong> Benne à ordures</Text>
-       </Divider>
-       <Card
-        hoverable={false}
-        style={{
-         width: '100%',
-        }}
-        cover={
-         ReactPlayer.canPlay(garbageCanAmenity.media) ? (
-          <ReactPlayer
-           url={garbageCanAmenity.media}
-           controls
-           width={'100%'}
-           height={240}
-          />
-         ) : (
-          <Image
-           src={garbageCanAmenity.media}
-           style={{
-            height: 240,
-            objectFit: 'cover',
-           }}
-          />
-         )
-        }
-       >
-        <Meta
-         title="Benne à ordures"
-         description={
-          <Paragraph
-           ellipsis={{
-            rows,
-            expandable: true,
-            symbol: 'lire plus',
-           }}
-          >
-           {garbageCanAmenity.description}
-          </Paragraph>
-         }
-        />
-       </Card>
-      </Col>
-     )}
-     <Col xs={24}></Col>
-     {property.houseRules && Object.keys(property.houseRules).length > 0 && (
-      <Col xs={24} md={12}>
-       <Divider>
-        <i className="fa-light fa-ban"></i>
-        <Text strong> Règles de la maison</Text>
-       </Divider>
-       <Flex gap="middle" vertical>
-        {ensureArray(property.houseRules).map((rule, index) => {
-         const { icon, title } = getHouseRuleDetails(rule);
-         return (
-          <Col key={index} xs={24}>
-           {icon}
-           <Text> {title}</Text>
-          </Col>
-         );
-        })}
-        {additionalRules && (
-         <Col xs={24}>
-          <Text strong>Règles supplémentaire : </Text>
-          <Text>{additionalRules}</Text>
          </Col>
         )}
-       </Flex>
-      </Col>
-     )}
-     <Col xs={24} md={12}>
-      {property.elements && Object.keys(property.elements).length > 0 && (
-       <Col xs={24}>
-        <Divider>
-         <i className="fa-light fa-bell-plus"></i>
-         <Text strong> Équipement supplémentaire</Text>
-        </Divider>
-        <Flex gap="middle" vertical>
-         {ensureArray(property.elements).map((element, index) => {
-          const { icon, title } = getElementsDetails(element);
-          return (
-           <Col key={index} xs={24}>
-            {icon}
-            <Text> {title}</Text>
-           </Col>
-          );
-         })}
-        </Flex>
-       </Col>
+        {paidparkingAmenity && (
+         <Col xs={24} md={parkingAmenity ? 6 : 8}>
+          <Image width={'100%'} src={paidparkingAmenity.media} />
+          <br />
+          <Paragraph>{paidparkingAmenity.description}</Paragraph>
+         </Col>
+        )}
+       </Row>
       )}
-      {property.safetyFeatures &&
-       Object.keys(property.safetyFeatures).length > 0 && (
-        <Col xs={24}>
+     </div>
+    ),
+   },
+   {
+    key: '2',
+    icon: <i className="fa-light fa-door-open"></i>,
+    tab: 'Manuel de la maison',
+    content: <HouseManual amenities={memoizedAmenities} />,
+   },
+   {
+    key: '3',
+    icon: <i className="fa-light fa-lock-keyhole"></i>,
+    tab: 'Départ',
+    content: (
+     <div>
+      {lateCheckOutPolicyParagraphs.length > 0 && (
+       <div>
+        <Flex gap="middle" align="center" justify="space-between">
          <Divider>
-          <i className="fa-light fa-shield-check"></i>
-          <Text strong> Équipement de sécurité</Text>
+          <Text strong>
+           <i className="fa-light fa-lock-keyhole"></i> Départ
+          </Text>
+          {isOwner && (
+           <Button
+            icon={<i className="fa-light fa-pen-to-square" />}
+            onClick={() => navigate(`/editcheckout?id=${id}`)}
+            type="link"
+            size="Large"
+            style={{ fontSize: 16 }}
+           />
+          )}
          </Divider>
-         <Flex gap="middle" vertical>
-          {ensureArray(property.safetyFeatures).map((feature, index) => {
-           const { icon, title } = getSafetyFeaturesDetails(feature);
-           return (
-            <Col key={index} xs={24}>
-             {icon}
-             <Text> {title}</Text>
-            </Col>
-           );
-          })}
-         </Flex>
-        </Col>
-       )}
-     </Col>
-    </Row>
-   ),
-  },
-  {
-   key: '3',
-   icon: <i className="fa-light fa-lock-keyhole"></i>,
-   tab: 'Départ',
-   content: (
-    <div>
-     {lateCheckOutPolicyParagraphs.length > 0 && (
-      <div>
-       <Divider>
-        <i className="fa-light fa-lock-keyhole"></i>
-        <Text strong> Départ</Text>
-       </Divider>
+        </Flex>
+        <Paragraph>
+         L'heure de départ s'effectue à tout moment avant{' '}
+         {formatTimeFromDatetime(property.checkOutTime)}
+        </Paragraph>
+        {lateCheckOutPolicyParagraphs.map((paragraph, index) => (
+         <Paragraph key={index}>{paragraph}</Paragraph>
+        ))}
+       </div>
+      )}
+
+      {beforeCheckOutParagraphs.length > 0 && (
+       <div>
+        <Divider>
+         <i className="fa-light fa-house-person-leave"></i>
+         <Text strong> Avant de quitter</Text>
+        </Divider>
+        {beforeCheckOutParagraphs.map((paragraph, index) => (
+         <Paragraph key={index}>{paragraph}</Paragraph>
+        ))}
+       </div>
+      )}
+
+      {property.additionalCheckOutInfo && (
        <Paragraph>
-        L'heure de départ s'effectue à tout moment avant{' '}
-        {formatTimeFromDatetime(property.checkOutTime)}
+        <Text strong>N.b : </Text>
+        {property.additionalCheckOutInfo}
        </Paragraph>
-       {lateCheckOutPolicyParagraphs.map((paragraph, index) => (
-        <Paragraph key={index}>{paragraph}</Paragraph>
-       ))}
-      </div>
-     )}
-
-     {beforeCheckOutParagraphs.length > 0 && (
-      <div>
-       <Divider>
-        <i className="fa-light fa-house-person-leave"></i>
-        <Text strong> Avant de quitter</Text>
-       </Divider>
-       {beforeCheckOutParagraphs.map((paragraph, index) => (
-        <Paragraph key={index}>{paragraph}</Paragraph>
-       ))}
-      </div>
-     )}
-
-     {property.additionalCheckOutInfo && (
-      <Paragraph>
-       <Text strong>N.b : </Text>
-       {property.additionalCheckOutInfo}
-      </Paragraph>
-     )}
-    </div>
-   ),
-  },
-  {
-   key: '4',
-   icon: <i className="fa-light fa-plate-utensils"></i>,
-   tab: 'Restaurants & Cafés',
-   content: (
-    <div>
-     <MapNearbyPlaces
-      latitude={property.latitude}
-      longitude={property.longitude}
-      type="Restaurant & Café"
-     />
-     <Divider />
-     <NearbyPlacesCarouselByType
-      latitude={property.latitude}
-      longitude={property.longitude}
-      type="Restaurant & Café"
-     />
-    </div>
-   ),
-  },
-  {
-   key: '5',
-   icon: <i className="fa-light fa-sun-cloud"></i>,
-   tab: 'Activités',
-   content: (
-    <div>
-     <MapNearbyPlaces
-      latitude={property.latitude}
-      longitude={property.longitude}
-      type="Activité"
-     />
-     <Divider />
-     <NearbyPlacesCarouselByType
-      latitude={property.latitude}
-      longitude={property.longitude}
-      type="Activité"
-     />
-    </div>
-   ),
-  },
-  {
-   key: '6',
-   icon: <i className="fa-light fa-camera"></i>,
-   tab: 'Attractions',
-   content: (
-    <div>
-     <MapNearbyPlaces
-      latitude={property.latitude}
-      longitude={property.longitude}
-      type="Attraction"
-     />
-     <Divider />
-     <NearbyPlacesCarouselByType
-      latitude={property.latitude}
-      longitude={property.longitude}
-      type="Attraction"
-     />
-    </div>
-   ),
-  },
-  {
-   key: '7',
-   icon: <i className="fa-light fa-print"></i>,
-   tab: 'Imprimer',
-   content: <Print property={property} amenities={amenities} />,
-  },
- ];
+      )}
+     </div>
+    ),
+   },
+   {
+    key: '4',
+    icon: <i className="fa-light fa-plate-utensils"></i>,
+    tab: 'Restaurants & Cafés',
+    content: (
+     <div>
+      <MapNearbyPlaces
+       latitude={property.latitude}
+       longitude={property.longitude}
+       type="Restaurant & Café"
+      />
+      <Divider />
+      <NearbyPlacesCarouselByType
+       latitude={property.latitude}
+       longitude={property.longitude}
+       type="Restaurant & Café"
+      />
+     </div>
+    ),
+   },
+   {
+    key: '5',
+    icon: <i className="fa-light fa-sun-cloud"></i>,
+    tab: 'Activités',
+    content: (
+     <div>
+      <MapNearbyPlaces
+       latitude={property.latitude}
+       longitude={property.longitude}
+       type="Activité"
+      />
+      <Divider />
+      <NearbyPlacesCarouselByType
+       latitude={property.latitude}
+       longitude={property.longitude}
+       type="Activité"
+      />
+     </div>
+    ),
+   },
+   {
+    key: '6',
+    icon: <i className="fa-light fa-camera"></i>,
+    tab: 'Attractions',
+    content: (
+     <div>
+      <MapNearbyPlaces
+       latitude={property.latitude}
+       longitude={property.longitude}
+       type="Attraction"
+      />
+      <Divider />
+      <NearbyPlacesCarouselByType
+       latitude={property.latitude}
+       longitude={property.longitude}
+       type="Attraction"
+      />
+     </div>
+    ),
+   },
+   {
+    key: '7',
+    icon: <i className="fa-light fa-store"></i>,
+    tab: 'Centres commerciaux',
+    content: (
+     <div>
+      <MapNearbyPlaces
+       latitude={property.latitude}
+       longitude={property.longitude}
+       type="Centre commercial"
+      />
+      <Divider />
+      <NearbyPlacesCarouselByType
+       latitude={property.latitude}
+       longitude={property.longitude}
+       type="Centre commercial"
+      />
+     </div>
+    ),
+   },
+  ],
+  [isOwner, property, amenities]
+ );
 
  if (loading) {
   return (
@@ -768,6 +462,23 @@ const DigitalGuidebook = () => {
    <Head />
    <Layout className="container-fluid">
     <Content>
+     <Flex gap="middle" align="start" justify="space-between">
+      <Button
+       type="default"
+       shape="round"
+       icon={<ArrowLeftOutlined />}
+       onClick={() => navigate(-1)}
+      >
+       Retour
+      </Button>
+      <Button
+       icon={<i className="fa-light fa-share-nodes" />}
+       onClick={showShareModal}
+      >
+       Partager
+      </Button>
+     </Flex>
+     <Divider type="vertical" />
      <Row gutter={[16, 16]}>
       <Col xs={24}>
        <Tabs
@@ -780,7 +491,7 @@ const DigitalGuidebook = () => {
          key: tab.key,
          children:
           tab.key === '1' && (!validLatitude || !validLongitude) ? (
-           <div>Invalid coordinates provided.</div>
+           <div>Coordonnées fournies non valides.</div>
           ) : (
            tab.content
           ),
@@ -791,6 +502,11 @@ const DigitalGuidebook = () => {
     </Content>
    </Layout>
    <Foot />
+   <ShareModal
+    isVisible={isShareModalVisible}
+    onClose={hideShareModal}
+    pageUrl={pageUrl}
+   />
   </Layout>
  );
 };

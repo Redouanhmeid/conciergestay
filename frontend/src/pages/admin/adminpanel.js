@@ -39,8 +39,7 @@ const Dashboard = () => {
   isLoading: ManagersLoading,
   fetchAllManagers,
  } = useUserData();
- const { loading, error, getAllNearbyPlaces, deleteNearbyPlace } =
-  useNearbyPlace();
+ const { error, getAllNearbyPlaces, deleteNearbyPlace } = useNearbyPlace();
 
  const [NearbyPlaces, setNearbyPlaces] = useState([]);
  const [visibleProperties, setVisibleProperties] = useState(3);

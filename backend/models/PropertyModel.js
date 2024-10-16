@@ -29,10 +29,6 @@ module.exports = (db, type) => {
    type: type.JSON,
    allowNull: true,
   },
-  safetyFeatures: {
-   type: type.JSON,
-   allowNull: true,
-  },
   price: {
    type: type.INTEGER,
    allowNull: true,
@@ -47,10 +43,6 @@ module.exports = (db, type) => {
   },
   beds: {
    type: type.INTEGER,
-   allowNull: true,
-  },
-  elements: {
-   type: type.JSON,
    allowNull: true,
   },
   houseRules: {
