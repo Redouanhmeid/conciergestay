@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from '../components/common/header';
 import Foot from '../components/common/footer';
 import { Layout, Spin, Card, Col, Row, Carousel } from 'antd';
 import '../App.css';
 import AddPropertyCard from './components/AddPropertyCard';
+import ShareModal from '../components/common/ShareModal';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useUserData } from '../hooks/useUserData';
 import useGetProperties from '../hooks/useGetProperties';
@@ -16,14 +17,23 @@ const PropertyManagerHome = () => {
  const User = user || JSON.parse(localStorage.getItem('user'));
  const { properties, loading, fetchProperties } = useGetProperties();
  const navigate = useNavigate();
+ const [isShareModalVisible, setIsShareModalVisible] = useState(false);
+ const [pageUrl, setPageUrl] = useState();
+
  const display = (id) => {
   navigate(`/propertydetails?id=${id}`);
  };
  const displayPrivate = (id) => {
   navigate(`/digitalguidebook?id=${id}`);
  };
- const edit = (id) => {
-  navigate(`/editproperty?id=${id}`);
+ const showShareModal = (id) => {
+  setPageUrl();
+  setPageUrl(`${window.location.origin}/propertydetails?id=${id}`);
+  setIsShareModalVisible(true);
+ };
+
+ const hideShareModal = () => {
+  setIsShareModalVisible(false);
  };
 
  useEffect(() => {
@@ -69,21 +79,15 @@ const PropertyManagerHome = () => {
             </Carousel>
            }
            actions={[
-            <i
-             className="Dashicon fa-light fa-eye"
-             key="display"
-             onClick={() => display(property.id)}
-            />,
-            <i
-             className="Dashicon fa-light fa-pen-to-square"
-             key="edit"
-             onClick={() => edit(property.id)}
-            />,
-            <i
-             className="Dashicon fa-light fa-house-lock"
-             key="ellipsis"
-             onClick={() => displayPrivate(property.id)}
-            />,
+            <div key="display" onClick={() => display(property.id)}>
+             <i className="Dashicon fa-light fa-eye" />
+            </div>,
+            <div key="ellipsis" onClick={() => displayPrivate(property.id)}>
+             <i className="Dashicon fa-light fa-house-lock" />
+            </div>,
+            <div key="share" onClick={() => showShareModal(property.id)}>
+             <i className="Dashicon fa-light fa-share-nodes" />
+            </div>,
            ]}
           >
            <Card.Meta
@@ -102,6 +106,11 @@ const PropertyManagerHome = () => {
     </Content>
    </Layout>
    <Foot />
+   <ShareModal
+    isVisible={isShareModalVisible}
+    onClose={hideShareModal}
+    pageUrl={pageUrl}
+   />
   </Layout>
  );
 };

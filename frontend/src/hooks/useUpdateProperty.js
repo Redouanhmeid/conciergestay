@@ -11,7 +11,6 @@ const useUpdateProperty = (propertyId) => {
   setIsLoading(true);
   setError(null);
   setSuccess(false);
-
   try {
    const response = await axios.put(
     `/api/v1/properties/${propertyId}${endpoint}`,

@@ -33,7 +33,6 @@ import useGetProperty from '../../../hooks/useGetProperty';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
-import ImgCrop from 'antd-img-crop';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -109,15 +108,28 @@ const EditPhotos = () => {
  };
 
  const handlePreview = async (file) => {
+  console.log(file);
   if (!file.url && !file.preview) {
    file.preview = await getBase64(file.originFileObj);
   }
   setPreviewImage(file.url || file.preview);
   setPreviewOpen(true);
  };
+
  const handleChange = ({ fileList: newFileList }) => {
-  setFileList(newFileList);
-  setUploading(newFileList.some((file) => file.status === 'uploading'));
+  // Set all files' status to 'done' if they have been uploaded
+  const updatedFileList = newFileList.map((file) => {
+   if (file.status === 'uploading') {
+    return file; // Keep uploading files unchanged
+   }
+   return { ...file, status: 'done' }; // Mark other files as 'done'
+  });
+
+  // Update the fileList state
+  setFileList(updatedFileList);
+
+  // Update uploading state based on whether any file is still uploading
+  setUploading(updatedFileList.some((file) => file.status === 'uploading'));
  };
 
  useEffect(() => {
@@ -204,24 +216,20 @@ const EditPhotos = () => {
           items={fileList.map((f) => f.uid)}
           strategy={verticalListSortingStrategy}
          >
-          <ImgCrop
-           aspect={640 / 426}
-           modalTitle="Modifier l'image"
-           rotationSlider
+          <Upload
+           listType="picture-card"
+           className="custom-upload"
+           fileList={fileList}
+           onPreview={handlePreview}
+           onChange={handleChange}
+           maxCount={16}
+           multiple
+           itemRender={(originNode, file) => (
+            <DraggableUploadListItem originNode={originNode} file={file} />
+           )}
           >
-           <Upload
-            listType="picture-card"
-            className="custom-upload"
-            fileList={fileList}
-            onPreview={handlePreview}
-            onChange={handleChange}
-            itemRender={(originNode, file) => (
-             <DraggableUploadListItem originNode={originNode} file={file} />
-            )}
-           >
-            {fileList.length >= 16 ? null : uploadButton}
-           </Upload>
-          </ImgCrop>
+           {fileList.length >= 16 ? null : uploadButton}
+          </Upload>
          </SortableContext>
         </DndContext>
 

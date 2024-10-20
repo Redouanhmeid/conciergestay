@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Grid, Flex, Divider, QRCode } from 'antd';
 
 const { useBreakpoint } = Grid;
 
 const ShareModal = ({ isVisible, onClose, pageUrl }) => {
- const [qrValue] = useState(pageUrl);
+ const [qrValue, setQrValue] = useState(pageUrl);
  const screens = useBreakpoint();
+
+ useEffect(() => {
+  if (pageUrl) {
+   setQrValue(pageUrl);
+  }
+ }, [pageUrl]);
 
  const shareOnWhatsApp = () => {
   const whatsappUrl = screens.xs
@@ -67,7 +73,11 @@ const ShareModal = ({ isVisible, onClose, pageUrl }) => {
    footer={null}
   >
    <Flex vertical align="center">
-    <QRCode value={qrValue} size={200} />
+    {qrValue ? (
+     <QRCode value={qrValue} size={200} />
+    ) : (
+     <p>Aucun code QR disponible</p>
+    )}
     <Divider>Ou partager via</Divider>
     <br />
     <Flex gap="middle">

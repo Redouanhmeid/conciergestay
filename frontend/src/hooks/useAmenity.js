@@ -9,12 +9,12 @@ const useAmenity = () => {
   setLoading(true);
   try {
    const response = await axios.get(`/api/v1/amenities/${propertyId}`);
-   setLoading(false);
    return response.data;
   } catch (error) {
-   setLoading(false);
    setError(error);
    return null;
+  } finally {
+   setLoading(false);
   }
  };
 

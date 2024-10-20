@@ -19,6 +19,7 @@ import ReactPlayer from 'react-player';
 import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
+import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import useUpdateProperty from '../../../hooks/useUpdateProperty';
 import useGetProperty from '../../../hooks/useGetProperty';
 import Head from '../../../components/common/header';
@@ -43,6 +44,7 @@ const EditCheckIn = () => {
  const navigate = useNavigate();
  const [form] = Form.useForm();
  const { updatePropertyCheckIn, isLoading, success } = useUpdateProperty(id);
+ const { uploadFrontPhoto } = useUploadPhotos();
  const { property, loading } = useGetProperty(id);
 
  const [checkInTime, setCheckInTime] = useState(null);
@@ -98,7 +100,18 @@ const EditCheckIn = () => {
   </button>
  );
 
- const handleSubmit = (values) => {
+ const handleSubmit = async (values) => {
+  if (fileList2.length > 0) {
+   const currentFile = fileList2[0];
+   if (currentFile.url && currentFile.url.startsWith('/frontphotos')) {
+    // If it's an existing file, just use the URL
+    values.frontPhoto = currentFile.url;
+   } else if (currentFile.originFileObj) {
+    // If it's a new file (i.e., has originFileObj), upload it
+    const photoUrl = await uploadFrontPhoto([currentFile]);
+    values.frontPhoto = photoUrl;
+   }
+  }
   updatePropertyCheckIn(values);
  };
 

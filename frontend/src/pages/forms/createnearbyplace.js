@@ -207,7 +207,16 @@ const CreateNearbyPlace = () => {
           </Form.Item>
          </Col>
          <Col xs={24} md={14}>
-          <Form.Item name="types" label="Types">
+          <Form.Item
+           name="types"
+           label="Types"
+           rules={[
+            {
+             required: true,
+             message: 'Veuillez sélectionner au moins un type !',
+            },
+           ]}
+          >
            <Select
             mode="multiple"
             value={selectedItems}

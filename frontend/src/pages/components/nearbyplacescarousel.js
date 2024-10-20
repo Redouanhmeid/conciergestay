@@ -14,7 +14,7 @@ import {
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
 
 const NearbyPlacesCarousel = ({ latitude, longitude }) => {
@@ -72,7 +72,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
   }
   const totalSlides = dataArray.length;
   if (screens.xs) {
-   return Math.min(1, totalSlides);
+   return Math.min(2, totalSlides);
   } else {
    return Math.min(5, totalSlides);
   }
@@ -95,12 +95,9 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
        slidesToShow={getSlidesToShow(PlacesToEat)}
        dots={false}
        autoplay
-       style={{ padding: '0 28px' }}
       >
        {PlacesToEat.map((place, index) => (
-        <div key={index} style={{ margin: '0 12px' }}>
-         <Place place={place} />
-        </div>
+        <Place place={place} key={index} style={{ margin: '0 12px' }} />
        ))}
       </Carousel>
 
@@ -126,12 +123,9 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
        slidesToShow={getSlidesToShow(Activities)}
        dots={false}
        autoplay
-       style={{ padding: '0 28px' }}
       >
        {Activities.map((place, index) => (
-        <div key={index} style={{ margin: '0 12px' }}>
-         <Place place={place} />
-        </div>
+        <Place place={place} key={index} style={{ margin: '0 12px' }} />
        ))}
       </Carousel>
       <div className="nearbyplacescarouselarrow right">
@@ -156,12 +150,9 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
        slidesToShow={getSlidesToShow(Attractions)}
        dots={false}
        autoplay
-       style={{ padding: '0 28px' }}
       >
        {Attractions.map((place, index) => (
-        <div key={index} style={{ margin: '0 12px' }}>
-         <Place place={place} />
-        </div>
+        <Place place={place} key={index} style={{ margin: '0 12px' }} />
        ))}
       </Carousel>
       <div className="nearbyplacescarouselarrow right">
@@ -186,12 +177,9 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
        slidesToShow={getSlidesToShow(Malls)}
        dots={false}
        autoplay
-       style={{ padding: '0 28px' }}
       >
        {Malls.map((place, index) => (
-        <div key={index} style={{ margin: '0 12px' }}>
-         <Place place={place} />
-        </div>
+        <Place place={place} key={index} style={{ margin: '0 12px' }} />
        ))}
       </Carousel>
       <div className="nearbyplacescarouselarrow right">
@@ -207,8 +195,10 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
 export default NearbyPlacesCarousel;
 
 const Place = ({ place }) => {
+ const screens = useBreakpoint();
  return (
   <Card
+   className="custom-card"
    cover={
     <div
      className="nearbyplacescarousel"
@@ -225,12 +215,30 @@ const Place = ({ place }) => {
      />
     </div>
    }
-   style={{ width: 'calc(100% - 16px)' }}
+   style={{
+    width: 'calc(100% - 16px)',
+    margin: '0 8px',
+    height: screens.xs ? '220px' : 'auto',
+   }}
   >
    <Card.Meta
-    title={place.name}
+    title={
+     <Text
+      style={{
+       fontSize: '16px',
+       display: '-webkit-box',
+       WebkitLineClamp: 2, // Limit to two lines
+       WebkitBoxOrient: 'vertical',
+       overflow: 'hidden',
+       textOverflow: 'ellipsis',
+       whiteSpace: 'normal', // Allow text to wrap
+      }}
+     >
+      {place.name}
+     </Text>
+    }
     description={
-     <Flex justify="space-between" align="center">
+     <Flex justify="space-between" align="center" wrap>
       <div>
        <Rate
         allowHalf
@@ -238,7 +246,7 @@ const Place = ({ place }) => {
         defaultValue={place.rating}
         style={{ color: '#cfaf83', fontSize: 12 }}
        />{' '}
-       {place.rating}
+       {!screens.xs && place.rating}
       </div>
       <Button
        href={place.url}

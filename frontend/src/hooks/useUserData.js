@@ -10,7 +10,6 @@ export const useUserData = () => {
  const [errorMsg, setErrorMsg] = useState();
 
  const getUserData = async (userEmail) => {
-  setIsLoading(true);
   try {
    const params = {
     url: `/api/v1/propertymanagers/email/${userEmail}`,
@@ -28,7 +27,6 @@ export const useUserData = () => {
  };
 
  const getUserDataById = useCallback(async (id) => {
-  setIsLoading(true); // Start loading state here
   try {
    const response = await axios.get(`/api/v1/propertymanagers/${id}`, {
     rejectUnauthorized: false, // Add when working with HTTPS sites
@@ -46,7 +44,6 @@ export const useUserData = () => {
  });
 
  const updatePropertyManager = async (id, firstname, lastname, phone) => {
-  setIsLoading(true);
   try {
    const params = {
     url: `/api/v1/propertymanagers/${id}`,
@@ -68,7 +65,6 @@ export const useUserData = () => {
  };
 
  const updateAvatar = async (id, avatar) => {
-  setIsLoading(true);
   try {
    const params = {
     url: `/api/v1/propertymanagers/avatar/${id}`,
@@ -90,7 +86,6 @@ export const useUserData = () => {
  };
 
  const updatePassword = async (id, currentPassword, newPassword) => {
-  setIsLoading(true);
   try {
    const response = await fetch(`/api/v1/propertymanagers/password/${id}`, {
     method: 'PUT',
@@ -115,7 +110,6 @@ export const useUserData = () => {
  };
 
  const requestPasswordReset = async (email) => {
-  setIsLoading(true);
   setError(false);
   setSuccess(false);
   setErrorMsg('');
@@ -146,7 +140,6 @@ export const useUserData = () => {
  };
 
  const verifyResetCode = async (email, code) => {
-  setIsLoading(true);
   try {
    const response = await fetch('/api/v1/propertymanagers/verify-reset-code', {
     method: 'POST',
@@ -168,7 +161,6 @@ export const useUserData = () => {
  };
 
  const resetPassword = async (email, code, newPassword) => {
-  setIsLoading(true);
   try {
    const response = await fetch('/api/v1/propertymanagers/reset-password', {
     method: 'POST',
@@ -210,7 +202,6 @@ export const useUserData = () => {
  };
 
  const deleteManagerById = async (id) => {
-  setIsLoading(true);
   setSuccess(false);
   setError(null);
   try {
@@ -225,7 +216,6 @@ export const useUserData = () => {
 
  // New function to verify a manager
  const verifyManager = async (id) => {
-  setIsLoading(true);
   setSuccess(false);
   setError(false);
   setErrorMsg('');

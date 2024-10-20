@@ -106,51 +106,68 @@ const amenityCategories = {
  ],
 };
 
-const AmenityCard = React.memo(({ amenity, description, media }) => {
- const screens = useBreakpoint();
- return (
-  <Card
-   hoverable={false}
-   style={{ width: '100%' }}
-   cover={
-    ReactPlayer.canPlay(media) ? (
-     <ReactPlayer
-      url={media}
-      controls
-      width="100%"
-      height={screens.xs ? 160 : 220}
-     />
-    ) : (
-     <Image
-      src={media}
-      height={screens.xs ? 160 : 220}
-      style={{ objectFit: 'cover' }}
-     />
-    )
-   }
-  >
-   <Meta
-    title={
-     <>
-      {amenityIcons[amenity]}
-      <Text strong> {amenityTitles[amenity]}</Text>
-     </>
+const AmenityCard = React.memo(
+ ({ amenity, description, media, wifiName, wifiPassword, shouldBeFullRow }) => {
+  const screens = useBreakpoint();
+  return (
+   <Card
+    hoverable={false}
+    style={{ width: '100%' }}
+    cover={
+     ReactPlayer.canPlay(media) ? (
+      <ReactPlayer
+       url={media}
+       controls
+       width="100%"
+       height={screens.xs ? 240 : 220}
+      />
+     ) : (
+      <Image
+       src={media}
+       height={screens.xs ? 240 : 220}
+       style={{ objectFit: 'cover' }}
+      />
+     )
     }
-    description={
-     <Paragraph
-      ellipsis={{
-       rows: 4,
-       expandable: true,
-       symbol: 'lire plus',
-      }}
-     >
-      {description}
-     </Paragraph>
-    }
-   />
-  </Card>
- );
-});
+   >
+    <Meta
+     title={
+      <>
+       {amenityIcons[amenity]}
+       <Text strong> {amenityTitles[amenity]}</Text>
+      </>
+     }
+     description={
+      <>
+       {amenity === 'wifi' && (
+        <>
+         <br />
+         <Paragraph>
+          <Text strong>Nom Wi-Fi: </Text>
+          {wifiName}
+         </Paragraph>
+         <Paragraph>
+          <Text strong>Mot de passe Wi-Fi: </Text>
+          <Text copyable>{wifiPassword}</Text>
+         </Paragraph>
+        </>
+       )}
+       <Paragraph
+        ellipsis={{
+         rows: 4,
+         expandable: true,
+         symbol: 'lire plus',
+        }}
+       >
+        {description}
+       </Paragraph>
+      </>
+     }
+    />
+   </Card>
+  );
+ }
+);
 
 const HouseManual = React.memo(({ amenities }) => {
  const availableAmenities = useMemo(() => {
@@ -173,15 +190,19 @@ const HouseManual = React.memo(({ amenities }) => {
       <Text strong>{category}</Text>
      </Divider>
      <Row gutter={[16, 16]}>
-      {categoryAmenities.map((amenity) => (
-       <Col key={amenity} xs={12}>
-        <AmenityCard
-         amenity={amenity}
-         description={amenities[amenity].description}
-         media={amenities[amenity].media}
-        />
-       </Col>
-      ))}
+      {categoryAmenities.map((amenity, index) => {
+       return (
+        <Col key={amenity} xs={24} md={12}>
+         <AmenityCard
+          amenity={amenity}
+          description={amenities[amenity].description}
+          media={amenities[amenity].media}
+          wifiName={amenities[amenity].wifiName}
+          wifiPassword={amenities[amenity].wifiPassword}
+         />
+        </Col>
+       );
+      })}
      </Row>
     </Col>
    ))}

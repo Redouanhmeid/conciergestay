@@ -1,7 +1,5 @@
 import { useAuthContext } from './hooks/useAuthContext';
-import Login from './pages/forms/sign/login';
 import { Spin } from 'antd';
-import PropertyManagerHome from './pages/propertymanagerhome';
 import Home from './pages/home';
 const App = () => {
  const { user, isLoading } = useAuthContext();

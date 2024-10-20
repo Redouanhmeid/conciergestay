@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
  Layout,
  Row,
@@ -56,12 +56,13 @@ const normFile = (e: any) => {
  }
  return e?.fileList;
 };
+
 const downloadQRCode = () => {
  const canvas = document.getElementById('qrcode')?.querySelector('canvas');
  if (canvas) {
   const url = canvas.toDataURL();
   const a = document.createElement('a');
-  a.download = 'QRCode.png';
+  a.download = `conciergestayqrcode.png`;
   a.href = url;
   document.body.appendChild(a);
   a.click();
@@ -70,6 +71,7 @@ const downloadQRCode = () => {
 };
 
 const Account = () => {
+ const [form] = Form.useForm();
  const { user } = useAuthContext();
  const {
   isLoading,
@@ -81,13 +83,10 @@ const Account = () => {
   error,
  } = useUserData();
  const { uploadAvatar, uploading } = useUploadPhotos();
- const User = user || JSON.parse(localStorage.getItem('user'));
+ const currentUser = user || JSON.parse(localStorage.getItem('user'));
+ // State declarations
+ const [loading, setLoading] = useState(true);
  const [isModalOpen, setIsModalOpen] = useState(false);
- const [firstname, setfirstname] = useState();
- const [lastname, setLastname] = useState();
- const [email, setEmail] = useState();
- const [phone, setPhone] = useState();
- const [avatar, setAvatar] = useState(null);
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
  const [fileList, setFileList] = useState([]);
@@ -95,6 +94,77 @@ const Account = () => {
  const [countryCode, setCountryCode] = useState(
   countries.find((country) => country.name === 'Maroc').dialCode
  ); // Default to first country
+
+ const pageUrl = window.location.href;
+
+ useEffect(() => {
+  const initializeUserData = async () => {
+   if (currentUser?.email) {
+    await getUserData(currentUser.email);
+    setLoading(false);
+   }
+  };
+  initializeUserData();
+ }, [currentUser?.email]);
+
+ // Update form values when userData changes
+ useEffect(() => {
+  const initializeFormData = async () => {
+   if (userData && form) {
+    const fullPhone = userData?.phone || '';
+    const phoneWithoutCountryCode = fullPhone.startsWith(countryCode)
+     ? fullPhone.slice(countryCode.length)
+     : fullPhone;
+
+    form.setFieldsValue({
+     lastname: userData.lastname,
+     firstname: userData.firstname,
+     phone: phoneWithoutCountryCode,
+    });
+
+    if (userData?.avatar) {
+     try {
+      // Get the filename from the URL or use a default name
+      const filename = userData.avatar.split('/').pop() || 'avatar.jpg';
+      const file = await urlToFile(userData.avatar, filename);
+
+      if (file) {
+       setFileList([
+        {
+         uid: '1',
+         name: filename,
+         status: 'done',
+         url: userData.avatar,
+         originFileObj: file,
+        },
+       ]);
+      }
+     } catch (error) {
+      console.error('Error setting file list:', error);
+     }
+    }
+   }
+  };
+
+  initializeFormData();
+ }, [userData?.email, form]);
+
+ // Handle success and error messages
+ useEffect(() => {
+  if (success) message.success('Détails mis à jour avec succès!');
+  if (error) message.warning('Erreur lors de la mise à jour des détails!');
+ }, [success, error]);
+
+ const urlToFile = async (url, filename) => {
+  try {
+   const response = await fetch(url);
+   const blob = await response.blob();
+   return new File([blob], filename, { type: blob.type });
+  } catch (error) {
+   console.error('Error converting URL to File:', error);
+   return null;
+  }
+ };
 
  const showPWDModal = () => {
   setIsModalOpen(true);
@@ -110,8 +180,6 @@ const Account = () => {
  const hideShareModal = () => {
   setIsShareModalVisible(false);
  };
-
- const pageUrl = window.location.href;
 
  const onFinish = (values) => {
   const fullPhoneNumber = `${countryCode}${values.phone}`;
@@ -130,16 +198,27 @@ const Account = () => {
   setPreviewImage(file.url || file.preview);
   setPreviewOpen(true);
  };
+
  const handleChange = ({ fileList: newFileList }) => {
   setFileList(newFileList);
  };
+
  const onAvatarChange = async () => {
   const AvatarUrl = await uploadAvatar(fileList);
   updateAvatar(userData.id, AvatarUrl);
  };
+
  const handleCountryChange = (value) => {
   setCountryCode(value);
  };
+
+ const initializeUserData = async () => {
+  if (currentUser?.email) {
+   await getUserData(currentUser.email);
+   setLoading(false);
+  }
+ };
+
  const uploadButton = (
   <button
    style={{
@@ -158,28 +237,8 @@ const Account = () => {
    </div>
   </button>
  );
- useEffect(() => {
-  if (User.email) {
-   getUserData(User.email);
-   setfirstname(userData.firstname);
-   setLastname(userData.lastname);
-   setEmail(userData.email);
-   setPhone(userData.phone);
-  }
- }, []);
 
- useEffect(() => {
-  if (success) {
-   message.success('Détails mis à jour avec succès!');
-  }
- }, [success]);
- useEffect(() => {
-  if (error) {
-   message.warning('Erreur lors de la mise à jour des détails!');
-  }
- }, [error]);
-
- if (isLoading) {
+ if (loading) {
   return (
    <div className="loading">
     <Spin size="large" />
@@ -204,18 +263,13 @@ const Account = () => {
       <br />
       <Divider />
       <Form
-       name="basic"
+       name="account"
+       form={form}
        labelCol={{ xs: 24, sm: 4 }}
        wrapperCol={{ xs: 24, sm: 20 }}
        onFinish={onFinish}
-       autoComplete="off"
        labelAlign="left"
        size="large"
-       initialValues={{
-        lastname: userData.lastname,
-        firstname: userData.firstname,
-        phone: userData.phone,
-       }}
       >
        <Form.Item name="lastname" label="Nom">
         <Input />
@@ -228,7 +282,7 @@ const Account = () => {
          type="number"
          addonBefore={
           <Select
-           defaultValue={countryCode}
+           value={countryCode}
            style={{ width: 140 }}
            onChange={handleCountryChange}
           >
@@ -244,7 +298,7 @@ const Account = () => {
         />
        </Form.Item>
        <Form.Item>
-        <Button type="primary" htmlType="submit">
+        <Button type="primary" htmlType="submit" loading={isLoading}>
          Mettre à jour du profil
         </Button>
        </Form.Item>
@@ -253,7 +307,7 @@ const Account = () => {
       <Form name="avatar" onFinish={onAvatarChange} layout="vertical">
        <Row gutter={[24, 0]}>
         <Flex align="center">
-         <Col xs={24} md={12}>
+         <Col xs={12}>
           <Form.Item name="avatar" label="Avatar">
            <div>
             <ImgCrop rotationSlider>
@@ -287,9 +341,9 @@ const Account = () => {
            </div>
           </Form.Item>
          </Col>
-         <Col xs={24} md={12}>
+         <Col xs={12}>
           <Form.Item>
-           <Button type="primary" htmlType="submit">
+           <Button type="primary" htmlType="submit" loading={uploading}>
             Changer l'avatar
            </Button>
           </Form.Item>
@@ -324,7 +378,7 @@ const Account = () => {
            type="link"
            icon={<CopyOutlined />}
            onClick={() => {
-            navigator.clipboard.writeText({ pageUrl });
+            navigator.clipboard.writeText(pageUrl);
            }}
           />
           <Button

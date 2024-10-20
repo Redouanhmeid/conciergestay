@@ -190,6 +190,7 @@ const updatePropertyCheckIn = async (req, res) => {
    earlyCheckIn,
    frontPhoto,
    accessToProperty,
+   guestAccessInfo,
    videoCheckIn,
   } = req.body;
   const property = await Property.findByPk(id);
@@ -201,6 +202,7 @@ const updatePropertyCheckIn = async (req, res) => {
    earlyCheckIn,
    frontPhoto,
    accessToProperty,
+   guestAccessInfo,
    videoCheckIn,
   });
   res.status(200).json(property);

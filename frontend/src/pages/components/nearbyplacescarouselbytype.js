@@ -14,7 +14,7 @@ import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
 import { useNavigate } from 'react-router-dom';
 
-const { Title } = Typography;
+const { Text } = Typography;
 const { useBreakpoint } = Grid;
 
 const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
@@ -96,12 +96,9 @@ const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
     slidesToShow={getSlidesToShow()}
     dots={false}
     autoplay
-    style={{ padding: '0 28px' }}
    >
     {filteredPlaces.map((place, index) => (
-     <div key={index} style={{ margin: '0 12px' }}>
-      <Place place={place} />
-     </div>
+     <Place place={place} key={index} style={{ margin: '0 12px' }} />
     ))}
    </Carousel>
 
@@ -115,8 +112,10 @@ const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
 export default NearbyPlacesCarouselByType;
 
 const Place = React.memo(({ place }) => {
+ const screens = useBreakpoint();
  return (
   <Card
+   className="custom-card"
    cover={
     <div className="nearbyplacescarousel" hoverable="false">
      <Image
@@ -134,10 +133,29 @@ const Place = React.memo(({ place }) => {
      />
     </div>
    }
-   style={{ width: 'calc(100% - 16px)', position: 'relative' }}
+   style={{
+    width: 'calc(100% - 16px)',
+    margin: '0 8px',
+    height: screens.xs ? '220px' : 'auto',
+    position: 'relative',
+   }}
   >
    <Card.Meta
-    title={place.name}
+    title={
+     <Text
+      style={{
+       fontSize: '16px',
+       display: '-webkit-box',
+       WebkitLineClamp: 2, // Limit to two lines
+       WebkitBoxOrient: 'vertical',
+       overflow: 'hidden',
+       textOverflow: 'ellipsis',
+       whiteSpace: 'normal', // Allow text to wrap
+      }}
+     >
+      {place.name}
+     </Text>
+    }
     description={
      <div
       style={{
@@ -153,7 +171,7 @@ const Place = React.memo(({ place }) => {
         defaultValue={place.rating}
         style={{ color: '#cfaf83', fontSize: 12 }}
        />{' '}
-       {place.rating}
+       {!screens.xs && place.rating}
       </div>
       <Button
        href={place.url}

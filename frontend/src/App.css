@@ -87,16 +87,19 @@ body {
   color: '#2b2c32';
 }
 .left{
-  left: 0;
+  left: -22px;
 }
 .right{
-  right: 0;
+  right: -22px;
 }
 .nearbyplacescarousel{
   position: relative;
   height: 180px;
   overflow: hidden;
   border-radius: 12px 12px 0 0;
+}
+.nearbyplacescarousel .ant-card-body{
+  padding: 2px !important;
 }
 .nearbyplacescarousel .ant-image{
   position: initial;
@@ -136,6 +139,9 @@ body {
 @media only screen and (max-width: 576px) {
   .logoStyle {
     height: 44px !important;
+  }
+  .custom-card .ant-card-body {
+    padding: 8px;
   }
   .nearbyplacescarousel{
     position: relative;
@@ -506,4 +512,8 @@ body {
 .custom-upload .ant-upload-list-item img {
   object-fit: cover; /* Ensures the image fits within the box without distortion */
   height: 100%;      /* Makes the image take the full height */
+}
+
+.ant-upload-list-item-name {
+  display: none !important;
 }
