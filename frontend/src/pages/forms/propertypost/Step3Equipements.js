@@ -9,18 +9,15 @@ const { Title, Text } = Typography;
 
 const Step3Equipements = ({ next, prev, values }) => {
  const [BasicAmenities, setBasicAmenities] = useState([]);
- const [SafetyFeatures, setSafetyFeatures] = useState([]);
+
  const submitFormData = () => {
   values.basicAmenities = BasicAmenities;
-  values.safetyFeatures = SafetyFeatures;
   next();
  };
  const onChangeBasicAmenities = (checkedvalues) => {
   setBasicAmenities(checkedvalues);
  };
- const onChangeSafetyFeatures = (checkedvalues) => {
-  setSafetyFeatures(checkedvalues);
- };
+
  return (
   <Layout className="contentStyle">
    <Head />

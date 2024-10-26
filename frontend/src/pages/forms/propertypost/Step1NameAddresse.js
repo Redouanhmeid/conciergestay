@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { Layout, Form, Typography, Row, Col, Input, Button, Radio } from 'antd';
+import {
+ Layout,
+ Form,
+ Typography,
+ Row,
+ Col,
+ Input,
+ Button,
+ Radio,
+ message,
+} from 'antd';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
 import { ArrowRightOutlined } from '@ant-design/icons';
@@ -11,7 +21,13 @@ const { Content } = Layout;
 const { Title } = Typography;
 
 const Step1NameAddresse = ({ next, handleFormData, values }) => {
+ const [form] = Form.useForm();
  const [checkedType, setCheckedType] = useState(null);
+ const [mapValues, setMapValues] = useState({
+  latitude: null,
+  longitude: null,
+  placeName: null,
+ });
 
  const propertyTypes = [
   {
@@ -36,22 +52,45 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
  };
 
  const handlePlaceSelected = ({ latitude, longitude, placeName }) => {
-  // Update values object with the new values
-  values.latitude = latitude;
-  values.longitude = longitude;
-  values.placeName = placeName;
+  setMapValues({
+   latitude,
+   longitude,
+   placeName,
+  });
+  // Update form data
+  handleFormData('latitude')({ target: { value: latitude } });
+  handleFormData('longitude')({ target: { value: longitude } });
+  handleFormData('placeName')({ target: { value: placeName } });
  };
 
  const submitFormData = () => {
-  values.type = checkedType;
-  handleFormData({
-   name: values.name,
-   description: values.description,
-   type: values.type,
-   airbnbUrl: values.airbnbUrl,
-   bookingUrl: values.bookingUrl,
-  });
-  next();
+  // Check if map values are present
+  if (!mapValues.latitude || !mapValues.longitude || !mapValues.placeName) {
+   message.error('Veuillez sélectionner un emplacement sur la carte');
+   return;
+  }
+  form
+   .validateFields()
+   .then(() => {
+    const completeFormData = {
+     name: values.name,
+     description: values.description,
+     type: checkedType,
+     airbnbUrl: values.airbnbUrl?.trim() ? values.airbnbUrl : null,
+     bookingUrl: values.bookingUrl?.trim() ? values.bookingUrl : null,
+     latitude: mapValues.latitude,
+     longitude: mapValues.longitude,
+     placeName: mapValues.placeName,
+    };
+    // Update each field individually
+    Object.entries(completeFormData).forEach(([key, value]) => {
+     handleFormData(key)({ target: { value } });
+    });
+    next();
+   })
+   .catch((info) => {
+    console.log('Validate Failed:', info);
+   });
  };
 
  return (
@@ -60,12 +99,13 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
    <Layout>
     <Content className="container">
      <Form
+      form={form}
       name="step1"
       layout="vertical"
       onFinish={submitFormData}
       size="large"
      >
-      <Title level={2}>Enregistrez les informations de votre propriété</Title>
+      <Title level={3}>Enregistrez les informations de votre propriété</Title>
       <Row gutter={[24, 0]}>
        <Col xs={24} md={24}>
         <Form.Item
@@ -171,7 +211,28 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
        </Col>
 
        <Col xs={24} md={24}>
-        <MapPicker onPlaceSelected={handlePlaceSelected} />
+        <Form.Item
+         label="Emplacement"
+         required
+         rules={[
+          {
+           validator: (_, value) => {
+            if (
+             !mapValues.latitude ||
+             !mapValues.longitude ||
+             !mapValues.placeName
+            ) {
+             return Promise.reject(
+              'Veuillez sélectionner un emplacement sur la carte'
+             );
+            }
+            return Promise.resolve();
+           },
+          },
+         ]}
+        >
+         <MapPicker onPlaceSelected={handlePlaceSelected} />
+        </Form.Item>
        </Col>
       </Row>
       <br />

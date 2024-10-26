@@ -143,13 +143,13 @@ const useUploadPhotos = () => {
     body: formData,
    });
    const data = await response.json();
-   setUploading(false);
 
    return data.files.map((file) => file.url);
   } catch (error) {
    console.error('Error uploading photos:', error);
-   setUploading(false);
    throw error;
+  } finally {
+   setUploading(false);
   }
  };
 

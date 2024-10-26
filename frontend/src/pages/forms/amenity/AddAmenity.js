@@ -139,7 +139,6 @@ const AddAmenity = () => {
   } catch (error) {
    console.error('Error:', error);
   }
-  console.log('Received values:', values);
  };
  return (
   <Layout className="contentStyle">
@@ -239,7 +238,13 @@ const AddAmenity = () => {
           )}
         </Col>
 
-        <Col xs={24} md={10}>
+        <Col
+         xs={24}
+         md={{
+          span: 10,
+          offset: 2,
+         }}
+        >
          <Form.Item
           label="Que souhaitez-vous dire à vos invités sur ce sujet ?"
           name="description"

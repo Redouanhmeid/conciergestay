@@ -23,6 +23,9 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
  const [placePhotos, setPlacePhotos] = useState([]);
  const [placeTypes, setPlaceTypes] = useState([]);
 
+ const [touched, setTouched] = useState(false);
+ const inputRef = useRef(null);
+
  const autocompleteRef = useRef(null);
 
  const handlePlaceSelect = (place) => {
@@ -70,6 +73,8 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
   const geocoder = new window.google.maps.Geocoder();
   const newLatLng = { lat: latLng.lat(), lng: latLng.lng() };
 
+  setPosition(newLatLng); // Update position immediately for smooth UI
+
   geocoder.geocode({ location: newLatLng }, (results, status) => {
    if (status === 'OK' && results[0]) {
     const place = results[0];
@@ -112,6 +117,14 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
   });
  };
 
+ const inputStyle = {
+  width: '100%',
+  padding: '0.5rem',
+  borderTopLeftRadius: '12px',
+  borderTopRightRadius: '12px',
+  border: touched && !placeName ? '1px solid #ff4d4f' : '1px solid #ddc7a8',
+ };
+
  if (!isLoaded) {
   return (
    <div className="loading">
@@ -138,6 +151,7 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
       if (autocompleteRef.current !== null) {
        const place = autocompleteRef.current.getPlace();
        handlePlaceSelect(place);
+       setTouched(true);
       }
      }}
      options={{
@@ -145,20 +159,22 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
      }}
     >
      <input
-      placeholder="Indiquer une place"
-      style={{
-       width: '100%',
-       padding: '0.5rem',
-       borderTopLeftRadius: '12px',
-       borderTopRightRadius: '12px',
-       border: '1px solid #ddc7a8',
-      }}
+      ref={inputRef}
+      placeholder="Indiquer une place *"
+      style={inputStyle}
+      onFocus={() => setTouched(true)}
      />
     </Autocomplete>
+    {touched && !placeName && (
+     <div style={{ color: '#ff4d4f', marginTop: '4px' }}>
+      Veuillez sélectionner un emplacement
+     </div>
+    )}
     <Map
-     key={position.lat + position.lng}
+     // key={position.lat + position.lng}
+     center={position}
      defaultZoom={14}
-     defaultCenter={position}
+     // defaultCenter={position}
      mapId={MapConfig.MAP_ID}
     >
      <AdvancedMarker

@@ -31,13 +31,15 @@ const Step5HouseManual = ({ prev, values }) => {
  const navigate = useNavigate();
 
  const [showAdditionalRules, setShowAdditionalRules] = useState(false);
- const [Price, setPrice] = useState([]);
- const [Capacity, setCapacity] = useState([]);
- const [Rooms, setRooms] = useState([]);
- const [Beds, setBeds] = useState([]);
- const [Elements, setElements] = useState([]);
- const [HouseRules, setHouseRules] = useState([]);
- const [AdditionalRules, setAdditionalRules] = useState('');
+ const [Price, setPrice] = useState(values.price || null);
+ const [Capacity, setCapacity] = useState(values.capacity || null);
+ const [Rooms, setRooms] = useState(values.rooms || null);
+ const [Beds, setBeds] = useState(values.beds || null);
+ const [Elements, setElements] = useState(values.elements || []);
+ const [HouseRules, setHouseRules] = useState(values.houseRules || []);
+ const [AdditionalRules, setAdditionalRules] = useState(
+  values.additionalRules || ''
+ );
 
  useEffect(() => {
   if (User) {
@@ -71,7 +73,6 @@ const Step5HouseManual = ({ prev, values }) => {
   try {
    await createProperty(values);
    setTimeout(() => {
-    console.log(values);
     // Navigate to the dashboard
     navigate('/dashboard');
    }, 1000);
@@ -86,10 +87,18 @@ const Step5HouseManual = ({ prev, values }) => {
    <Layout>
     <Content className="container">
      <Form
-      name="step3"
+      name="step5"
       layout="vertical"
       onFinish={submitFormData}
       size="large"
+      initialValues={{
+       price: Price,
+       capacity: Capacity,
+       rooms: Rooms,
+       beds: Beds,
+       houseRules: HouseRules,
+       additionalRules: AdditionalRules,
+      }}
      >
       <Title level={2}>Manuel de la maison</Title>
       <Row gutter={[24, 0]}>
@@ -98,29 +107,42 @@ const Step5HouseManual = ({ prev, values }) => {
          <InputNumber
           min={0}
           addonAfter="Dh"
+          value={Price}
           onChange={(value) => setPrice(value)}
          />
         </Form.Item>
        </Col>
        <Col xs={9} md={5}>
         <Form.Item label="Max Personnes" name="capacity">
-         <InputNumber min={0} onChange={(value) => setCapacity(value)} />
+         <InputNumber
+          min={0}
+          value={Capacity}
+          onChange={(value) => setCapacity(value)}
+         />
         </Form.Item>
        </Col>
        <Col xs={8} md={5}>
         <Form.Item label="Chambres" name="rooms">
-         <InputNumber min={0} onChange={(value) => setRooms(value)} />
+         <InputNumber
+          min={0}
+          value={Rooms}
+          onChange={(value) => setRooms(value)}
+         />
         </Form.Item>
        </Col>
        <Col xs={7} md={5}>
         <Form.Item label="Lits" name="beds">
-         <InputNumber min={0} onChange={(value) => setBeds(value)} />
+         <InputNumber
+          min={0}
+          value={Beds}
+          onChange={(value) => setBeds(value)}
+         />
         </Form.Item>
        </Col>
 
        <Col xs={24} md={24}>
         <Form.Item label="Règles de la maison:" name="houseRules">
-         <Checkbox.Group onChange={onChangehouseRules}>
+         <Checkbox.Group value={HouseRules} onChange={onChangehouseRules}>
           <Row gutter={[24, 0]}>
            <Col xs={24}>
             <Checkbox value="noNoise">

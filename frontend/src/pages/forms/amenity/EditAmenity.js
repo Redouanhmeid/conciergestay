@@ -46,10 +46,15 @@ const EditAmenity = () => {
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
  const [fileList, setFileList] = useState([]);
+ const [isSubmitting, setIsSubmitting] = useState(false);
 
  const getAmenity = async (id) => {
-  const data = await getOneAmenity(id);
-  setAmenity(data);
+  try {
+   const data = await getOneAmenity(id);
+   setAmenity(data);
+  } catch (error) {
+   console.error('Error fetching amenity:', error);
+  }
  };
 
  useEffect(() => {
@@ -64,13 +69,13 @@ const EditAmenity = () => {
     media: amenity.media,
     wifiName: amenity.wifiName,
     wifiPassword: amenity.wifiPassword,
+    mediaType: ReactPlayer.canPlay(amenity.media) ? 'Video' : 'Photo',
    });
+
    setVideoUrl(amenity.media);
-   // Handle setting the initial media type and file list if needed
-   const isVideo = ReactPlayer.canPlay(amenity.media);
-   setMediaType(isVideo ? 'Video' : 'Photo');
-   form.setFieldsValue({ mediaType: isVideo ? 'Video' : 'Photo' });
-   if (!ReactPlayer.canPlay(amenity.media)) {
+   setMediaType(ReactPlayer.canPlay(amenity.media) ? 'Video' : 'Photo');
+
+   if (!ReactPlayer.canPlay(amenity.media) && amenity.media) {
     setFileList([
      { uid: '-1', name: 'image.jpg', status: 'done', url: amenity.media },
     ]);
@@ -78,14 +83,11 @@ const EditAmenity = () => {
   }
  }, [amenity, form]);
 
- const goBack = () => {
-  navigate(-1); // This will navigate back to the previous page
- };
-
  const onChangeMediaType = (e) => {
   setMediaType(e.target.value);
   form.setFieldsValue({ media: '' });
   setVideoUrl('');
+  setFileList([]);
  };
  const handlePreview = async (file) => {
   if (!file.url && !file.preview) {
@@ -115,26 +117,42 @@ const EditAmenity = () => {
    </div>
   </button>
  );
+
  const onFinish = async (values) => {
-  values.name = amenity;
-  values.propertyId = id;
-  values.media = videoUrl;
-  if (mediaType === 'Photo' && fileList.length > 0) {
-   const photoUrl = await uploadAmenity(fileList);
-   values.media = photoUrl;
-  }
+  if (isSubmitting) return; // Prevent double submission
+
+  setIsSubmitting(true);
   try {
-   await updateAmenity(values);
-   if (!error) {
-    setTimeout(() => {
-     // Navigate to the dashboard
-     navigate(-1);
-    }, 1000);
+   let mediaUrl = videoUrl;
+
+   if (mediaType === 'Photo' && fileList.length > 0) {
+    const currentFile = fileList[0];
+    if (currentFile.url && currentFile.url.startsWith('/amenities')) {
+     mediaUrl = currentFile.url;
+    } else if (currentFile.originFileObj) {
+     mediaUrl = await uploadAmenity(fileList);
+    }
    }
+
+   const updateData = {
+    id: amenity.id,
+    name: amenity.name,
+    description: values.description,
+    media: mediaUrl,
+    propertyId: amenity.propertyId,
+    ...(amenity.name === 'wifi' && {
+     wifiName: values.wifiName,
+     wifiPassword: values.wifiPassword,
+    }),
+   };
+
+   await updateAmenity(updateData);
+   navigate(-1);
   } catch (error) {
    console.error('Error:', error);
+  } finally {
+   setIsSubmitting(false);
   }
-  console.log('Received values:', values);
  };
 
  if (loading) {
@@ -152,7 +170,7 @@ const EditAmenity = () => {
      type="default"
      shape="round"
      icon={<ArrowLeftOutlined />}
-     onClick={goBack}
+     onClick={() => navigate(-1)}
     >
      Retour
     </Button>
@@ -166,6 +184,9 @@ const EditAmenity = () => {
        layout="vertical"
        size="large"
        form={form}
+       initialValues={{
+        mediaType: amenity.media,
+       }}
       >
        <Row gutter={[32, 16]}>
         <Col xs={24} md={12}>
@@ -176,11 +197,7 @@ const EditAmenity = () => {
           onChange={onChangeMediaType}
          >
           <Form.Item name="mediaType">
-           <Radio.Group
-            defaultValue={mediaType}
-            buttonStyle="solid"
-            size="large"
-           >
+           <Radio.Group buttonStyle="solid" size="large">
             <Radio.Button value="Photo">Photo</Radio.Button>
             <Radio.Button value="Video">Video</Radio.Button>
            </Radio.Group>
@@ -241,13 +258,19 @@ const EditAmenity = () => {
            />
           </Form.Item>
          )}
+         {mediaType === 'Video' &&
+          form.getFieldValue(['media']) &&
+          form.getFieldValue(['media']).trim() !== '' && (
+           <ReactPlayer url={form.getFieldValue(['media'])} controls />
+          )}
         </Col>
-        {mediaType === 'Video' &&
-         form.getFieldValue(['media']) &&
-         form.getFieldValue(['media']).trim() !== '' && (
-          <ReactPlayer url={form.getFieldValue(['media'])} controls />
-         )}
-        <Col xs={24} md={12}>
+        <Col
+         xs={24}
+         md={{
+          span: 10,
+          offset: 2,
+         }}
+        >
          <Form.Item
           label="Que souhaitez-vous dire à vos invités sur ce sujet ?"
           name="description"
@@ -281,7 +304,8 @@ const EditAmenity = () => {
             style={{ width: '100%' }}
             type="primary"
             htmlType="submit"
-            loading={loading}
+            loading={isSubmitting || loading}
+            disabled={isSubmitting}
            >
             Enregistrer
            </Button>

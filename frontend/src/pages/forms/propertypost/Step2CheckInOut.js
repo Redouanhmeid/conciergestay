@@ -40,21 +40,27 @@ const getBase64 = (file) =>
 const Step2CheckInOut = ({ next, prev, values }) => {
  const [form] = Form.useForm();
  const { uploadFrontPhoto } = useUploadPhotos();
- const [CheckInTime, setCheckInTime] = useState(
-  form.getFieldValue('checkInTime')
+ const [loading, setLoading] = useState(false);
+
+ const [CheckInTime, setCheckInTime] = useState(values.checkInTime || null);
+ const [CheckOutTime, setCheckOutTime] = useState(values.checkOutTime || null);
+ const [EarlyCheckIn, setEarlyCheckIn] = useState(values.earlyCheckIn || []);
+ const [AccessToProperty, setAccessToProperty] = useState(
+  values.accessToProperty || []
  );
- const [CheckOutTime, setCheckOutTime] = useState(
-  form.getFieldValue('checkOutTime')
- );
- const [EarlyCheckIn, setEarlyCheckIn] = useState([]);
- const [AccessToProperty, setAccessToProperty] = useState([]);
+
  const [LateCheckOutPolicy, setLateCheckOutPolicy] = useState([]);
  const [BeforeCheckOut, setBeforeCheckOut] = useState([]);
- const [GuestAccessInfo, setGuestAccessInfo] = useState('');
- const [VideoCheckIn, setVideoCheckIn] = useState('');
- const [AdditionalCheckOutInfo, setAdditionalCheckOutInfo] = useState('');
- const [frontPhoto, setFrontPhoto] = useState('');
- const [loading, setLoading] = useState(false);
+
+ const [GuestAccessInfo, setGuestAccessInfo] = useState(
+  values.guestAccessInfo || ''
+ );
+ const [VideoCheckIn, setVideoCheckIn] = useState(values.videoCheckIn || '');
+ const [AdditionalCheckOutInfo, setAdditionalCheckOutInfo] = useState(
+  values.additionalCheckOutInfo || ''
+ );
+ const [frontPhoto, setFrontPhoto] = useState(values.frontPhoto || '');
+ const [fileList, setFileList] = useState([]);
 
  const submitFormData = async () => {
   try {
@@ -95,8 +101,15 @@ const Step2CheckInOut = ({ next, prev, values }) => {
        size="large"
        form={form}
        initialValues={{
-        ['checkInTime']: dayjs().hour(12).minute(0),
-        ['checkOutTime']: dayjs().hour(12).minute(0),
+        checkInTime: values.checkInTime || dayjs().hour(12).minute(0),
+        checkOutTime: values.checkOutTime || dayjs().hour(12).minute(0),
+        earlyCheckIn: values.earlyCheckIn || [],
+        lateCheckOutPolicy: values.lateCheckOutPolicy || [],
+        accessToProperty: values.accessToProperty || [],
+        BeforeCheckOut: values.beforeCheckOut || [],
+        guestAccessInfo: values.guestAccessInfo || '',
+        videoCheckIn: values.videoCheckIn || '',
+        additionalCheckOutInfo: values.additionalCheckOutInfo || '',
        }}
       >
        <CheckInForm

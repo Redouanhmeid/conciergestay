@@ -104,6 +104,69 @@ body {
 .nearbyplacescarousel .ant-image{
   position: initial;
 }
+
+.propertydtcarousel {
+  height: 426px;
+  overflow: hidden;
+}
+.propertydtcarousel .ant-image {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.propertydtcarousel .card-image.portrait {
+  transform: translateY(-50%);
+}
+
+.propertycarousel {
+  position: relative;
+  height: 200px;
+  border-radius: 14px 14px 0 0;
+  overflow: hidden;
+}
+.propertycarousel .image-container {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 14px 14px 0 0;
+}
+.propertycarousel .ant-image {
+  position: absolute !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.propertycarousel .ant-image img.card-image {
+  position: absolute;
+  max-width: none;
+  max-height: none;
+  min-height: 200px;
+  object-fit: cover;
+}
+.propertycarousel .card-image.portrait {
+  width: 100%  !important;
+  height: auto !important;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.propertycarousel .card-image.landscape {
+  width: 100% !important;
+  height: 100% !important;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.image-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: #f0f0f0;
+  color: rgba(0, 0, 0, 0.25);
+  font-size: 14px;
+}
+
 .pin {
   cursor: 'pointer';
   position: relative;
@@ -310,6 +373,7 @@ body {
 }
 .customRadioButton:hover {
   cursor: pointer;
+  color: #fff;
   background-color: #aa7e42;
   border-color: #ebdecd;
 }
@@ -327,6 +391,26 @@ body {
   margin-top: 8px;
   margin-bottom: 8px;
   font-size: 24px;
+}
+
+@media only screen and (max-width: 576px) {
+  .customRadioGroup {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .customRadioButton {
+    padding: 6px;
+    width: 104px;
+  }
+  .customRadioContainer .ant-radio-wrapper{
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    font-size: 13px;
+  }
+  .customRadioContainer .ant-radio-wrapper > span:last-child {
+    padding-inline-start: 3px;
+    padding-inline-end: 3px;
+  }
 }
 
 .ant-image .ant-image-img {
@@ -514,6 +598,9 @@ body {
   height: 100%;      /* Makes the image take the full height */
 }
 
+.custom-upload .ant-upload-list-item-container {
+  height: auto !important;
+}
 .ant-upload-list-item-name {
   display: none !important;
 }

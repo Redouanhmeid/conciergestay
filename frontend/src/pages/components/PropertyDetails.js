@@ -244,6 +244,20 @@ const PropertyDetails = () => {
  const [isAmenitiesModalVisible, setIsAmenitiesModalVisible] = useState(false);
  const [isARulesModalOpen, setIsARulesModalOpen] = useState(false);
  const [isOwner, setIsOwner] = useState(false);
+ const [imageAspectRatios, setImageAspectRatios] = useState({});
+
+ const handleImageLoad = (e, index) => {
+  const { naturalWidth, naturalHeight } = e.target;
+  const aspectRatio = naturalHeight > naturalWidth && 'portrait';
+
+  setImageAspectRatios((prevState) => {
+   const newState = {
+    ...prevState,
+    [index]: aspectRatio,
+   };
+   return newState;
+  });
+ };
 
  const confirmDelete = async () => {
   await deleteProperty(id);
@@ -590,11 +604,15 @@ const PropertyDetails = () => {
       <Row gutter={[16, 4]}>
        <Col xs={24} sm={12} id="desc">
         <div style={{ maxWidth: '100%', margin: '12px 0 0 0' }}>
-         <Carousel autoplay effect="fade">
+         <Carousel autoplay effect="fade" className="propertydtcarousel">
           {Array.isArray(parsedProperty.photos) &&
            parsedProperty.photos.map((photo, index) => (
             <div key={index}>
-             <Image src={photo} />
+             <Image
+              src={photo}
+              className={`card-image ${imageAspectRatios[index]}`}
+              onLoad={(e) => handleImageLoad(e, index)}
+             />
             </div>
            ))}
          </Carousel>
@@ -609,7 +627,7 @@ const PropertyDetails = () => {
            right: 15,
            top: 15,
            fontSize: 16,
-           color: '#fdfdfd',
+           color: '#2b2c32',
           }}
          />
         )}
@@ -623,7 +641,7 @@ const PropertyDetails = () => {
            onClick={() => navigate(`/editbasicinfo?id=${id}`)}
            type="link"
            size="Large"
-           style={{ fontSize: 16 }}
+           style={{ fontSize: 16, color: '#2b2c32' }}
           />
          )}
         </Flex>
@@ -805,6 +823,7 @@ const PropertyDetails = () => {
             right: 15,
             top: 15,
             fontSize: 16,
+            color: '#2b2c32',
            }}
           />
          )}

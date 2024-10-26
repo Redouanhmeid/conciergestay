@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
+ Spin,
  Layout,
  Form,
  Row,
@@ -13,10 +14,12 @@ import {
 } from 'antd';
 import {
  DndContext,
+ TouchSensor,
  closestCenter,
  PointerSensor,
  useSensor,
  useSensors,
+ defaultDropAnimation,
 } from '@dnd-kit/core';
 import {
  SortableContext,
@@ -31,12 +34,12 @@ import {
  ArrowLeftOutlined,
  ArrowRightOutlined,
  PlusOutlined,
+ LoadingOutlined,
 } from '@ant-design/icons';
-import ImgCrop from 'antd-img-crop';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 
 const { Content } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const getBase64 = (file) =>
  new Promise((resolve, reject) => {
@@ -47,17 +50,81 @@ const getBase64 = (file) =>
  });
 
 const DraggableUploadListItem = ({ originNode, file }) => {
- const { attributes, listeners, setNodeRef, transform, transition } =
-  useSortable({
-   id: file.uid,
-  });
+ const {
+  attributes,
+  listeners,
+  setNodeRef,
+  transform,
+  transition,
+  isDragging,
+ } = useSortable({
+  id: file.uid,
+ });
+ const [isPreviewLoading, setIsPreviewLoading] = useState(!file.preview);
+
+ useEffect(() => {
+  if (!file.preview && file.originFileObj) {
+   getBase64(file.originFileObj)
+    .then((preview) => {
+     file.preview = preview;
+     setIsPreviewLoading(false);
+    })
+    .catch((error) => {
+     console.error('Error generating preview:', error);
+     setIsPreviewLoading(false);
+    });
+  } else {
+   setIsPreviewLoading(false);
+  }
+ }, [file]);
  const style = {
   transform: CSS.Transform.toString(transform),
   transition,
   cursor: 'move',
+  border: isDragging ? '2px solid #1890ff' : 'none',
+  touchAction: 'none',
  };
+ if (isPreviewLoading) {
+  return (
+   <div
+    ref={setNodeRef}
+    style={{
+     ...style,
+     display: 'flex',
+     alignItems: 'center',
+     justifyContent: 'center',
+     width: '100%',
+     height: '100%',
+     backgroundColor: '#fafafa',
+     border: '1px dashed #d9d9d9',
+     borderRadius: '8px',
+     padding: '8px',
+    }}
+    {...attributes}
+    {...listeners}
+   >
+    <Spin
+     indicator={
+      <LoadingOutlined
+       style={{
+        fontSize: 24,
+        color: '#1890ff',
+       }}
+       spin
+      />
+     }
+    />
+   </div>
+  );
+ }
  return (
-  <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+  <div
+   ref={setNodeRef}
+   style={style}
+   {...attributes}
+   {...listeners}
+   className={isDragging ? 'dragging' : ''}
+  >
    {originNode}
   </div>
  );
@@ -73,10 +140,31 @@ const Step4Photos = ({ next, prev, values }) => {
  const sensors = useSensors(
   useSensor(PointerSensor, {
    activationConstraint: {
-    distance: 8,
+    distance: 8, // For desktop
+   },
+  }),
+  useSensor(TouchSensor, {
+   activationConstraint: {
+    delay: 100, // Short delay for touch interactions
+    tolerance: 5, // Allow slight finger movement before drag starts
+   },
+   listeners: {
+    touchmove: (event) => {
+     // Prevent scrolling while dragging
+     event.preventDefault();
+    },
    },
   })
  );
+
+ const beforeUpload = async (file) => {
+  try {
+   return false; // Prevent automatic upload
+  } catch (error) {
+   console.error('Error generating preview:', error);
+   return false;
+  }
+ };
 
  const handlePreview = async (file) => {
   if (!file.url && !file.preview) {
@@ -87,29 +175,16 @@ const Step4Photos = ({ next, prev, values }) => {
   setPreviewOpen(true);
  };
 
- const handleChange = async ({ fileList: newFileList }) => {
+ const handleChange = ({ fileList: newFileList }) => {
   setFileList(newFileList);
-
-  if (newFileList.length === 0) {
-   setUpload(false);
-  }
-
-  // Upload files
-  if (newFileList.length > fileList.length) {
-   setUpload(true);
-   // Simulate uploading
-   setTimeout(() => {
-    setUpload(false);
-   }, 2000);
-  }
  };
 
- const handleRemove = (file) => {
-  const newFileList = fileList.filter((item) => item !== file);
-  setFileList(newFileList);
+ const handleDragStart = () => {
+  document.body.classList.add('dragging');
  };
 
  const onDragEnd = (event) => {
+  document.body.classList.remove('dragging');
   const { active, over } = event;
   if (active.id !== over.id) {
    setFileList((items) => {
@@ -118,6 +193,16 @@ const Step4Photos = ({ next, prev, values }) => {
     return arrayMove(items, oldIndex, newIndex);
    });
   }
+ };
+
+ const handleSubmit = async () => {
+  try {
+   const photoUrls = await uploadPhotos(fileList);
+   values.photos = photoUrls;
+  } catch (error) {
+   console.error('Error uploading photos:', error);
+  }
+  next();
  };
 
  const uploadButton = (
@@ -152,58 +237,61 @@ const Step4Photos = ({ next, prev, values }) => {
    )}
   </div>
  );
- const submitFormData = async () => {
-  try {
-   const photoUrls = await uploadPhotos(fileList);
-   values.photos = photoUrls;
-  } catch (error) {
-   console.error('Error uploading photos:', error);
-  }
-  next();
- };
+
  return (
   <Layout className="contentStyle">
    <Head />
    <Layout>
     <Content className="container">
-     <Form
-      name="step4"
-      layout="vertical"
-      onFinish={submitFormData}
-      size="large"
-     >
+     <Form name="step4" layout="vertical" onFinish={handleSubmit} size="large">
       <Row gutter={[24, 0]}>
        <Col xs={24} md={24}>
         <Title level={2}>Ajouter des Photos de votre logement</Title>
+        {fileList.length > 1 && (
+         <div
+          style={{
+           textAlign: 'center',
+           margin: '10px 0',
+          }}
+         >
+          <Text type="secondary">
+           Vous pouvez réorganiser vos photos en les glissant-déposant
+          </Text>{' '}
+          🎯📷
+         </div>
+        )}
        </Col>
        <Col xs={24} md={24}>
         <DndContext
          sensors={sensors}
          collisionDetection={closestCenter}
+         onDragStart={handleDragStart}
          onDragEnd={onDragEnd}
+         dropAnimation={{
+          ...defaultDropAnimation,
+          dragSourceOpacity: 0.5,
+         }}
         >
          <SortableContext
           items={fileList.map((f) => f.uid)}
           strategy={verticalListSortingStrategy}
          >
-          <ImgCrop
-           aspect={640 / 426}
-           modalTitle="Modifier l'image"
-           rotationSlider
+          <Upload
+           listType="picture-card"
+           className="custom-upload"
+           fileList={fileList}
+           onPreview={handlePreview}
+           onChange={handleChange}
+           beforeUpload={beforeUpload}
+           maxCount={16}
+           multiple
+           customRequest={({ onSuccess }) => onSuccess('ok')}
+           itemRender={(originNode, file) => (
+            <DraggableUploadListItem originNode={originNode} file={file} />
+           )}
           >
-           <Upload
-            listType="picture-card"
-            className="custom-upload"
-            fileList={fileList}
-            onPreview={handlePreview}
-            onChange={handleChange}
-            itemRender={(originNode, file) => (
-             <DraggableUploadListItem originNode={originNode} file={file} />
-            )}
-           >
-            {fileList.length >= 16 ? null : uploadButton}
-           </Upload>
-          </ImgCrop>
+           {fileList.length >= 16 ? null : uploadButton}
+          </Upload>
          </SortableContext>
         </DndContext>
 

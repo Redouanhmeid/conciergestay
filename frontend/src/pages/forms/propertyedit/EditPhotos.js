@@ -13,10 +13,12 @@ import {
 } from 'antd';
 import {
  DndContext,
+ TouchSensor,
  closestCenter,
  PointerSensor,
  useSensor,
  useSensors,
+ defaultDropAnimation,
 } from '@dnd-kit/core';
 import {
  SortableContext,
@@ -35,7 +37,7 @@ import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
 
 const { Content } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const getBase64 = (file) =>
  new Promise((resolve, reject) => {
@@ -46,17 +48,31 @@ const getBase64 = (file) =>
  });
 
 const DraggableUploadListItem = ({ originNode, file }) => {
- const { attributes, listeners, setNodeRef, transform, transition } =
-  useSortable({
-   id: file.uid,
-  });
+ const {
+  attributes,
+  listeners,
+  setNodeRef,
+  transform,
+  transition,
+  isDragging,
+ } = useSortable({
+  id: file.uid,
+ });
  const style = {
   transform: CSS.Transform.toString(transform),
   transition,
   cursor: 'move',
+  border: isDragging ? '2px solid #1890ff' : 'none',
+  touchAction: 'none',
  };
  return (
-  <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+  <div
+   ref={setNodeRef}
+   style={style}
+   {...attributes}
+   {...listeners}
+   className={isDragging ? 'dragging' : ''}
+  >
    {originNode}
   </div>
  );
@@ -79,7 +95,19 @@ const EditPhotos = () => {
  const sensors = useSensors(
   useSensor(PointerSensor, {
    activationConstraint: {
-    distance: 8,
+    distance: 8, // For desktop
+   },
+  }),
+  useSensor(TouchSensor, {
+   activationConstraint: {
+    delay: 100, // Short delay for touch interactions
+    tolerance: 5, // Allow slight finger movement before drag starts
+   },
+   listeners: {
+    touchmove: (event) => {
+     // Prevent scrolling while dragging
+     event.preventDefault();
+    },
    },
   })
  );
@@ -107,8 +135,18 @@ const EditPhotos = () => {
   }
  };
 
+ const beforeUpload = async (file) => {
+  try {
+   const preview = await getBase64(file);
+   file.preview = preview;
+   return false; // Prevent automatic upload
+  } catch (error) {
+   console.error('Error generating preview:', error);
+   return false;
+  }
+ };
+
  const handlePreview = async (file) => {
-  console.log(file);
   if (!file.url && !file.preview) {
    file.preview = await getBase64(file.originFileObj);
   }
@@ -145,7 +183,28 @@ const EditPhotos = () => {
   }
  }, [loading, property]);
 
+ useEffect(() => {
+  // Add CSS to prevent scrolling while dragging
+  const style = document.createElement('style');
+  style.textContent = `
+      .dragging {
+        touch-action: none;
+      }
+      body.dragging {
+        overflow: hidden;
+        touch-action: none;
+      }
+    `;
+  document.head.appendChild(style);
+  return () => document.head.removeChild(style);
+ }, []);
+
+ const handleDragStart = () => {
+  document.body.classList.add('dragging');
+ };
+
  const onDragEnd = (event) => {
+  document.body.classList.remove('dragging');
   const { active, over } = event;
   if (active.id !== over.id) {
    setFileList((items) => {
@@ -198,6 +257,17 @@ const EditPhotos = () => {
       Retour
      </Button>
      <Title level={3}>Modifier les photos de votre logement</Title>
+     <div
+      style={{
+       textAlign: 'center',
+       margin: '10px 0',
+      }}
+     >
+      <Text type="secondary">
+       Vous pouvez réorganiser vos photos en les glissant-déposant
+      </Text>{' '}
+      🎯📷
+     </div>
      <Form
       name="editBasicInfo"
       form={form}
@@ -205,35 +275,42 @@ const EditPhotos = () => {
       initialValues={property}
       layout="vertical"
      >
-      <Row gutter={[24, 0]}>
-       <Col xs={24}>
-        <DndContext
-         sensors={sensors}
-         collisionDetection={closestCenter}
-         onDragEnd={onDragEnd}
+      <Row gutter={[8, 0]}>
+       <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={onDragEnd}
+        dropAnimation={{
+         ...defaultDropAnimation,
+         dragSourceOpacity: 0.5,
+        }}
+       >
+        <SortableContext
+         items={fileList.map((f) => f.uid)}
+         strategy={verticalListSortingStrategy}
         >
-         <SortableContext
-          items={fileList.map((f) => f.uid)}
-          strategy={verticalListSortingStrategy}
+         <Upload
+          listType="picture-card"
+          className="custom-upload"
+          fileList={fileList}
+          onPreview={handlePreview}
+          onChange={handleChange}
+          beforeUpload={beforeUpload}
+          maxCount={16}
+          multiple
+          customRequest={({ onSuccess }) => onSuccess('ok')}
+          itemRender={(originNode, file) => (
+           <DraggableUploadListItem originNode={originNode} file={file} />
+          )}
          >
-          <Upload
-           listType="picture-card"
-           className="custom-upload"
-           fileList={fileList}
-           onPreview={handlePreview}
-           onChange={handleChange}
-           maxCount={16}
-           multiple
-           itemRender={(originNode, file) => (
-            <DraggableUploadListItem originNode={originNode} file={file} />
-           )}
-          >
-           {fileList.length >= 16 ? null : uploadButton}
-          </Upload>
-         </SortableContext>
-        </DndContext>
+          {fileList.length >= 16 ? null : uploadButton}
+         </Upload>
+        </SortableContext>
+       </DndContext>
 
-        {previewOpen && (
+       {previewOpen && (
+        <Col xs={24}>
          <Image
           wrapperStyle={{ display: 'none' }}
           preview={{
@@ -242,8 +319,8 @@ const EditPhotos = () => {
           }}
           src={previewImage}
          />
-        )}
-       </Col>
+        </Col>
+       )}
 
        {fileList.length === 16 && (
         <Col xs={24}>

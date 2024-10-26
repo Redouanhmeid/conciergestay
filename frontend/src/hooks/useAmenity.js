@@ -44,14 +44,14 @@ const useAmenity = () => {
   }
  };
 
- const updateAmenity = async (id, amenityData) => {
-  setLoading(true);
+ const updateAmenity = async (amenityData) => {
   try {
-   const response = await axios.put(`/api/v1/amenities/${id}`, amenityData);
-   setLoading(false);
+   const response = await axios.put(
+    `/api/v1/amenities/${amenityData.id}`,
+    amenityData
+   );
    return response.data;
   } catch (error) {
-   setLoading(false);
    setError(error);
    return null;
   }
