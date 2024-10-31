@@ -11,6 +11,8 @@ import {
  Button,
  Alert,
  Typography,
+ Progress,
+ message,
 } from 'antd';
 import {
  DndContext,
@@ -37,6 +39,7 @@ import {
  LoadingOutlined,
 } from '@ant-design/icons';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
+import useUpdateProperty from '../../../hooks/useUpdateProperty';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -131,11 +134,40 @@ const DraggableUploadListItem = ({ originNode, file }) => {
 };
 
 const Step4Photos = ({ next, prev, values }) => {
- const { uploadPhotos, uploading } = useUploadPhotos();
+ const {
+  updatePropertyPhotos,
+  isLoading: isUpdating,
+  error: updateError,
+  success: updateSuccess,
+ } = useUpdateProperty(values.propertyId);
+ const { uploadPhotos, uploading, uploadProgress } = useUploadPhotos();
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
  const [fileList, setFileList] = useState([]);
  const [upload, setUpload] = useState(false);
+
+ // Initialize fileList with values.photos if they exist
+ useEffect(() => {
+  if (values.photos && values.photos.length > 0) {
+   setFileList(
+    values.photos.map((url, index) => ({
+     uid: `existing-${index}`,
+     name: url.substring(url.lastIndexOf('/') + 1),
+     status: 'done',
+     url: url,
+    }))
+   );
+  }
+ }, [values.photos]);
+
+ useEffect(() => {
+  if (updateError) {
+   message.error('Failed to update property photos: ' + updateError);
+  }
+  if (updateSuccess) {
+   message.success('Property photos updated successfully');
+  }
+ }, [updateError, updateSuccess]);
 
  const sensors = useSensors(
   useSensor(PointerSensor, {
@@ -196,13 +228,40 @@ const Step4Photos = ({ next, prev, values }) => {
  };
 
  const handleSubmit = async () => {
-  try {
-   const photoUrls = await uploadPhotos(fileList);
-   values.photos = photoUrls;
-  } catch (error) {
-   console.error('Error uploading photos:', error);
+  if (!fileList.length) {
+   console.error('No files to upload');
+   return;
   }
-  next();
+
+  try {
+   // Filter files that need to be uploaded (have originFileObj)
+   const filesWithOriginFileObj = fileList.filter((file) => file.originFileObj);
+   const newFileList = filesWithOriginFileObj.reduce((acc, file, index) => {
+    acc[index] = file;
+    return acc;
+   }, []);
+
+   // Get URLs of existing files
+   const existingUrls = fileList
+    .filter((file) => !file.originFileObj)
+    .map((file) => file.url);
+
+   // Upload new files and combine with existing URLs
+   const newPhotoUrls = await uploadPhotos(newFileList);
+   const allPhotoUrls = [...existingUrls, ...newPhotoUrls];
+
+   // Update property with all photo URLs
+   await updatePropertyPhotos({ photos: allPhotoUrls });
+
+   // Update form values
+   values.photos = allPhotoUrls;
+
+   // Proceed to next step
+   next();
+  } catch (error) {
+   console.error('Error handling photos:', error);
+   message.error('Failed to process photos. Please try again.');
+  }
  };
 
  const uploadButton = (
@@ -308,17 +367,25 @@ const Step4Photos = ({ next, prev, values }) => {
          />
         )}
        </Col>
+       {fileList.length === 16 && (
+        <Col xs={24}>
+         <Alert
+          message="Vous avez atteint le nombre maximum de photos."
+          type="info"
+         />
+         <br />
+        </Col>
+       )}
+       {uploading && (
+        <Col xs={24}>
+         <Progress
+          percent={uploadProgress}
+          status="active"
+          strokeColor={{ from: '#ebdecd', to: '#aa7e42' }}
+         />
+        </Col>
+       )}
       </Row>
-      <br />
-      {fileList.length === 16 && (
-       <>
-        <Alert
-         message="Vous avez atteint le nombre maximum de photos."
-         type="info"
-        />
-        <br />
-       </>
-      )}
 
       <Row justify="end">
        <Col xs={8} md={1}>
@@ -337,7 +404,7 @@ const Step4Photos = ({ next, prev, values }) => {
           type="primary"
           htmlType="submit"
           style={{ width: '100%' }}
-          loading={uploading}
+          loading={uploading || isUpdating}
          >
           Continue {<ArrowRightOutlined />}
          </Button>

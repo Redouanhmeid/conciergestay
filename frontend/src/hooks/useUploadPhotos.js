@@ -3,6 +3,7 @@ import imageCompression from 'browser-image-compression';
 
 const useUploadPhotos = () => {
  const [uploading, setUploading] = useState(false);
+ const [uploadProgress, setUploadProgress] = useState(0);
 
  const compressImage = async (image) => {
   const options = {
@@ -129,20 +130,48 @@ const useUploadPhotos = () => {
   }
  };
 
+ const uploadWithProgress = async (formData, onProgress) => {
+  return new Promise((resolve, reject) => {
+   const xhr = new XMLHttpRequest();
+
+   xhr.upload.addEventListener('progress', (event) => {
+    if (event.lengthComputable) {
+     const percentComplete = Math.round((event.loaded / event.total) * 100);
+     onProgress(percentComplete);
+    }
+   });
+
+   xhr.addEventListener('load', () => {
+    if (xhr.status >= 200 && xhr.status < 300) {
+     const response = JSON.parse(xhr.responseText);
+     resolve(response);
+    } else {
+     reject(new Error(`HTTP Error: ${xhr.status}`));
+    }
+   });
+
+   xhr.addEventListener('error', () => {
+    reject(new Error('Network Error'));
+   });
+
+   xhr.open('POST', '/upload');
+   xhr.send(formData);
+  });
+ };
+
  const uploadPhotos = async (photos) => {
   try {
    setUploading(true);
    const formData = new FormData();
+
    for (const photo of photos) {
     const compressedPhoto = await compressImage(photo.originFileObj);
     formData.append('photos', compressedPhoto, photo.name);
    }
 
-   const response = await fetch('/upload', {
-    method: 'POST',
-    body: formData,
+   const data = await uploadWithProgress(formData, (progress) => {
+    setUploadProgress(progress);
    });
-   const data = await response.json();
 
    return data.files.map((file) => file.url);
   } catch (error) {
@@ -150,6 +179,7 @@ const useUploadPhotos = () => {
    throw error;
   } finally {
    setUploading(false);
+   setUploadProgress(0);
   }
  };
 
@@ -160,6 +190,7 @@ const useUploadPhotos = () => {
   uploadFrontPhoto,
   uploadAvatar,
   uploading,
+  uploadProgress,
  };
 };
 

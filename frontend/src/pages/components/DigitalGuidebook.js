@@ -64,7 +64,6 @@ const ensureArray = (value) => {
  }
  return [];
 };
-
 const isValidCoordinate = (coord) => typeof coord === 'number' && !isNaN(coord);
 
 const generateTabs = (
@@ -89,24 +88,24 @@ const generateTabs = (
   tab: 'Arrivée',
   content: (
    <div>
+    <Flex gap="middle" align="center" justify="space-between">
+     <Divider>
+      <Text strong>
+       <i className="fa-light fa-key"></i> Arrivée
+      </Text>
+      {isOwner && (
+       <Button
+        icon={<i className="fa-light fa-pen-to-square" />}
+        onClick={() => navigate(`/editcheckin?id=${id}`)}
+        type="link"
+        size="Large"
+        style={{ fontSize: 16 }}
+       />
+      )}
+     </Divider>
+    </Flex>
     {earlyCheckInParagraphs.length > 0 && (
      <div>
-      <Flex gap="middle" align="center" justify="space-between">
-       <Divider>
-        <Text strong>
-         <i className="fa-light fa-key"></i> Arrivée
-        </Text>
-        {isOwner && (
-         <Button
-          icon={<i className="fa-light fa-pen-to-square" />}
-          onClick={() => navigate(`/editcheckin?id=${id}`)}
-          type="link"
-          size="Large"
-          style={{ fontSize: 16 }}
-         />
-        )}
-       </Divider>
-      </Flex>
       <Row gutter={[16, 16]}>
        <Col xs={24} md={16}>
         <Paragraph>
@@ -176,16 +175,34 @@ const generateTabs = (
 
       {parkingAmenity && (
        <Col xs={24} md={paidparkingAmenity ? 6 : 8}>
-        <Image width={'100%'} src={parkingAmenity.media} />
-        <br />
-        <Paragraph>{parkingAmenity.description}</Paragraph>
+        <Text strong>
+         <i className="fa-light fa-circle-parking fa-lg" /> Parking gratuit
+        </Text>
+        {ReactPlayer.canPlay(parkingAmenity.media) ? (
+         <ReactPlayer url={parkingAmenity.media} controls width="100%" />
+        ) : (
+         <>
+          <Image width={'100%'} src={parkingAmenity.media} />
+          <br />
+          <Paragraph>{parkingAmenity.description}</Paragraph>
+         </>
+        )}
        </Col>
       )}
       {paidparkingAmenity && (
        <Col xs={24} md={parkingAmenity ? 6 : 8}>
-        <Image width={'100%'} src={paidparkingAmenity.media} />
-        <br />
-        <Paragraph>{paidparkingAmenity.description}</Paragraph>
+        <Text strong>
+         <i className="fa-light fa-square-parking fa-lg" /> stationnement payant
+        </Text>
+        {ReactPlayer.canPlay(parkingAmenity.media) ? (
+         <ReactPlayer url={paidparkingAmenity.media} controls width="100%" />
+        ) : (
+         <>
+          <Image width={'100%'} src={paidparkingAmenity.media} />
+          <br />
+          <Paragraph>{paidparkingAmenity.description}</Paragraph>
+         </>
+        )}
        </Col>
       )}
      </Row>
@@ -197,20 +214,39 @@ const generateTabs = (
   key: '2',
   icon: <i className="fa-light fa-door-open"></i>,
   tab: 'Manuel de la maison',
-  content:
-   amenities.length > 0 ? (
-    <HouseManual amenities={memoizedAmenities} />
-   ) : (
-    <div
-     style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-     }}
-    >
-     Aucun équipement disponible
-    </div> // Fallback when no amenities exist
-   ),
+  content: (
+   <div>
+    <Flex gap="middle" align="center" justify="space-between">
+     <Divider>
+      <Text strong>
+       <i className="fa-light fa-door-open"></i> Manuel de la maison
+      </Text>
+      {isOwner && (
+       <Button
+        icon={<i className="fa-light fa-pen-to-square" />}
+        onClick={() => navigate(`/editequipements?id=${id}`)}
+        type="link"
+        size="Large"
+        style={{ fontSize: 16 }}
+       />
+      )}
+     </Divider>
+    </Flex>
+    {amenities.length > 0 ? (
+     <HouseManual amenities={memoizedAmenities} />
+    ) : (
+     <div
+      style={{
+       display: 'flex',
+       alignItems: 'center',
+       justifyContent: 'center',
+      }}
+     >
+      Aucun équipement disponible
+     </div>
+    )}
+   </div>
+  ),
  },
  {
   key: '3',
@@ -218,24 +254,24 @@ const generateTabs = (
   tab: 'Départ',
   content: (
    <div>
+    <Flex gap="middle" align="center" justify="space-between">
+     <Divider>
+      <Text strong>
+       <i className="fa-light fa-lock-keyhole"></i> Départ
+      </Text>
+      {isOwner && (
+       <Button
+        icon={<i className="fa-light fa-pen-to-square" />}
+        onClick={() => navigate(`/editcheckout?id=${id}`)}
+        type="link"
+        size="Large"
+        style={{ fontSize: 16 }}
+       />
+      )}
+     </Divider>
+    </Flex>
     {lateCheckOutPolicyParagraphs.length > 0 && (
      <div>
-      <Flex gap="middle" align="center" justify="space-between">
-       <Divider>
-        <Text strong>
-         <i className="fa-light fa-lock-keyhole"></i> Départ
-        </Text>
-        {isOwner && (
-         <Button
-          icon={<i className="fa-light fa-pen-to-square" />}
-          onClick={() => navigate(`/editcheckout?id=${id}`)}
-          type="link"
-          size="Large"
-          style={{ fontSize: 16 }}
-         />
-        )}
-       </Divider>
-      </Flex>
       <Paragraph>
        L'heure de départ s'effectue à tout moment avant{' '}
        {formatTimeFromDatetime(property.checkOutTime)}

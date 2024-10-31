@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
  Layout,
  Form,
@@ -13,6 +13,9 @@ import {
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
 import { ArrowRightOutlined } from '@ant-design/icons';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import { useUserData } from '../../../hooks/useUserData';
+import useCreateProperty from '../../../hooks/useCreateProperty';
 import MapPicker from './MapPicker';
 import airbnb from '../../../assets/airbnb.png';
 import booking from '../../../assets/booking.png';
@@ -21,6 +24,11 @@ const { Content } = Layout;
 const { Title } = Typography;
 
 const Step1NameAddresse = ({ next, handleFormData, values }) => {
+ const { user } = useAuthContext();
+ const User = user || JSON.parse(localStorage.getItem('user'));
+ const { userData, getUserData } = useUserData();
+ const { loading, error, success, propertyId, createProperty } =
+  useCreateProperty();
  const [form] = Form.useForm();
  const [checkedType, setCheckedType] = useState(null);
  const [mapValues, setMapValues] = useState({
@@ -28,6 +36,12 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
   longitude: null,
   placeName: null,
  });
+
+ useEffect(() => {
+  if (User) {
+   getUserData(User.email);
+  }
+ }, [User]);
 
  const propertyTypes = [
   {
@@ -63,34 +77,45 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
   handleFormData('placeName')({ target: { value: placeName } });
  };
 
- const submitFormData = () => {
+ const submitFormData = async () => {
   // Check if map values are present
   if (!mapValues.latitude || !mapValues.longitude || !mapValues.placeName) {
    message.error('Veuillez sélectionner un emplacement sur la carte');
    return;
   }
-  form
-   .validateFields()
-   .then(() => {
-    const completeFormData = {
-     name: values.name,
-     description: values.description,
-     type: checkedType,
-     airbnbUrl: values.airbnbUrl?.trim() ? values.airbnbUrl : null,
-     bookingUrl: values.bookingUrl?.trim() ? values.bookingUrl : null,
-     latitude: mapValues.latitude,
-     longitude: mapValues.longitude,
-     placeName: mapValues.placeName,
-    };
-    // Update each field individually
+
+  try {
+   await form.validateFields();
+
+   const completeFormData = {
+    name: values.name,
+    description: values.description,
+    type: checkedType,
+    airbnbUrl: values.airbnbUrl?.trim() ? values.airbnbUrl : null,
+    bookingUrl: values.bookingUrl?.trim() ? values.bookingUrl : null,
+    latitude: mapValues.latitude,
+    longitude: mapValues.longitude,
+    placeName: mapValues.placeName,
+    propertyManagerId: userData.id,
+   };
+
+   // Create the property
+   const newProperty = await createProperty(completeFormData);
+
+   if (newProperty) {
+    // Update form data as before
     Object.entries(completeFormData).forEach(([key, value]) => {
      handleFormData(key)({ target: { value } });
     });
+    // Store the property ID for later use
+    handleFormData('propertyId')({ target: { value: newProperty.id } });
     next();
-   })
-   .catch((info) => {
-    console.log('Validate Failed:', info);
-   });
+   } else {
+    message.error('Impossible de créer la propriété');
+   }
+  } catch (info) {
+   console.log('Validate Failed:', info);
+  }
  };
 
  return (

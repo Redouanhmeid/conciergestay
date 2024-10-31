@@ -12,6 +12,7 @@ import {
  Upload,
  Image,
  Spin,
+ message,
 } from 'antd';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
@@ -23,6 +24,8 @@ import {
 import ReactPlayer from 'react-player';
 import dayjs from 'dayjs';
 import ImgCrop from 'antd-img-crop';
+import useUpdatePropertyCheckIn from '../../../hooks/useUpdateProperty';
+import useUpdatePropertyCheckOut from '../../../hooks/useUpdateProperty';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 
 const { Content } = Layout;
@@ -37,7 +40,20 @@ const getBase64 = (file) =>
   reader.onerror = (error) => reject(error);
  });
 
-const Step2CheckInOut = ({ next, prev, values }) => {
+const Step2CheckInOut = ({ next, values }) => {
+ const {
+  updatePropertyCheckIn,
+  isLoading: checkInLoading,
+  success: checkInSuccess,
+  error: checkInError,
+ } = useUpdatePropertyCheckIn(values.propertyId);
+ const {
+  updatePropertyCheckOut,
+  isLoading: checkOutLoading,
+  success: checkOutSuccess,
+  error: checkOutError,
+ } = useUpdatePropertyCheckOut(values.propertyId);
+
  const [form] = Form.useForm();
  const { uploadFrontPhoto } = useUploadPhotos();
  const [loading, setLoading] = useState(false);
@@ -49,8 +65,12 @@ const Step2CheckInOut = ({ next, prev, values }) => {
   values.accessToProperty || []
  );
 
- const [LateCheckOutPolicy, setLateCheckOutPolicy] = useState([]);
- const [BeforeCheckOut, setBeforeCheckOut] = useState([]);
+ const [LateCheckOutPolicy, setLateCheckOutPolicy] = useState(
+  values.lateCheckOutPolicy || []
+ );
+ const [BeforeCheckOut, setBeforeCheckOut] = useState(
+  values.beforeCheckOut || []
+ );
 
  const [GuestAccessInfo, setGuestAccessInfo] = useState(
   values.guestAccessInfo || ''
@@ -60,29 +80,55 @@ const Step2CheckInOut = ({ next, prev, values }) => {
   values.additionalCheckOutInfo || ''
  );
  const [frontPhoto, setFrontPhoto] = useState(values.frontPhoto || '');
- const [fileList, setFileList] = useState([]);
 
  const submitFormData = async () => {
   try {
    setLoading(true); // Start loading
-
-   values.checkInTime = CheckInTime || dayjs().hour(12).minute(0);
-   values.earlyCheckIn = EarlyCheckIn;
-   values.accessToProperty = AccessToProperty;
-   values.checkOutTime = CheckOutTime || dayjs().hour(12).minute(0);
-   values.lateCheckOutPolicy = LateCheckOutPolicy;
-   values.beforeCheckOut = BeforeCheckOut;
-   values.guestAccessInfo = GuestAccessInfo;
-   values.additionalCheckOutInfo = AdditionalCheckOutInfo;
-   values.videoCheckIn = VideoCheckIn;
-
-   if (frontPhoto) {
+   // Prepare check-in data
+   const checkInData = {
+    checkInTime: CheckInTime || dayjs().hour(12).minute(0),
+    earlyCheckIn: EarlyCheckIn,
+    accessToProperty: AccessToProperty,
+    guestAccessInfo: GuestAccessInfo,
+    videoCheckIn: VideoCheckIn,
+    frontPhoto: '',
+   };
+   // Handle front photo upload if it exists
+   if (
+    typeof frontPhoto === 'string' &&
+    frontPhoto.startsWith('/frontphotos')
+   ) {
+    checkInData.frontPhoto = frontPhoto; // Keep the existing URL if already uploaded
+   } else if (frontPhoto.length > 0) {
     const photoUrl = await uploadFrontPhoto(frontPhoto);
-    values.frontPhoto = photoUrl;
+    checkInData.frontPhoto = photoUrl;
    }
-   next(); // Proceed to the next step
+   // Prepare check-out data
+   const checkOutData = {
+    checkOutTime: CheckOutTime || dayjs().hour(12).minute(0),
+    lateCheckOutPolicy: LateCheckOutPolicy,
+    beforeCheckOut: BeforeCheckOut,
+    additionalCheckOutInfo: AdditionalCheckOutInfo,
+   };
+
+   let hasErrors = false;
+
+   try {
+    await updatePropertyCheckIn(checkInData);
+    await updatePropertyCheckOut(checkOutData);
+   } catch (error) {
+    hasErrors = true;
+    message.error('Une erreur est survenue');
+   }
+
+   if (!hasErrors) {
+    // Update values object with all the new data
+    Object.assign(values, { ...checkInData, ...checkOutData });
+    next();
+   }
   } catch (error) {
    console.error('Error submitting form:', error);
+   message.error(error.message || 'Impossible de mettre');
   } finally {
    setLoading(false); // End loading
   }
@@ -93,7 +139,10 @@ const Step2CheckInOut = ({ next, prev, values }) => {
    <Head />
    <Layout>
     <Content className="container">
-     <Spin spinning={loading} tip="Soumission en cours...">
+     <Spin
+      spinning={loading || checkInLoading || checkOutLoading}
+      tip="Soumission en cours..."
+     >
       <Form
        name="step2"
        layout="vertical"
@@ -106,7 +155,7 @@ const Step2CheckInOut = ({ next, prev, values }) => {
         earlyCheckIn: values.earlyCheckIn || [],
         lateCheckOutPolicy: values.lateCheckOutPolicy || [],
         accessToProperty: values.accessToProperty || [],
-        BeforeCheckOut: values.beforeCheckOut || [],
+        beforeCheckOut: values.beforeCheckOut || [],
         guestAccessInfo: values.guestAccessInfo || '',
         videoCheckIn: values.videoCheckIn || '',
         additionalCheckOutInfo: values.additionalCheckOutInfo || '',
@@ -120,6 +169,7 @@ const Step2CheckInOut = ({ next, prev, values }) => {
         setGuestAccessInfo={setGuestAccessInfo}
         setVideoCheckIn={setVideoCheckIn}
         setFrontPhoto={setFrontPhoto}
+        values={values}
        />
        <CheckOutForm
         form={form}
@@ -130,19 +180,14 @@ const Step2CheckInOut = ({ next, prev, values }) => {
        />
        <br />
        <Row justify="end">
-        <Col xs={8} md={1}>
-         <Form.Item>
-          <Button
-           htmlType="submit"
-           shape="circle"
-           onClick={prev}
-           icon={<ArrowLeftOutlined />}
-          />
-         </Form.Item>
-        </Col>
         <Col xs={16} md={3}>
          <Form.Item>
-          <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+          <Button
+           type="primary"
+           htmlType="submit"
+           style={{ width: '100%' }}
+           loading={checkInLoading || checkOutLoading}
+          >
            Continue {<ArrowRightOutlined />}
           </Button>
          </Form.Item>
@@ -167,9 +212,23 @@ const CheckInForm = ({
  setGuestAccessInfo,
  setVideoCheckIn,
  setFrontPhoto,
+ values,
 }) => {
  const [videoURL, setVideoURL] = useState('');
- const [fileList, setFileList] = useState([]);
+ const [fileList, setFileList] = useState(() => {
+  // Initialize fileList with existing frontPhoto if it exists
+  if (values?.frontPhoto) {
+   return [
+    {
+     uid: '-1',
+     name: 'front-photo',
+     status: 'done',
+     url: values.frontPhoto,
+    },
+   ];
+  }
+  return [];
+ });
  const [previewImage, setPreviewImage] = useState('');
  const [previewOpen, setPreviewOpen] = useState(false);
 

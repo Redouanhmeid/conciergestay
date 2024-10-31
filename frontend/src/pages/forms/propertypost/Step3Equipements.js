@@ -1,22 +1,71 @@
 import React, { useState } from 'react';
-import { Layout, Form, Typography, Row, Col, Checkbox, Button } from 'antd';
+import {
+ Layout,
+ Form,
+ Typography,
+ Row,
+ Col,
+ Checkbox,
+ Button,
+ message,
+} from 'antd';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import useUpdateProperty from '../../../hooks/useUpdateProperty';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 const Step3Equipements = ({ next, prev, values }) => {
+ const {
+  updatePropertyAmenities,
+  isLoading: amenitiesLoading,
+  error: amenitiesError,
+  success,
+ } = useUpdateProperty(values.propertyId);
+
+ const [loading, setLoading] = useState(false);
  const [BasicAmenities, setBasicAmenities] = useState([]);
 
- const submitFormData = () => {
-  values.basicAmenities = BasicAmenities;
-  next();
- };
  const onChangeBasicAmenities = (checkedvalues) => {
   setBasicAmenities(checkedvalues);
  };
+
+ const submitFormData = async () => {
+  if (loading || amenitiesLoading) {
+   return; // Prevent multiple submissions while loading
+  }
+
+  try {
+   setLoading(true);
+
+   const amenitiesData = {
+    basicAmenities: BasicAmenities,
+   };
+
+   try {
+    await updatePropertyAmenities(amenitiesData);
+    // If update successful, update values and proceed
+    values.basicAmenities = BasicAmenities;
+    next();
+   } catch (error) {
+    message.error(
+     'Une erreur est survenue lors de la mise à jour des équipements'
+    );
+   }
+  } catch (error) {
+   console.error('Error submitting form:', error);
+   message.error(
+    error.message ||
+     'Impossible de mettre à jour les informations sur la propriété'
+   );
+  } finally {
+   setLoading(false);
+  }
+ };
+
+ const isSubmitting = loading || amenitiesLoading;
 
  return (
   <Layout className="contentStyle">
@@ -28,6 +77,9 @@ const Step3Equipements = ({ next, prev, values }) => {
       layout="vertical"
       onFinish={submitFormData}
       size="large"
+      initialValues={{
+       basicAmenities: values.basicAmenities || [],
+      }}
      >
       <Title level={2}>
        Indiquez aux voyageurs quels sont les équipements de votre logement:
@@ -52,23 +104,13 @@ const Step3Equipements = ({ next, prev, values }) => {
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
-              <Checkbox value="soap">
-               <i className="fa-light fa-soap fa-xl" /> Savon
+              <Checkbox value="jacuzzi">
+               <i className="fa-light fa-hot-tub-person fa-xl" /> Jacuzzi
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
-              <Checkbox value="hairdryer">
-               <i className="fa-light fa-gun-squirt fa-xl" /> Sèche-cheveux
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="shampoo">
-               <i className="fa-light fa-bottle-water fa-xl" /> Shampooing
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="hotwater">
-               <i className="fa-light fa-tank-water fa-xl" /> Eau chaude
+              <Checkbox value="bathtub">
+               <i className="fa-light fa-bath fa-xl" /> Baignoire
               </Checkbox>
              </Col>
             </Row>
@@ -92,24 +134,8 @@ const Step3Equipements = ({ next, prev, values }) => {
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
-              <Checkbox value="basicequipement" style={{ lineHeight: 1 }}>
-               <i className="fa-light fa-toilet-paper-blank fa-xl" />{' '}
-               Équipements de base
-               <br />
-               <Text type="secondary">
-                Serviettes, draps, savon et papier toilette
-               </Text>
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="cabinetfiling">
-               <i className="fa-light fa-cabinet-filing fa-xl" /> Classeur
-               d'armoire
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="blankets">
-               <i className="fa-light fa-blanket fa-xl" /> Couvertures
+              <Checkbox value="vacuum">
+               <i className="fa-light fa-vacuum fa-xl" /> Aspirateur
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
@@ -118,14 +144,8 @@ const Step3Equipements = ({ next, prev, values }) => {
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
-              <Checkbox value="vacuum">
-               <i className="fa-light fa-vacuum fa-xl" /> Aspirateur
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="mattresspillow">
-               <i className="fa-light fa-mattress-pillow fa-xl" /> Matelas
-               oreiller
+              <Checkbox value="babybed">
+               <i className="fa-light fa-baby fa-xl" /> Lit bébé
               </Checkbox>
              </Col>
             </Row>
@@ -143,14 +163,48 @@ const Step3Equipements = ({ next, prev, values }) => {
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
-              <Checkbox value="ethernet">
-               <i className="fa-light fa-ethernet fa-xl" /> Connexion Ethernet
+              <Checkbox value="speaker">
+               <i className="fa-light fa-speaker fa-xl" /> Système audio
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
-              <Checkbox value="speaker">
-               <i className="fa-light fa-speaker fa-xl" /> Système audio
-               Bluetooth
+              <Checkbox value="gameconsole">
+               <i className="fa-light fa-gamepad-modern fa-xl" /> Console de
+               jeux
+              </Checkbox>
+             </Col>
+            </Row>
+            {/* Cuisine et salle à manger */}
+            <Row>
+             <Col xs={24}>
+              <Text strong>
+               <br />
+               Cuisine
+              </Text>
+             </Col>
+             <Col xs={12} md={8}>
+              <Checkbox value="oven">
+               <i className="fa-light fa-oven fa-xl" /> Four
+              </Checkbox>
+             </Col>
+             <Col xs={12} md={8}>
+              <Checkbox value="microwave">
+               <i className="fa-light fa-microwave fa-xl" /> Micro-ondes
+              </Checkbox>
+             </Col>
+             <Col xs={12} md={8}>
+              <Checkbox value="coffeemaker">
+               <i className="fa-light fa-coffee-pot fa-xl" /> cafétière
+              </Checkbox>
+             </Col>
+             <Col xs={12} md={8}>
+              <Checkbox value="fridge">
+               <i className="fa-light fa-refrigerator fa-xl" /> Réfrigérateur
+              </Checkbox>
+             </Col>
+             <Col xs={12} md={8}>
+              <Checkbox value="fireburner">
+               <i className="fa-light fa-fire-burner fa-xl" /> Cuisinière
               </Checkbox>
              </Col>
             </Row>
@@ -162,28 +216,28 @@ const Step3Equipements = ({ next, prev, values }) => {
                Chauffage et climatisation
               </Text>
              </Col>
-             <Col xs={12} md={8}>
+             <Col xs={10} md={8}>
               <Checkbox value="heating">
                <i className="fa-light fa-temperature-arrow-up fa-xl" />{' '}
                Chauffage
               </Checkbox>
              </Col>
-             <Col xs={12} md={8}>
+             <Col xs={14} md={8}>
               <Checkbox value="airConditioning">
                <i className="fa-light fa-snowflake fa-xl" /> Climatisation
               </Checkbox>
              </Col>
-             <Col xs={12} md={8}>
+             <Col xs={10} md={8}>
               <Checkbox value="fireplace">
                <i className="fa-light fa-fireplace fa-xl" /> Cheminée
               </Checkbox>
              </Col>
-             <Col xs={12} md={8}>
+             <Col xs={14} md={8}>
               <Checkbox value="ceilingfan">
                <i className="fa-light fa-fan fa-xl" /> Ventilateur de plafond
               </Checkbox>
              </Col>
-             <Col xs={12} md={8}>
+             <Col xs={14} md={8}>
               <Checkbox value="tablefan">
                <i className="fa-light fa-fan-table fa-xl" /> Ventilateur de
                table
@@ -198,90 +252,20 @@ const Step3Equipements = ({ next, prev, values }) => {
                Sécurité à la maison
               </Text>
              </Col>
-             <Col xs={12} md={8}>
+             <Col xs={24} md={8}>
               <Checkbox value="fingerprint">
                <i className="fa-light fa-fingerprint fa-xl" /> Serrure
                biometrique à empreinte digitale
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
-              <Checkbox value="cameras">
-               <i className="fa-light fa-camera-cctv fa-xl" /> Caméras de
-               surveillance extérieures
+              <Checkbox value="lockbox">
+               <i className="fa-light fa-lock-hashtag fa-xl" /> Boite à serrure
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
-              <Checkbox value="extinguisher">
-               <i className="fa-light fa-fire-extinguisher fa-xl" /> Extincteur
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="sensor">
-               <i className="fa-light fa-sensor fa-xl" /> Détecteur de fumée
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="kitmedical">
-               <i className="fa-light fa-kit-medical fa-xl" /> Kit de premiers
-               secours
-              </Checkbox>
-             </Col>
-            </Row>
-            {/* Cuisine et salle à manger */}
-            <Row>
-             <Col xs={24}>
-              <Text strong>
-               <br />
-               Cuisine et salle à manger
-              </Text>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="kitchen" style={{ lineHeight: 1 }}>
-               <i className="fa-light fa-utensils fa-xl" /> Cuisine
-               <br />
-               <Text type="secondary">
-                Espace où les voyageurs peuvent cuisiner
-               </Text>
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="fridge">
-               <i className="fa-light fa-refrigerator fa-xl" /> Réfrigérateur
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="microwave">
-               <i className="fa-light fa-microwave fa-xl" /> Microwave
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="oven">
-               <i className="fa-light fa-oven fa-xl" /> Four à micro-ondes
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="kitchenset" style={{ lineHeight: 1 }}>
-               <i className="fa-light fa-kitchen-set fa-xl" /> Équipements de
-               cuisine de base
-               <br />
-               <Text type="secondary">
-                Casseroles et poêles, Bols, tasses, etc
-               </Text>
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="blender">
-               <i className="fa-light fa-blender fa-xl" /> Mixeur
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="fireburner">
-               <i className="fa-light fa-fire-burner fa-xl" /> Cuisinière à gaz
-              </Checkbox>
-             </Col>
-             <Col xs={12} md={8}>
-              <Checkbox value="coffeepot">
-               <i className="fa-light fa-coffee-pot fa-xl" /> Café
+              <Checkbox value="parkingaccess">
+               <i className="fa-light fa-square-parking fa-xl" /> Accès parking
               </Checkbox>
              </Col>
             </Row>
@@ -293,15 +277,15 @@ const Step3Equipements = ({ next, prev, values }) => {
                Internet et bureau
               </Text>
              </Col>
-             <Col xs={12} md={8}>
+             <Col xs={24} md={8}>
               <Checkbox value="wifi">
                <i className="fa-light fa-wifi fa-xl" /> Wifi
               </Checkbox>
              </Col>
-             <Col xs={12} md={8}>
+             <Col xs={24} md={8}>
               <Checkbox value="dedicatedworkspace">
-               <i className="fa-light fa-chair-office fa-xl" /> Espace de
-               travail dédié
+               <i className="fa-light fa-chair-office fa-xl" /> Espace dédié de
+               travail
               </Checkbox>
              </Col>
             </Row>
@@ -322,7 +306,7 @@ const Step3Equipements = ({ next, prev, values }) => {
              <Col xs={12} md={8}>
               <Checkbox value="paidParking">
                <i className="fa-light fa-square-parking fa-xl" /> Stationnement
-               payant dans la rue
+               payant
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
@@ -350,12 +334,19 @@ const Step3Equipements = ({ next, prev, values }) => {
           shape="circle"
           onClick={prev}
           icon={<ArrowLeftOutlined />}
+          disabled={isSubmitting}
          />
         </Form.Item>
        </Col>
        <Col xs={16} md={3}>
         <Form.Item>
-         <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+         <Button
+          type="primary"
+          htmlType="submit"
+          style={{ width: '100%' }}
+          loading={isSubmitting}
+          disabled={isSubmitting}
+         >
           Continue {<ArrowRightOutlined />}
          </Button>
         </Form.Item>

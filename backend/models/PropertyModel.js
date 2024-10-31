@@ -105,6 +105,16 @@ module.exports = (db, type) => {
    type: type.STRING(90),
    allowNull: true,
   },
+  isVerified: {
+   type: type.BOOLEAN,
+   defaultValue: false,
+   allowNull: false,
+  },
+  isPublished: {
+   type: type.BOOLEAN,
+   defaultValue: false,
+   allowNull: false,
+  },
  });
 
  property.createProperty = async (propertyData) => {

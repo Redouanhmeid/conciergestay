@@ -10,23 +10,31 @@ import {
  Checkbox,
  Input,
  Alert,
+ message,
 } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
-import { useAuthContext } from '../../../hooks/useAuthContext';
-import { useUserData } from '../../../hooks/useUserData';
-import useCreateProperty from '../../../hooks/useCreateProperty';
 import { useNavigate } from 'react-router-dom';
+import useUpdatePropertyCapacity from '../../../hooks/useUpdateProperty';
+import useUpdatePropertyRules from '../../../hooks/useUpdateProperty';
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 const Step5HouseManual = ({ prev, values }) => {
- const { user } = useAuthContext();
- const User = user || JSON.parse(localStorage.getItem('user'));
- const { userData, getUserData } = useUserData();
- const { createProperty, loading, error, success } = useCreateProperty();
+ const {
+  updatePropertyCapacity,
+  isLoading: capacityLoading,
+  success: capacitySuccess,
+  error: capacityError,
+ } = useUpdatePropertyCapacity(values.propertyId);
+ const {
+  updatePropertyRules,
+  isLoading: rulesLoading,
+  success: rulesSuccess,
+  error: rulesError,
+ } = useUpdatePropertyRules(values.propertyId);
 
  const navigate = useNavigate();
 
@@ -41,25 +49,51 @@ const Step5HouseManual = ({ prev, values }) => {
   values.additionalRules || ''
  );
 
- useEffect(() => {
-  if (User) {
-   getUserData(User.email);
-  }
- }, [User]);
+ const submitFormData = async () => {
+  const capacityData = {
+   price: Price,
+   capacity: Capacity,
+   rooms: Rooms,
+   beds: Beds,
+  };
+  const rulesData = {
+   houseRules: HouseRules,
+  };
 
- const submitFormData = () => {
-  values.price = Price;
-  values.capacity = Capacity;
-  values.rooms = Rooms;
-  values.beds = Beds;
-  values.elements = Elements;
-  values.houseRules = HouseRules;
   if (showAdditionalRules) {
-   values.houseRules.push(`additionalRules: ${AdditionalRules}`);
+   const additionalRule = `additionalRules: ${AdditionalRules}`;
+   rulesData.houseRules = rulesData.houseRules.filter(
+    (rule) => rule !== 'additionalRules'
+   );
+   const index = rulesData.houseRules.findIndex((rule) =>
+    rule.startsWith('additionalRules:')
+   );
+
+   if (index !== -1) {
+    // Replace the existing additionalRules entry
+    rulesData.houseRules[index] = additionalRule;
+   } else {
+    // Add a new additionalRules entry
+    rulesData.houseRules.push(additionalRule);
+   }
   }
-  values.propertyManagerId = userData.id;
-  onFinish(values);
+
+  let hasErrors = false;
+  try {
+   await updatePropertyCapacity(capacityData);
+   await updatePropertyRules(rulesData);
+  } catch (error) {
+   hasErrors = true;
+   message.error('Une erreur est survenue');
+  }
+
+  if (!hasErrors) {
+   // Update values object with all the new data
+   Object.assign(values, { ...capacityData, ...rulesData });
+   navigate('/dashboard');
+  }
  };
+
  const onChangeElements = (checkedvalues) => {
   setElements(checkedvalues);
  };
@@ -68,17 +102,6 @@ const Step5HouseManual = ({ prev, values }) => {
  };
  const handleCheckboxChange = (checkedValues) => {
   setShowAdditionalRules(checkedValues.includes('additionalRules'));
- };
- const onFinish = async (values) => {
-  try {
-   await createProperty(values);
-   setTimeout(() => {
-    // Navigate to the dashboard
-    navigate('/dashboard');
-   }, 1000);
-  } catch (error) {
-   console.error('Error:', error);
-  }
  };
 
  return (
@@ -206,22 +229,23 @@ const Step5HouseManual = ({ prev, values }) => {
       </Row>
       <br />
 
-      {success && !error && (
+      {capacitySuccess && !capacityError && rulesSuccess && !rulesError && (
        <Col xs={24}>
         <Alert message="Propriété créée avec succès" type="success" closable />
         <br />
        </Col>
       )}
-      {error && (
-       <Col xs={24}>
-        <Alert
-         message="Échec de la création de la propriété"
-         type="error"
-         closable
-        />
-        <br />
-       </Col>
-      )}
+      {capacityError ||
+       (rulesError && (
+        <Col xs={24}>
+         <Alert
+          message="Échec de la création de la propriété"
+          type="error"
+          closable
+         />
+         <br />
+        </Col>
+       ))}
       <Row justify="end">
        <Col xs={8} md={1}>
         <Form.Item>
@@ -229,7 +253,7 @@ const Step5HouseManual = ({ prev, values }) => {
           htmlType="submit"
           shape="circle"
           onClick={prev}
-          disabled={loading}
+          disabled={capacityLoading || rulesLoading}
           icon={<ArrowLeftOutlined />}
          />
         </Form.Item>
@@ -240,8 +264,8 @@ const Step5HouseManual = ({ prev, values }) => {
           type="primary"
           htmlType="submit"
           style={{ width: '100%' }}
-          loading={loading}
-          disabled={success}
+          loading={capacityLoading || rulesLoading}
+          disabled={capacitySuccess || rulesSuccess}
          >
           Enregistrer
          </Button>
