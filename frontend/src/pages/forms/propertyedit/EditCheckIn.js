@@ -12,6 +12,7 @@ import {
  Upload,
  Image,
  Checkbox,
+ message,
 } from 'antd';
 import dayjs from 'dayjs';
 import ImgCrop from 'antd-img-crop';
@@ -30,6 +31,42 @@ const { Title } = Typography;
 const format = 'HH:mm';
 const { TextArea } = Input;
 
+// Default check-in times that make more business sense
+const DEFAULT_CHECK_IN_TIME = dayjs().hour(11).minute(0); // 11:00 AM
+
+const TimePickerWithDefault = ({ value, onChange, name, label }) => {
+ // Internal state to track if user has made a selection
+ const [hasUserSelected, setHasUserSelected] = useState(
+  value && value.format('HH:mm') !== '00:00'
+ );
+
+ const handleTimeChange = (time) => {
+  setHasUserSelected(true);
+  onChange?.(time);
+ };
+
+ const handleClear = () => {
+  setHasUserSelected(false);
+  // When cleared, reset to the appropriate default time
+  onChange?.(DEFAULT_CHECK_IN_TIME);
+ };
+
+ return (
+  <Form.Item label={label} name={name}>
+   <TimePicker
+    format="HH:mm"
+    showNow={false}
+    size="large"
+    onChange={handleTimeChange}
+    onClear={handleClear}
+    allowClear={false}
+    value={value}
+    placeholder="Sélectionnez l'heure d'arrivée"
+   />
+  </Form.Item>
+ );
+};
+
 const getBase64 = (file) =>
  new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -43,7 +80,8 @@ const EditCheckIn = () => {
  const { id } = queryString.parse(location.search);
  const navigate = useNavigate();
  const [form] = Form.useForm();
- const { updatePropertyCheckIn, isLoading, success } = useUpdateProperty(id);
+ const { updatePropertyCheckIn, isLoading, success, error } =
+  useUpdateProperty(id);
  const { uploadFrontPhoto } = useUploadPhotos();
  const { property, loading } = useGetProperty(id);
 
@@ -60,14 +98,16 @@ const EditCheckIn = () => {
     ...property,
     checkInTime: dayjs(property.checkInTime),
    });
-   setFileList2([
-    {
-     uid: 1,
-     name: property.frontPhoto,
-     status: 'done',
-     url: property.frontPhoto,
-    },
-   ]);
+   if (property.frontPhoto) {
+    setFileList2([
+     {
+      uid: 1,
+      name: property.frontPhoto,
+      status: 'done',
+      url: property.frontPhoto,
+     },
+    ]);
+   }
    setVideoURL(property.videoCheckIn || '');
   }
  }, [loading, property]);
@@ -101,19 +141,38 @@ const EditCheckIn = () => {
  );
 
  const handleSubmit = async (values) => {
-  if (fileList2.length > 0) {
-   const currentFile = fileList2[0];
-   if (currentFile.url && currentFile.url.startsWith('/frontphotos')) {
-    // If it's an existing file, just use the URL
-    values.frontPhoto = currentFile.url;
-   } else if (currentFile.originFileObj) {
-    // If it's a new file (i.e., has originFileObj), upload it
-    const photoUrl = await uploadFrontPhoto([currentFile]);
-    values.frontPhoto = photoUrl;
+  try {
+   if (fileList2.length > 0) {
+    const currentFile = fileList2[0];
+    if (currentFile.url && currentFile.url.startsWith('/frontphotos')) {
+     // If it's an existing file, just use the URL
+     values.frontPhoto = currentFile.url;
+    } else if (currentFile.originFileObj) {
+     // If it's a new file (i.e., has originFileObj), upload it
+     const photoUrl = await uploadFrontPhoto([currentFile]);
+     values.frontPhoto = photoUrl;
+    }
    }
+   await updatePropertyCheckIn(values);
+  } catch (err) {
+   console.error('Form submission error:', err);
   }
-  updatePropertyCheckIn(values);
  };
+
+ useEffect(() => {
+  if (success) {
+   message.success(
+    "Les informations d'arrivée ont été mises à jour avec succès"
+   );
+   navigate(-1);
+  }
+  if (error) {
+   message.error(
+    error ||
+     "Une erreur s'est produite lors de la mise à jour des informations d'arrivée"
+   );
+  }
+ }, [success, error, navigate]);
 
  if (loading) {
   return (
@@ -145,18 +204,13 @@ const EditCheckIn = () => {
      >
       <Row gutter={[16, 8]}>
        <Col xs={24} md={24}>
-        <Form.Item
-         label="Quand est l'heure la plus tôt à laquelle les invités peuvent s'enregistrer?"
+        <TimePickerWithDefault
+         value={checkInTime}
+         onChange={setCheckInTime}
          name="checkInTime"
-        >
-         <TimePicker
-          format={format} // Using the same format as in EditProperty
-          showNow={false}
-          size="large"
-          value={checkInTime} // Ensure the value is set from state
-          onChange={setCheckInTime} // Update state on change
-         />
-        </Form.Item>
+         label="Quand est l'heure la plus tôt à laquelle les invités peuvent s'enregistrer ?"
+         isCheckIn={true}
+        />
        </Col>
 
        <Col xs={24}>
@@ -240,7 +294,7 @@ const EditCheckIn = () => {
          label="Quelles informations vos invités doivent-ils connaître pour accéder à la propriété ?"
          name="guestAccessInfo"
         >
-         <TextArea />
+         <TextArea showCount maxLength={255} />
         </Form.Item>
        </Col>
 
@@ -304,6 +358,7 @@ const EditCheckIn = () => {
         {videoURL && (
          <div style={{ marginTop: '16px' }}>
           <ReactPlayer url={videoURL} controls={true} width="100%" />
+          <br />
          </div>
         )}
        </Col>

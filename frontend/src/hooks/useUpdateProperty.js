@@ -18,9 +18,14 @@ const useUpdateProperty = (propertyId) => {
    );
    setProperty(response.data);
    setSuccess(true);
+   return response.data;
   } catch (err) {
-   console.error('Error updating property:', err);
-   setError(err.message || 'An error occurred while updating the property');
+   const errorMessage =
+    err.response?.data?.message ||
+    err.message ||
+    "Une erreur s'est produite lors de la mise à jour de la propriété";
+   setError("Une erreur s'est produite lors de la mise à jour de la propriété");
+   throw new Error(errorMessage);
   } finally {
    setIsLoading(false);
   }

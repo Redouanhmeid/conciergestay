@@ -10,6 +10,7 @@ import {
  Typography,
  Button,
  Checkbox,
+ message,
 } from 'antd';
 import dayjs from 'dayjs';
 import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
@@ -25,12 +26,49 @@ const { Title } = Typography;
 const { TextArea } = Input;
 const format = 'HH:mm';
 
+// Default check-out times that make more business sense
+const DEFAULT_CHECK_OUT_TIME = dayjs().hour(12).minute(0); // 12:00 AM
+
+const TimePickerWithDefault = ({ value, onChange, name, label }) => {
+ // Internal state to track if user has made a selection
+ const [hasUserSelected, setHasUserSelected] = useState(
+  value && value.format('HH:mm') !== '00:00'
+ );
+
+ const handleTimeChange = (time) => {
+  setHasUserSelected(true);
+  onChange?.(time);
+ };
+
+ const handleClear = () => {
+  setHasUserSelected(false);
+  // When cleared, reset to the appropriate default time
+  onChange?.(DEFAULT_CHECK_OUT_TIME);
+ };
+
+ return (
+  <Form.Item label={label} name={name}>
+   <TimePicker
+    format="HH:mm"
+    showNow={false}
+    size="large"
+    onChange={handleTimeChange}
+    onClear={handleClear}
+    allowClear={false}
+    value={value}
+    placeholder="Sélectionnez l'heure de départ"
+   />
+  </Form.Item>
+ );
+};
+
 const EditCheckOut = () => {
  const location = useLocation();
  const { id } = queryString.parse(location.search);
  const navigate = useNavigate();
  const [form] = Form.useForm();
- const { updatePropertyCheckOut, isLoading, success } = useUpdateProperty(id);
+ const { updatePropertyCheckOut, isLoading, success, error } =
+  useUpdateProperty(id);
  const { property, loading } = useGetProperty(id);
 
  const [checkOutTime, setCheckOutTime] = useState(null);
@@ -45,9 +83,28 @@ const EditCheckOut = () => {
   }
  }, [loading, property]);
 
- const handleSubmit = (values) => {
-  updatePropertyCheckOut(values);
+ const handleSubmit = async (values) => {
+  try {
+   await updatePropertyCheckOut(values);
+  } catch (err) {
+   console.error('Form submission error:', err);
+  }
  };
+
+ useEffect(() => {
+  if (success) {
+   message.success(
+    "Les informations d'arrivée ont été mises à jour avec succès"
+   );
+   navigate(-1);
+  }
+  if (error) {
+   message.error(
+    error ||
+     "Une erreur s'est produite lors de la mise à jour des informations d'arrivée"
+   );
+  }
+ }, [success, error, navigate]);
 
  if (loading) {
   return (
@@ -79,18 +136,13 @@ const EditCheckOut = () => {
      >
       <Row gutter={[16, 8]}>
        <Col xs={24} md={24}>
-        <Form.Item
-         label="À quelle heure voulez-vous demander aux invités de quitter les lieux ?"
+        <TimePickerWithDefault
+         value={checkOutTime}
+         onChange={setCheckOutTime}
          name="checkOutTime"
-        >
-         <TimePicker
-          format={format} // Using the same format as in EditProperty
-          showNow={false}
-          size="large"
-          value={checkOutTime} // Ensure the value is set from state
-          onChange={setCheckOutTime} // Update state on change
-         />
-        </Form.Item>
+         label="À quelle heure voulez-vous demander aux invités de quitter les lieux ?"
+         isCheckIn={true}
+        />
        </Col>
 
        <Col xs={24}>
@@ -189,12 +241,12 @@ const EditCheckOut = () => {
             </Checkbox>
            </Col>
            <Col xs={24}>
-            <Checkbox value="porteNonVerrouillee">
+            <Checkbox value="portesVerrouillees">
              Laissez la porte déverrouillée.
             </Checkbox>
            </Col>
            <Col xs={24}>
-            <Checkbox value="portesVerrouillees">
+            <Checkbox value="porteNonVerrouillee">
              Assurez-vous que les portes sont verrouillées.
             </Checkbox>
            </Col>
@@ -218,7 +270,7 @@ const EditCheckOut = () => {
          label="Informations supplémentaires sur le départ :"
          name="additionalCheckOutInfo"
         >
-         <TextArea />
+         <TextArea showCount maxLength={255} />
         </Form.Item>
        </Col>
       </Row>

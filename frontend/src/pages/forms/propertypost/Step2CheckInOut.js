@@ -32,6 +32,61 @@ const { Content } = Layout;
 const { TextArea } = Input;
 const format = 'HH:mm';
 
+// Default check-in/out times that make more business sense
+const DEFAULT_CHECK_IN_TIME = dayjs().hour(11).minute(0); // 11:00 AM
+const DEFAULT_CHECK_OUT_TIME = dayjs().hour(12).minute(0); // 12:00 AM
+
+const TimePickerWithDefault = ({
+ value,
+ onChange,
+ name,
+ label,
+ isCheckIn = true,
+}) => {
+ // Internal state to track if user has made a selection
+ const [hasUserSelected, setHasUserSelected] = useState(
+  value && value.format('HH:mm') !== '00:00'
+ );
+
+ const handleTimeChange = (time) => {
+  setHasUserSelected(true);
+  onChange?.(time);
+ };
+
+ const handleClear = () => {
+  setHasUserSelected(false);
+  // When cleared, reset to the appropriate default time
+  onChange?.(isCheckIn ? DEFAULT_CHECK_IN_TIME : DEFAULT_CHECK_OUT_TIME);
+ };
+
+ return (
+  <Form.Item
+   label={label}
+   name={name}
+   help={
+    !hasUserSelected
+     ? `Heure par défaut: ${isCheckIn ? '11:00' : '12:00'}`
+     : undefined
+   }
+  >
+   <TimePicker
+    format="HH:mm"
+    showNow={false}
+    size="large"
+    onChange={handleTimeChange}
+    onClear={handleClear}
+    allowClear={false}
+    value={value}
+    placeholder={
+     isCheckIn
+      ? "Sélectionnez l'heure d'arrivée"
+      : "Sélectionnez l'heure de départ"
+    }
+   />
+  </Form.Item>
+ );
+};
+
 const getBase64 = (file) =>
  new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -58,8 +113,12 @@ const Step2CheckInOut = ({ next, values }) => {
  const { uploadFrontPhoto } = useUploadPhotos();
  const [loading, setLoading] = useState(false);
 
- const [CheckInTime, setCheckInTime] = useState(values.checkInTime || null);
- const [CheckOutTime, setCheckOutTime] = useState(values.checkOutTime || null);
+ const [CheckInTime, setCheckInTime] = useState(
+  values.checkInTime || DEFAULT_CHECK_IN_TIME
+ );
+ const [CheckOutTime, setCheckOutTime] = useState(
+  values.checkOutTime || DEFAULT_CHECK_OUT_TIME
+ );
  const [EarlyCheckIn, setEarlyCheckIn] = useState(values.earlyCheckIn || []);
  const [AccessToProperty, setAccessToProperty] = useState(
   values.accessToProperty || []
@@ -112,7 +171,6 @@ const Step2CheckInOut = ({ next, values }) => {
    };
 
    let hasErrors = false;
-
    try {
     await updatePropertyCheckIn(checkInData);
     await updatePropertyCheckOut(checkOutData);
@@ -122,9 +180,9 @@ const Step2CheckInOut = ({ next, values }) => {
    }
 
    if (!hasErrors) {
+    next();
     // Update values object with all the new data
     Object.assign(values, { ...checkInData, ...checkOutData });
-    next();
    }
   } catch (error) {
    console.error('Error submitting form:', error);
@@ -150,8 +208,8 @@ const Step2CheckInOut = ({ next, values }) => {
        size="large"
        form={form}
        initialValues={{
-        checkInTime: values.checkInTime || dayjs().hour(12).minute(0),
-        checkOutTime: values.checkOutTime || dayjs().hour(12).minute(0),
+        checkInTime: values.checkInTime || dayjs().hour(0).minute(0),
+        checkOutTime: values.checkOutTime || dayjs().hour(0).minute(0),
         earlyCheckIn: values.earlyCheckIn || [],
         lateCheckOutPolicy: values.lateCheckOutPolicy || [],
         accessToProperty: values.accessToProperty || [],
@@ -163,6 +221,7 @@ const Step2CheckInOut = ({ next, values }) => {
       >
        <CheckInForm
         form={form}
+        CheckInTime={CheckInTime}
         setCheckInTime={setCheckInTime}
         setEarlyCheckIn={setEarlyCheckIn}
         setAccessToProperty={setAccessToProperty}
@@ -173,6 +232,7 @@ const Step2CheckInOut = ({ next, values }) => {
        />
        <CheckOutForm
         form={form}
+        CheckOutTime={CheckOutTime}
         setCheckOutTime={setCheckOutTime}
         setBeforeCheckOut={setBeforeCheckOut}
         setLateCheckOutPolicy={setLateCheckOutPolicy}
@@ -206,6 +266,7 @@ export default Step2CheckInOut;
 
 const CheckInForm = ({
  form,
+ CheckInTime,
  setCheckInTime,
  setEarlyCheckIn,
  setAccessToProperty,
@@ -263,9 +324,6 @@ const CheckInForm = ({
   </button>
  );
 
- const onChangeCheckIn = (time) => {
-  setCheckInTime(time);
- };
  const onChangeEarlyCheckIn = (checkedvalues) => {
   setEarlyCheckIn(checkedvalues);
  };
@@ -283,17 +341,13 @@ const CheckInForm = ({
     <Divider orientation="left">
      <h2 style={{ margin: 0 }}>Arrivée</h2>
     </Divider>
-    <Form.Item
-     label="Quand est l'heure la plus tôt à laquelle les invités peuvent s'enregistrer ?"
+    <TimePickerWithDefault
+     value={CheckInTime}
+     onChange={setCheckInTime}
      name="checkInTime"
-    >
-     <TimePicker
-      format={format}
-      showNow={false}
-      size="large"
-      onChange={onChangeCheckIn}
-     />
-    </Form.Item>
+     label="Quand est l'heure la plus tôt à laquelle les invités peuvent s'enregistrer ?"
+     isCheckIn={true}
+    />
    </Col>
    <Col xs={24} md={24}>
     <Form.Item
@@ -373,7 +427,11 @@ const CheckInForm = ({
      label="Quelles informations vos invités doivent-ils connaître pour accéder à la propriété ?"
      name="guestAccessInfo"
     >
-     <TextArea onChange={(e) => setGuestAccessInfo(e.target.value)} />
+     <TextArea
+      onChange={(e) => setGuestAccessInfo(e.target.value)}
+      showCount
+      maxLength={255}
+     />
     </Form.Item>
    </Col>
 
@@ -430,6 +488,7 @@ const CheckInForm = ({
    {videoURL && (
     <Col xs={24} md={24}>
      <ReactPlayer url={videoURL} controls={true} width="100%" />
+     <br />
     </Col>
    )}
   </Row>
@@ -438,14 +497,12 @@ const CheckInForm = ({
 
 const CheckOutForm = ({
  form,
+ CheckOutTime = { CheckOutTime },
  setCheckOutTime,
  setLateCheckOutPolicy,
  setBeforeCheckOut,
  setAdditionalCheckOutInfo,
 }) => {
- const onChangeCheckOut = (time) => {
-  setCheckOutTime(time);
- };
  const onChangeLateCheckOutPolicy = (checkedvalues) => {
   setLateCheckOutPolicy(checkedvalues);
  };
@@ -458,17 +515,13 @@ const CheckOutForm = ({
     <Divider orientation="left">
      <h2 style={{ margin: 0 }}>Départ</h2>
     </Divider>
-    <Form.Item
-     label="À quelle heure voulez-vous demander aux invités de quitter les lieux ?"
+    <TimePickerWithDefault
+     value={CheckOutTime}
+     onChange={setCheckOutTime}
      name="checkOutTime"
-    >
-     <TimePicker
-      format={format}
-      showNow={false}
-      size="large"
-      onChange={onChangeCheckOut}
-     />
-    </Form.Item>
+     label="À quelle heure voulez-vous demander aux invités de quitter les lieux ?"
+     isCheckIn={false}
+    />
    </Col>
    <Col xs={24} md={24}>
     <Form.Item
@@ -592,7 +645,11 @@ const CheckOutForm = ({
      label="Informations supplémentaires sur le départ :"
      name="additionalCheckOutInfo"
     >
-     <TextArea onChange={(e) => setAdditionalCheckOutInfo(e.target.value)} />
+     <TextArea
+      onChange={(e) => setAdditionalCheckOutInfo(e.target.value)}
+      showCount
+      maxLength={255}
+     />
     </Form.Item>
    </Col>
   </Row>

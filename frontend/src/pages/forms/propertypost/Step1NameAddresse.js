@@ -191,7 +191,11 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
           },
          ]}
         >
-         <Input.TextArea onChange={handleFormData('description')} />
+         <Input.TextArea
+          onChange={handleFormData('description')}
+          showCount
+          maxLength={255}
+         />
         </Form.Item>
        </Col>
 

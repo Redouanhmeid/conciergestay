@@ -81,9 +81,9 @@ export const getEarlyCheckInDetails = (earlyCheckIn) => {
 
 export const getAccessToPropertyDetails = (accessToProperty) => {
  switch (accessToProperty) {
-  case 'acceuilContactezMoi':
-   return 'La clé de la maison se trouve dans la boîte à clé';
   case 'cleDansBoite':
+   return 'La clé de la maison se trouve dans la boîte à clé';
+  case 'acceuilContactezMoi':
    return 'On sera là pour vous accueillir, sinon, contactez moi quand vous arrivez.';
   case 'codesAccesCourriel':
    return 'Nous vous enverrons vos codes d’accès par courriel avant votre arrivée.';
@@ -102,8 +102,6 @@ export const getLateCheckOutPolicyDetails = (lateCheckOutPolicy) => {
    return 'Malheureusement l’heure de départ n’est pas flexible.';
   case 'heureDepartAlternative':
    return 'Lorsque l’horaire le permet, il nous fait plaisir d’accommoder une heure de départ alternative. Contactez-nous à l’avance si vous souhaitez prendre un arrangement à cet effet.';
-  case 'codesAccesCourriel':
-   return 'Nous vous enverrons vos codes d’accès par courriel avant votre arrivée.';
   case 'contactezNous':
    return 'Communiquez avec nous si vous aimeriez quitter plus tard.';
   case 'optionDepartTardif':

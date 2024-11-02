@@ -249,7 +249,7 @@ const AddAmenity = () => {
           label="Que souhaitez-vous dire à vos invités sur ce sujet ?"
           name="description"
          >
-          <Input.TextArea rows={6} />
+          <Input.TextArea rows={6} showCount maxLength={255} />
          </Form.Item>
         </Col>
         {amenity === 'wifi' && (

@@ -679,6 +679,8 @@ const EditProperty = () => {
               rows={4}
               value={additionalRules}
               onChange={(e) => setAdditionalRules(e.target.value)}
+              showCount
+              maxLength={255}
              />
             </Form.Item>
            </Col>
@@ -835,7 +837,7 @@ const EditProperty = () => {
            label="Quelles informations vos invités doivent-ils connaître pour accéder à la propriété ?"
            name="guestAccessInfo"
           >
-           <TextArea />
+           <TextArea showCount maxLength={255} />
           </Form.Item>
          </Col>
 
@@ -1042,7 +1044,7 @@ const EditProperty = () => {
            label="Informations supplémentaires sur le départ :"
            name="additionalCheckOutInfo"
           >
-           <TextArea />
+           <TextArea showCount maxLength={255} />
           </Form.Item>
          </Col>
         </Row>

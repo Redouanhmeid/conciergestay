@@ -125,6 +125,8 @@ const EditHouseRules = () => {
           rows={4}
           value={additionalRules}
           onChange={(e) => setAdditionalRules(e.target.value)}
+          showCount
+          maxLength={255}
          />
         </Form.Item>
        </Col>

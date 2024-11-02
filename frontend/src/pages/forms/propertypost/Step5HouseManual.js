@@ -222,6 +222,8 @@ const Step5HouseManual = ({ prev, values }) => {
            rows={4}
            value={AdditionalRules} // Use value instead of onChange
            onChange={(e) => setAdditionalRules(e.target.value)}
+           showCount
+           maxLength={255}
           />
          </Form.Item>
         </Col>

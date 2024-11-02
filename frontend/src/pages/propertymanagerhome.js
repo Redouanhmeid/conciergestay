@@ -97,7 +97,7 @@ const PropertyManagerHome = () => {
                 src={photo}
                 preview={false}
                 placeholder={
-                 <div className="image-placeholder">Loading...</div>
+                 <div className="image-placeholder">Chargement...</div>
                 }
                 fallback={fallback}
                 className={`card-image ${imageAspectRatios[index]}`}

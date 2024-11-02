@@ -107,7 +107,7 @@ const PropertyList = ({
             src={photo}
             preview={false}
             fallback={fallback}
-            placeholder={<div className="image-placeholder">Loading...</div>}
+            placeholder={<div className="image-placeholder">Chargement...</div>}
             className={`card-image ${imageAspectRatios[index]}`}
             onLoad={(e) => handleImageLoad(e, index)}
            />
