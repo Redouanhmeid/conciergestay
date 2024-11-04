@@ -164,7 +164,7 @@ const AddAmenity = () => {
        form={form}
       >
        <Row gutter={[32, 16]}>
-        <Col xs={24} md={14}>
+        <Col xs={24} md={12}>
          <Flex
           horizontal="true"
           gap="middle"
@@ -249,7 +249,7 @@ const AddAmenity = () => {
           label="Que souhaitez-vous dire à vos invités sur ce sujet ?"
           name="description"
          >
-          <Input.TextArea rows={6} showCount maxLength={255} />
+          <Input.TextArea rows={6} showCount maxLength={500} />
          </Form.Item>
         </Col>
         {amenity === 'wifi' && (
@@ -257,12 +257,12 @@ const AddAmenity = () => {
           <Row gutter={[16, 32]}>
            <Col xs={24} md={12}>
             <Form.Item label="Nom du Wi-Fi" name="wifiName">
-             <Input />
+             <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
            <Col xs={24} md={12}>
             <Form.Item label="Mot de passe Wi-Fi" name="wifiPassword">
-             <Input />
+             <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
           </Row>

@@ -28,8 +28,13 @@ const EditEquipement = () => {
  const { updatePropertyAmenities, isLoading, success } = useUpdateProperty(id);
  const { property, loading } = useGetProperty(id);
 
- const handleSubmit = (values) => {
-  updatePropertyAmenities(values);
+ const handleSubmit = async (values) => {
+  try {
+   await updatePropertyAmenities(values);
+   navigate(-1);
+  } catch (error) {
+   console.error('Error:', error);
+  }
  };
 
  if (loading) {

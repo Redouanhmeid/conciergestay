@@ -141,6 +141,7 @@ const EditCheckIn = () => {
  );
 
  const handleSubmit = async (values) => {
+  console.log(values);
   try {
    if (fileList2.length > 0) {
     const currentFile = fileList2[0];
@@ -294,7 +295,7 @@ const EditCheckIn = () => {
          label="Quelles informations vos invités doivent-ils connaître pour accéder à la propriété ?"
          name="guestAccessInfo"
         >
-         <TextArea showCount maxLength={255} />
+         <TextArea showCount maxLength={500} />
         </Form.Item>
        </Col>
 

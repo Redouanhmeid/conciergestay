@@ -130,6 +130,7 @@ const EditPhotos = () => {
    const photoUrls = await uploadPhotos(newFileList);
    photoUrls.unshift(...urlsArray);
    await updatePropertyPhotos({ photos: photoUrls });
+   navigate(-1);
   } catch (error) {
    console.error('Error updating property:', error);
   }

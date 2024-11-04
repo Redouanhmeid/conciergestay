@@ -6,11 +6,11 @@ module.exports = (db, type) => {
    autoIncrement: true,
   },
   name: {
-   type: type.STRING(50),
+   type: type.STRING(25),
    allowNull: false,
   },
   description: {
-   type: type.TEXT,
+   type: type.STRING(500),
    allowNull: true,
   },
   media: {
@@ -18,11 +18,11 @@ module.exports = (db, type) => {
    allowNull: true,
   },
   wifiName: {
-   type: type.STRING,
+   type: type.STRING(25),
    allowNull: true,
   },
   wifiPassword: {
-   type: type.STRING,
+   type: type.STRING(25),
    allowNull: true,
   },
  });

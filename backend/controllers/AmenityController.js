@@ -35,9 +35,20 @@ const deleteAmenity = async (req, res) => {
  try {
   const { id } = req.params;
   const amenity = await Amenity.findByPk(id);
+
   if (!amenity) {
    return res.status(404).json({ error: 'Amenity not found' });
   }
+
+  // Delete associated files first
+  try {
+   await deleteAmenityFiles(amenity);
+  } catch (fileError) {
+   console.error('Error deleting amenity files:', fileError);
+   // Continue with amenity deletion even if some files fail to delete
+  }
+
+  // Then delete the amenity record
   await amenity.destroy();
 
   res.status(200).json({ message: 'Amenity deleted successfully' });

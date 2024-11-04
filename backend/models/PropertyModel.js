@@ -62,7 +62,7 @@ module.exports = (db, type) => {
    allowNull: true,
   },
   guestAccessInfo: {
-   type: type.STRING,
+   type: type.STRING(500),
    allowNull: true,
   },
   videoCheckIn: {
@@ -82,7 +82,7 @@ module.exports = (db, type) => {
    allowNull: true,
   },
   additionalCheckOutInfo: {
-   type: type.STRING,
+   type: type.STRING(500),
    allowNull: true,
   },
   latitude: {

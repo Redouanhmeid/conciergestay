@@ -1,6 +1,6 @@
 const haversine = require('haversine-distance');
-const { Property } = require('../models');
-
+const { Property, Amenity } = require('../models');
+const { deletePropertyFiles } = require('../helpers/utils');
 // find one Property
 const getProperty = async (req, res) => {
  Property.findOne({ where: { id: req.params.id } }).then((property) => {
@@ -53,10 +53,27 @@ const deleteProperty = async (req, res) => {
  try {
   const { id } = req.params;
 
+  const amenities = await Amenity.findAll({
+   where: { propertyId: id },
+  });
   const property = await Property.findByPk(id);
+
   if (!property) {
    return res.status(404).json({ error: 'Property not found' });
   }
+
+  // Add the amenities to the property object
+  property.Amenities = amenities;
+
+  // Delete all associated files first
+  try {
+   await deletePropertyFiles(property);
+  } catch (fileError) {
+   console.error('Error deleting property files:', fileError);
+   // Continue with property deletion even if some files fail to delete
+  }
+
+  // Delete the property from database
 
   await property.destroy();
 

@@ -270,7 +270,7 @@ const EditCheckOut = () => {
          label="Informations supplémentaires sur le départ :"
          name="additionalCheckOutInfo"
         >
-         <TextArea showCount maxLength={255} />
+         <TextArea showCount maxLength={500} />
         </Form.Item>
        </Col>
       </Row>

@@ -430,7 +430,7 @@ const CheckInForm = ({
      <TextArea
       onChange={(e) => setGuestAccessInfo(e.target.value)}
       showCount
-      maxLength={255}
+      maxLength={500}
      />
     </Form.Item>
    </Col>
@@ -648,7 +648,7 @@ const CheckOutForm = ({
      <TextArea
       onChange={(e) => setAdditionalCheckOutInfo(e.target.value)}
       showCount
-      maxLength={255}
+      maxLength={500}
      />
     </Form.Item>
    </Col>

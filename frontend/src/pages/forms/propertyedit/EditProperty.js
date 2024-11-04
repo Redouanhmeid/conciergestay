@@ -285,7 +285,7 @@ const EditProperty = () => {
             { required: true, message: 'Veuillez saisir une description!' },
            ]}
           >
-           <TextArea />
+           <TextArea showCount maxLength={500} rows={6} />
           </Form.Item>
          </Col>
          <Col xs={24}>
@@ -837,7 +837,7 @@ const EditProperty = () => {
            label="Quelles informations vos invités doivent-ils connaître pour accéder à la propriété ?"
            name="guestAccessInfo"
           >
-           <TextArea showCount maxLength={255} />
+           <TextArea showCount maxLength={500} />
           </Form.Item>
          </Col>
 
@@ -1044,7 +1044,7 @@ const EditProperty = () => {
            label="Informations supplémentaires sur le départ :"
            name="additionalCheckOutInfo"
           >
-           <TextArea showCount maxLength={255} />
+           <TextArea showCount maxLength={500} />
           </Form.Item>
          </Col>
         </Row>

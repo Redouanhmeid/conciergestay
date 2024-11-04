@@ -154,7 +154,7 @@ const EditBasicInfo = () => {
           { required: true, message: 'Veuillez saisir une description!' },
          ]}
         >
-         <Input.TextArea showCount maxLength={255} />
+         <Input.TextArea showCount maxLength={500} rows={6} />
         </Form.Item>
        </Col>
        <Col xs={24} md={12}>

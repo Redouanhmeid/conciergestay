@@ -275,7 +275,7 @@ const EditAmenity = () => {
           label="Que souhaitez-vous dire à vos invités sur ce sujet ?"
           name="description"
          >
-          <Input.TextArea rows={6} showCount maxLength={255} />
+          <Input.TextArea rows={6} showCount maxLength={500} />
          </Form.Item>
         </Col>
         {amenity.name === 'wifi' && (
@@ -283,12 +283,12 @@ const EditAmenity = () => {
           <Row gutter={[16, 0]}>
            <Col xs={24} md={12}>
             <Form.Item label="WiFi Name" name="wifiName">
-             <Input />
+             <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
            <Col xs={24} md={12}>
             <Form.Item label="WiFi Password" name="wifiPassword">
-             <Input />
+             <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
           </Row>
