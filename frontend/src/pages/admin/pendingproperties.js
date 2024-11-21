@@ -5,82 +5,69 @@ import {
  Col,
  Typography,
  Table,
- Input,
  Button,
- Space,
- Popconfirm,
  Image,
+ Input,
+ Space,
+ Spin,
  message,
 } from 'antd';
 import { SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
-import useProperty from '../../hooks/useProperty';
-import { useUserData } from '../../hooks/useUserData';
 import { useNavigate } from 'react-router-dom';
+import useProperty from '../../hooks/useProperty';
 
 const { Content } = Layout;
 const { Title } = Typography;
 
-const Properties = () => {
- const {
-  properties = [],
-  loading,
-  success,
-  error,
-  deleteProperty,
-  fetchAllProperties,
- } = useProperty();
- const { fetchManagerById } = useUserData();
+const Pendingproperties = () => {
  const navigate = useNavigate();
+ const {
+  pendingProperties,
+  loading: pendingLoading,
+  error,
+  verifyProperty,
+  bulkVerifyProperties,
+  togglePublishProperty,
+  fetchPendingProperties,
+ } = useProperty();
 
  const [managersMap, setManagersMap] = useState({});
  const [searchText, setSearchText] = useState('');
  const [searchedColumn, setSearchedColumn] = useState('');
+ const [selectionType, setSelectionType] = useState('checkbox');
+ const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
- useEffect(() => {
-  fetchAllProperties();
- }, [loading]);
-
- useEffect(() => {
-  const fetchManagersData = async () => {
-   const newManagersMap = { ...managersMap };
-
-   for (const property of properties) {
-    if (
-     property.propertyManagerId &&
-     !newManagersMap[property.propertyManagerId]
-    ) {
-     try {
-      // Await the manager data directly from the API
-      const manager = await fetchManagerById(property.propertyManagerId);
-
-      // Check if the manager data is available and update the map
-      if (manager && manager.firstname && manager.lastname) {
-       newManagersMap[
-        property.propertyManagerId
-       ] = `${manager.firstname} ${manager.lastname}`;
-      } else {
-       console.warn(`No manager found for ID: ${property.propertyManagerId}`);
-       newManagersMap[property.propertyManagerId] = 'Unknown Manager'; // Fallback
-      }
-     } catch (error) {
-      console.error(
-       `Failed to fetch manager with ID: ${property.propertyManagerId}`,
-       error
-      );
-      newManagersMap[property.propertyManagerId] = 'Error loading manager'; // Error fallback
-     }
-    }
-   }
-   setManagersMap(newManagersMap);
-  };
-
-  if (properties.length > 0) {
-   fetchManagersData();
+ // Handle single property verification
+ const handleVerifyProperty = async (propertyId) => {
+  const result = await verifyProperty(propertyId);
+  if (result) {
+   message.success(`La propriété a été vérifiée!`);
+   fetchPendingProperties();
   }
- }, [properties]);
+ };
+ // Handle bulk verification
+ const handleBulkVerify = async () => {
+  if (selectedRowKeys.length === 0) {
+   message.warning('Aucune propriété sélectionnée pour vérification.');
+   return;
+  }
 
+  const results = await bulkVerifyProperties(selectedRowKeys);
+  if (results) {
+   message.success(`${selectedRowKeys.length} propriétés vérifiées!`);
+   setSelectedRowKeys([]); // Clear selection after verification
+   fetchPendingProperties();
+  }
+ };
+ // Row selection configuration
+ const rowSelection = {
+  selectedRowKeys,
+  onChange: (newSelectedRowKeys) => {
+   setSelectedRowKeys(newSelectedRowKeys);
+  },
+ };
  // Handle search
  const handleSearch = (selectedKeys, confirm, dataIndex) => {
   confirm();
@@ -155,7 +142,9 @@ const Properties = () => {
 
  // Filters for "type", "rooms", and "beds" columns
  const getUniqueValues = (key) =>
-  [...new Set(properties.map((item) => item[key]))].sort((a, b) => a - b);
+  [...new Set(pendingProperties.map((item) => item[key]))].sort(
+   (a, b) => a - b
+  );
 
  const columns = [
   {
@@ -193,6 +182,7 @@ const Properties = () => {
     return typeMap[type] || type; // Default to type if no mapping found
    },
   },
+
   {
    title: 'Prix',
    dataIndex: 'price',
@@ -230,114 +220,26 @@ const Properties = () => {
    sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
    render: (createdAt) => new Date(createdAt).toLocaleString(),
   },
+  ,
   {
-   title: 'Manager',
-   key: 'propertyManagerId',
-   render: (_, record) => {
-    const managerName = managersMap[record.propertyManagerId]; // Get the manager's name from the map
-    return managerName || 'Loading...'; // Display the manager's name or 'Loading...'
-   },
-   // Add search filter based on manager's name
-   filterDropdown: ({
-    setSelectedKeys,
-    selectedKeys,
-    confirm,
-    clearFilters,
-   }) => (
-    <div style={{ padding: 8 }}>
-     <Input
-      placeholder={`Chercher Manager`}
-      value={selectedKeys[0]}
-      onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-      onPressEnter={() => confirm()}
-      style={{ marginBottom: 8, display: 'block' }}
-     />
-     <Space>
-      <Button
-       type="primary"
-       onClick={() => confirm()}
-       icon={<SearchOutlined />}
-       size="small"
-       style={{ width: 90 }}
-      >
-       Chercher
-      </Button>
-      <Button
-       onClick={() => clearFilters && clearFilters()}
-       size="small"
-       style={{ width: 90 }}
-      >
-       Réinitialiser
-      </Button>
-     </Space>
-    </div>
-   ),
-   filterIcon: (filtered) => (
-    <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-   ),
-   onFilter: (value, record) => {
-    const managerName = managersMap[record.propertyManagerId];
-    return managerName
-     ? managerName.toLowerCase().includes(value.toLowerCase())
-     : false;
-   },
-  },
-  {
-   title: 'Actions',
-   key: 'actions',
+   title: 'Action',
+   key: 'action',
    render: (_, record) => (
-    <Space>
-     <Button
-      icon={<i className="Dashicon fa-light fa-eye" key="display" />}
-      onClick={() => navigate(`/propertydetails?id=${record.id}`)}
-      type="link"
-      shape="circle"
-     />
-     <Button
-      icon={<i className="Dashicon fa-light fa-pen-to-square" key="edit" />}
-      onClick={() => navigate(`/editproperty?id=${record.id}`)}
-      type="link"
-      shape="circle"
-     />
-     <Button
-      icon={<i className="Dashicon fa-light fa-house-lock" key="ellipsis" />}
-      onClick={() => navigate(`/digitalguidebook?id=${record.id}`)}
-      type="link"
-      shape="circle"
-     />
-     <Popconfirm
-      title="Etes-vous sûr de supprimer ?"
-      onConfirm={() => confirmDelete(record.id)}
-     >
-      <Button
-       danger
-       icon={
-        <i
-         className="Dashicon fa-light fa-trash"
-         style={{ color: 'red' }}
-         key="delete"
-        />
-       }
-       type="link"
-       shape="circle"
-      />
-     </Popconfirm>
-    </Space>
+    <Button type="primary" onClick={() => handleVerifyProperty(record.id)}>
+     Vérifier
+    </Button>
    ),
   },
  ];
 
- const confirmDelete = async (id) => {
-  await deleteProperty(id);
-  if (!error) {
-   await fetchAllProperties();
-   message.success('Propriété supprimée avec succès.');
-  } else {
-   message.error(
-    `Erreur lors de la suppression de la propriété: ${error.message}`
-   );
-  }
- };
+ if (error) return <p>Erreur: {error}</p>;
+ if (pendingLoading) {
+  return (
+   <div className="loading">
+    <Spin size="large" />
+   </div>
+  );
+ }
 
  return (
   <Layout className="contentStyle">
@@ -351,14 +253,29 @@ const Properties = () => {
     >
      Retour
     </Button>
-    <Title level={2}>Propriétés</Title>
+    <Title level={2}>Propriétés en attente</Title>
+    <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+     <Col>
+      <Button
+       type="primary"
+       disabled={selectedRowKeys.length === 0}
+       onClick={handleBulkVerify}
+      >
+       Vérifier les propriétés sélectionnées
+      </Button>
+     </Col>
+    </Row>
     <Row gutter={[16, 16]}>
      <Col xs={24} md={24}>
       <Table
        columns={columns}
-       dataSource={properties}
-       loading={loading}
+       dataSource={pendingProperties}
+       loading={pendingLoading}
        rowKey="id"
+       rowSelection={{
+        type: selectionType,
+        ...rowSelection,
+       }}
       />
      </Col>
     </Row>
@@ -368,4 +285,4 @@ const Properties = () => {
  );
 };
 
-export default Properties;
+export default Pendingproperties;

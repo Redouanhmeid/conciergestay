@@ -37,16 +37,18 @@ import ResetPasswordRequest from './pages/forms/sign/ResetPasswordRequest';
 import VerifyResetCode from './pages/forms/sign/VerifyResetCode';
 import NewPassword from './pages/forms/sign/NewPassword';
 import EditCheckOut from './pages/forms/propertyedit/EditCheckOut';
+import Pendingproperties from './pages/admin/pendingproperties';
 
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
  { path: '/dashboard', element: <PropertyManagerHome /> },
  { path: '/adminpanel', element: <AdminPanel /> },
  { path: '/managers', element: <Managers /> },
+ { path: '/manager', element: <Manager /> },
  { path: '/properties', element: <Properties /> },
  { path: '/nearbyplaces', element: <NearbyPlaces /> },
  { path: '/nearbyplace', element: <NearbyPlace /> },
- { path: '/manager', element: <Manager /> },
+ { path: '/pendingproperties', element: <Pendingproperties /> },
  { path: '/login', element: <Login /> },
  { path: '/signup', element: <Signup /> },
  { path: '/account', element: <Account /> },

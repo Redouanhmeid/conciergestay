@@ -14,7 +14,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
 import useUpdateProperty from '../../../hooks/useUpdateProperty';
-import useGetProperty from '../../../hooks/useGetProperty';
+import useProperty from '../../../hooks/useProperty';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
 
@@ -27,7 +27,7 @@ const EditBasicInfo = () => {
  const navigate = useNavigate();
  const [form] = Form.useForm();
  const { updatePropertyBasicInfo, isLoading, success } = useUpdateProperty(id);
- const { property, loading } = useGetProperty(id);
+ const { property, loading, fetchProperty } = useProperty();
  const [checkedType, setCheckedType] = useState(null);
 
  const propertyTypes = [
@@ -47,6 +47,10 @@ const EditBasicInfo = () => {
    icon: <i className="Radioicon fa-light fa-house-user"></i>,
   },
  ];
+
+ useEffect(() => {
+  fetchProperty(id);
+ }, [loading]);
 
  useEffect(() => {
   if (!loading && property) {
@@ -73,7 +77,7 @@ const EditBasicInfo = () => {
   setCheckedType(e.target.value);
  };
 
- if (loading) {
+ if (loading || property.length === 0) {
   return (
    <div className="loading">
     <Spin size="large" />

@@ -1,4 +1,5 @@
 const { Amenity } = require('../models');
+const { deleteAmenityFiles } = require('../helpers/utils');
 
 // Create a new amenity
 const createAmenity = async (req, res) => {

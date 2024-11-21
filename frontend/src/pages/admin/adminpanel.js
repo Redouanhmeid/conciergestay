@@ -10,6 +10,7 @@ import {
  Image,
  List,
  Statistic,
+ Badge,
  Button,
  Spin,
  Flex,
@@ -21,7 +22,7 @@ import {
 import { UserOutlined, PlusOutlined } from '@ant-design/icons';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
-import useGetProperties from '../../hooks/useGetProperties';
+import useProperty from '../../hooks/useProperty';
 import { useUserData } from '../../hooks/useUserData';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
 
@@ -33,7 +34,7 @@ const Dashboard = () => {
   properties = [],
   loading: PropertiesLoading,
   fetchAllProperties,
- } = useGetProperties();
+ } = useProperty();
  const {
   Managers = [],
   isLoading: ManagersLoading,
@@ -48,6 +49,14 @@ const Dashboard = () => {
  const [Ploading, setPLoading] = useState(false);
  const [Mloading, setMLoading] = useState(false);
  const [Nloading, setNLoading] = useState(false);
+
+ const pendingProperties = properties.filter(
+  (property) => property.status === 'pending'
+ ).length;
+
+ const pendingNearbyPlaces = NearbyPlaces.filter(
+  (NearbyPlace) => NearbyPlace.isVerified === false
+ ).length;
 
  const fetchNearbyPlaces = async () => {
   try {
@@ -134,6 +143,37 @@ const Dashboard = () => {
   <Layout className="contentStyle">
    <Head />
    <Content className="container">
+    <Title level={2}>Examiner et approuver</Title>
+    <Row gutter={[16, 16]}>
+     <Col xs={24} md={12}>
+      <a href={`/pendingproperties`}>
+       <Badge count={pendingProperties} status="warning" offset={[4, 4]}>
+        <Statistic
+         value="Propriétés en attente"
+         prefix={
+          <i className="fa-light fa-house" style={{ color: '#aa7e42' }} />
+         }
+        />
+       </Badge>
+      </a>
+     </Col>
+     <Col xs={24} md={12}>
+      <a href={`/#`}>
+       <Badge count={pendingNearbyPlaces} status="warning" offset={[4, 4]}>
+        <Statistic
+         value="Lieux à proximité à vérifier"
+         prefix={
+          <i
+           className="fa-light fa-map-location"
+           style={{ color: '#aa7e42' }}
+          />
+         }
+        />
+       </Badge>
+      </a>
+     </Col>
+    </Row>
+    <Divider />
     <Title level={2}>Statistiques</Title>
     <Row gutter={[16, 16]}>
      <Col xs={24} md={6}>

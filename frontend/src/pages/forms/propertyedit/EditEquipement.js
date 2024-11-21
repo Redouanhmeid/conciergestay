@@ -13,7 +13,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
 import useUpdateProperty from '../../../hooks/useUpdateProperty';
-import useGetProperty from '../../../hooks/useGetProperty';
+import useProperty from '../../../hooks/useProperty';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
 
@@ -26,7 +26,7 @@ const EditEquipement = () => {
  const navigate = useNavigate();
  const [form] = Form.useForm();
  const { updatePropertyAmenities, isLoading, success } = useUpdateProperty(id);
- const { property, loading } = useGetProperty(id);
+ const { property, loading, fetchProperty } = useProperty();
 
  const handleSubmit = async (values) => {
   try {
@@ -37,7 +37,11 @@ const EditEquipement = () => {
   }
  };
 
- if (loading) {
+ useEffect(() => {
+  fetchProperty(id);
+ }, [loading]);
+
+ if (loading || property.length === 0) {
   return (
    <div className="loading">
     <Spin size="large" />

@@ -7,7 +7,7 @@ import AddPropertyCard from './components/AddPropertyCard';
 import ShareModal from '../components/common/ShareModal';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useUserData } from '../hooks/useUserData';
-import useGetProperties from '../hooks/useGetProperties';
+import useProperty from '../hooks/useProperty';
 import { useNavigate } from 'react-router-dom';
 import fallback from '../assets/fallback.png';
 
@@ -16,7 +16,7 @@ const PropertyManagerHome = () => {
  const { user } = useAuthContext();
  const { isLoading, userData, getUserData } = useUserData();
  const User = user || JSON.parse(localStorage.getItem('user'));
- const { properties, loading, fetchProperties } = useGetProperties();
+ const { properties, loading, fetchPropertiesbypm } = useProperty();
  const navigate = useNavigate();
  const [isShareModalVisible, setIsShareModalVisible] = useState(false);
  const [pageUrl, setPageUrl] = useState();
@@ -46,7 +46,7 @@ const PropertyManagerHome = () => {
 
  useEffect(() => {
   if (!isLoading) {
-   fetchProperties(userData.id);
+   fetchPropertiesbypm(userData.id);
   }
  }, [isLoading]);
 

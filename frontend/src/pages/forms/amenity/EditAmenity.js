@@ -13,6 +13,8 @@ import {
  Radio,
  Upload,
  Image,
+ Popconfirm,
+ message,
 } from 'antd';
 import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
 import Head from '../../../components/common/header';
@@ -38,7 +40,8 @@ const EditAmenity = () => {
  const { id } = location.state;
  const navigate = useNavigate();
  const { uploadAmenity } = useUploadPhotos();
- const { loading, error, updateAmenity, getOneAmenity } = useAmenity();
+ const { loading, error, deleteAmenity, updateAmenity, getOneAmenity } =
+  useAmenity();
  const [form] = Form.useForm();
  const [amenity, setAmenity] = useState('');
  const [mediaType, setMediaType] = useState('Photo');
@@ -155,6 +158,18 @@ const EditAmenity = () => {
   }
  };
 
+ const confirmDelete = async (id) => {
+  await deleteAmenity(id);
+  if (!error) {
+   message.success('Equipement supprimé avec succès.');
+   navigate(-1);
+  } else {
+   message.error(
+    `Erreur lors de la suppression de l'équipement: ${error.message}`
+   );
+  }
+ };
+
  if (loading) {
   return (
    <div className="loading">
@@ -166,14 +181,34 @@ const EditAmenity = () => {
   <Layout className="contentStyle">
    <Head />
    <Content className="container">
-    <Button
-     type="default"
-     shape="round"
-     icon={<ArrowLeftOutlined />}
-     onClick={() => navigate(-1)}
-    >
-     Retour
-    </Button>
+    <Flex horizontal="true" gap="middle" justify="space-between" align="start">
+     <Button
+      type="default"
+      shape="round"
+      icon={<ArrowLeftOutlined />}
+      onClick={() => navigate(-1)}
+     >
+      Retour
+     </Button>
+
+     <Popconfirm
+      title="Etes-vous sûr de supprimer ?"
+      onConfirm={() => confirmDelete(amenity.id)}
+     >
+      <Button
+       danger
+       icon={
+        <i
+         className="Dashicon fa-light fa-trash"
+         style={{ color: 'red' }}
+         key="delete"
+        />
+       }
+       type="link"
+       shape="circle"
+      />
+     </Popconfirm>
+    </Flex>
     <Row gutter={[16, 16]}>
      <Col xs={24}>
       <Title level={2}>Ajouter une carte pour {amenity.name}</Title>

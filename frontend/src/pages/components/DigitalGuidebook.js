@@ -19,7 +19,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
-import useGetProperty from '../../hooks/useGetProperty';
+import useProperty from '../../hooks/useProperty';
 import useAmenity from '../../hooks/useAmenity';
 import MapMarker from './MapMarker';
 import ReactPlayer from 'react-player';
@@ -393,12 +393,16 @@ const DigitalGuidebook = () => {
  const { user } = useAuthContext();
  const storedUser = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserDataById, isLoading } = useUserData();
- const { property, loading } = useGetProperty(id);
+ const { property, loading, fetchProperty } = useProperty();
  const { getAllAmenities } = useAmenity();
  const [amenities, setAmenities] = useState([]);
  const [isOwner, setIsOwner] = useState(false);
  const [isShareModalVisible, setIsShareModalVisible] = useState(false);
  const rows = 4;
+
+ useEffect(() => {
+  fetchProperty(id);
+ }, [loading]);
 
  useEffect(() => {
   if (property.propertyManagerId) {
@@ -522,7 +526,7 @@ const DigitalGuidebook = () => {
   ]
  );
 
- if (loading) {
+ if (loading || property.length === 0) {
   return (
    <div className="loading">
     <Spin size="large" />

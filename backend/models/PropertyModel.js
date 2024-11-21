@@ -105,15 +105,10 @@ module.exports = (db, type) => {
    type: type.STRING(90),
    allowNull: true,
   },
-  isVerified: {
-   type: type.BOOLEAN,
-   defaultValue: false,
-   allowNull: false,
-  },
-  isPublished: {
-   type: type.BOOLEAN,
-   defaultValue: false,
-   allowNull: false,
+  status: {
+   type: type.STRING(15),
+   enum: ['pending', 'verified', 'published', 'unpublished'],
+   default: 'pending',
   },
  });
 

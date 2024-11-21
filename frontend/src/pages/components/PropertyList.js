@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import useGetProperties from '../../hooks/useGetProperties';
+import useProperty from '../../hooks/useProperty';
 import {
  Row,
  Col,
@@ -26,7 +26,7 @@ const PropertyList = ({
  checkedbasicAmenities,
 }) => {
  const navigate = useNavigate();
- const { properties, fetchAllProperties, loading, error } = useGetProperties();
+ const { properties, fetchAllProperties, loading, error } = useProperty();
  const [filteredProperties, setFilteredProperties] = useState([]);
  const [imageAspectRatios, setImageAspectRatios] = useState({});
 

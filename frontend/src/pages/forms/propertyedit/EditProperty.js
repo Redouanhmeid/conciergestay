@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import useGetProperty from '../../../hooks/useGetProperty';
+import useProperty from '../../../hooks/useProperty';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import useUpdateProperty from '../../../hooks/useUpdateProperty';
 import {
@@ -45,7 +45,7 @@ const getBase64 = (file) =>
 const EditProperty = () => {
  const location = useLocation();
  const { id } = queryString.parse(location.search);
- const { property, loading } = useGetProperty(id);
+ const { property, loading, fetchProperty } = useProperty();
  const navigate = useNavigate();
  const { uploadPhotos, uploadFrontPhoto } = useUploadPhotos();
  const { updateProperty } = useUpdateProperty();
@@ -84,6 +84,10 @@ const EditProperty = () => {
    }
   });
  };
+
+ useEffect(() => {
+  fetchProperty(id);
+ }, [loading]);
 
  useEffect(() => {
   if (!loading && property) {
@@ -236,7 +240,7 @@ const EditProperty = () => {
   }
  };
 
- if (loading) {
+ if (loading || property.length === 0) {
   return (
    <div className="loading">
     <Spin size="large" />

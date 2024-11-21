@@ -13,7 +13,7 @@ import {
 } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import queryString from 'query-string';
-import useGetProperty from '../../../hooks/useGetProperty';
+import useProperty from '../../../hooks/useProperty';
 import useUpdateProperty from '../../../hooks/useUpdateProperty';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
@@ -25,7 +25,7 @@ const { TextArea } = Input;
 const EditHouseRules = () => {
  const location = useLocation();
  const { id } = queryString.parse(location.search);
- const { property, loading } = useGetProperty(id);
+ const { property, loading, fetchProperty } = useProperty();
  const navigate = useNavigate();
  const [form] = Form.useForm();
  const { updatePropertyRules, isLoading, success } = useUpdateProperty(id);
@@ -40,7 +40,11 @@ const EditHouseRules = () => {
   updatePropertyRules(values);
  };
 
- if (loading) {
+ useEffect(() => {
+  fetchProperty(id);
+ }, [loading]);
+
+ if (loading || property.length === 0) {
   return (
    <div className="loading">
     <Spin size="large" />

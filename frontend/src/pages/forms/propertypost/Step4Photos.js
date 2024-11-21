@@ -6,7 +6,6 @@ import {
  Row,
  Col,
  Upload,
- Modal,
  Image,
  Button,
  Alert,
@@ -144,30 +143,6 @@ const Step4Photos = ({ next, prev, values }) => {
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
  const [fileList, setFileList] = useState([]);
- const [upload, setUpload] = useState(false);
-
- // Initialize fileList with values.photos if they exist
- useEffect(() => {
-  if (values.photos && values.photos.length > 0) {
-   setFileList(
-    values.photos.map((url, index) => ({
-     uid: `existing-${index}`,
-     name: url.substring(url.lastIndexOf('/') + 1),
-     status: 'done',
-     url: url,
-    }))
-   );
-  }
- }, [values.photos]);
-
- useEffect(() => {
-  if (updateError) {
-   message.error('Failed to update property photos: ' + updateError);
-  }
-  if (updateSuccess) {
-   message.success('Property photos updated successfully');
-  }
- }, [updateError, updateSuccess]);
 
  const sensors = useSensors(
   useSensor(PointerSensor, {
@@ -229,10 +204,9 @@ const Step4Photos = ({ next, prev, values }) => {
 
  const handleSubmit = async () => {
   if (!fileList.length) {
-   console.error('No files to upload');
+   console.error('Aucun fichier à télécharger');
    return;
   }
-
   try {
    // Filter files that need to be uploaded (have originFileObj)
    const filesWithOriginFileObj = fileList.filter((file) => file.originFileObj);
@@ -260,9 +234,36 @@ const Step4Photos = ({ next, prev, values }) => {
    next();
   } catch (error) {
    console.error('Error handling photos:', error);
-   message.error('Failed to process photos. Please try again.');
+   message.error('Échec du traitement des photos. Veuillez réessayer.');
   }
  };
+
+ // Initialize fileList with values.photos if they exist
+ useEffect(() => {
+  if (values.photos && values.photos.length > 0) {
+   setFileList(
+    values.photos.map((url, index) => ({
+     uid: `existing-${index}`,
+     name: url.substring(url.lastIndexOf('/') + 1),
+     status: 'done',
+     url: url,
+    }))
+   );
+  }
+ }, [values.photos]);
+
+ useEffect(() => {
+  if (updateError) {
+   message.error(
+    'Échec de la mise à jour des photos de la propriété : ' + updateError
+   );
+  }
+  if (updateSuccess) {
+   message.success(
+    'Les photos de la propriété ont été mises à jour avec succès'
+   );
+  }
+ }, [updateError, updateSuccess]);
 
  const uploadButton = (
   <div
@@ -274,7 +275,7 @@ const Step4Photos = ({ next, prev, values }) => {
     alignItems: 'center',
    }}
   >
-   {upload ? (
+   {uploading ? (
     <div style={{ marginTop: 8 }}>Téléchargement en cours...</div>
    ) : (
     <button

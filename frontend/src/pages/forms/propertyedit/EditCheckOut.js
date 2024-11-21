@@ -17,7 +17,7 @@ import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
 import useUpdateProperty from '../../../hooks/useUpdateProperty';
-import useGetProperty from '../../../hooks/useGetProperty';
+import useProperty from '../../../hooks/useProperty';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
 
@@ -69,9 +69,13 @@ const EditCheckOut = () => {
  const [form] = Form.useForm();
  const { updatePropertyCheckOut, isLoading, success, error } =
   useUpdateProperty(id);
- const { property, loading } = useGetProperty(id);
+ const { property, loading, fetchProperty } = useProperty();
 
  const [checkOutTime, setCheckOutTime] = useState(null);
+
+ useEffect(() => {
+  fetchProperty(id);
+ }, [loading]);
 
  // Same time handling logic as in EditProperty
  useEffect(() => {
@@ -106,7 +110,7 @@ const EditCheckOut = () => {
   }
  }, [success, error, navigate]);
 
- if (loading) {
+ if (loading || property.length === 0) {
   return (
    <div className="loading">
     <Spin size="large" />

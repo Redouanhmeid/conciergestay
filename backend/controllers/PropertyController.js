@@ -1,6 +1,7 @@
 const haversine = require('haversine-distance');
 const { Property, Amenity } = require('../models');
 const { deletePropertyFiles } = require('../helpers/utils');
+
 // find one Property
 const getProperty = async (req, res) => {
  Property.findOne({ where: { id: req.params.id } }).then((property) => {
@@ -20,7 +21,20 @@ const getProperties = async (req, res) => {
   res.json(property);
  });
 };
+// find all Pending Properties
+const getPendingProperties = async (req, res) => {
+ try {
+  // Find all properties with a status of 'pending'
+  const pendingProperties = await Property.findAll({
+   where: { status: 'pending' },
+  });
 
+  res.status(200).json(pendingProperties);
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to retrieve pending properties' });
+ }
+};
 const createProperty = async (req, res) => {
  try {
   const propertyData = req.body;
@@ -271,8 +285,106 @@ const updatePropertyPhotos = async (req, res) => {
  }
 };
 
+const verifyProperty = async (req, res) => {
+ try {
+  const { id } = req.params;
+  const property = await Property.findByPk(id);
+
+  if (!property) {
+   return res.status(404).json({ error: 'Property not found' });
+  }
+
+  // Ensure only `pending` properties can be verified
+  if (property.status !== 'pending') {
+   return res.status(400).json({ error: 'Property is not in pending status' });
+  }
+
+  // Set the property status to `verified`
+  await property.update({ status: 'published' });
+  res
+   .status(200)
+   .json({ message: 'Property published successfully', property });
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to published property' });
+ }
+};
+
+const bulkVerifyProperties = async (req, res) => {
+ try {
+  const { ids } = req.body; // Expecting an array of property IDs
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+   return res.status(400).json({ error: 'Invalid or missing property IDs' });
+  }
+
+  const properties = await Property.findAll({
+   where: {
+    id: ids,
+   },
+  });
+
+  if (properties.length === 0) {
+   return res
+    .status(404)
+    .json({ error: 'No properties found for the given IDs' });
+  }
+
+  const results = await Promise.all(
+   properties.map(async (property) => {
+    if (property.status === 'pending') {
+     await property.update({ status: 'published' });
+     return { id: property.id, status: 'success' };
+    }
+    return {
+     id: property.id,
+     status: 'failed',
+     reason: 'Not in pending status',
+    };
+   })
+  );
+
+  const successfulUpdates = results.filter(
+   (result) => result.status === 'success'
+  );
+  const failedUpdates = results.filter((result) => result.status === 'failed');
+
+  res.status(200).json({
+   message: 'Bulk verification process completed',
+   successful: successfulUpdates,
+   failed: failedUpdates,
+  });
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to bulk verify properties' });
+ }
+};
+
+const togglePublishProperty = async (req, res) => {
+ try {
+  const { id } = req.params;
+  const property = await Property.findByPk(id);
+
+  if (!property) {
+   return res.status(404).json({ error: 'Property not found' });
+  }
+
+  // Toggle between `published` and `unpublished`
+  const newStatus =
+   property.status === 'published' ? 'unpublished' : 'published';
+  await property.update({ status: newStatus });
+  res
+   .status(200)
+   .json({ message: `Property ${newStatus} successfully`, property });
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to update property status' });
+ }
+};
+
 module.exports = {
  getProperties,
+ getPendingProperties,
  getProperty,
  getPropertiesByManagerId,
  createProperty,
@@ -286,4 +398,7 @@ module.exports = {
  updatePropertyCheckIn,
  updatePropertyCheckOut,
  updatePropertyPhotos,
+ verifyProperty,
+ bulkVerifyProperties,
+ togglePublishProperty,
 };

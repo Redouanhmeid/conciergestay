@@ -14,7 +14,7 @@ import {
  message,
 } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import useGetProperties from '../../hooks/useGetProperties';
+import useProperty from '../../hooks/useProperty';
 import { useUserData } from '../../hooks/useUserData';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
@@ -40,7 +40,7 @@ const Manager = () => {
   properties = [],
   loading: propertiesLoading,
   fetchAllProperties,
- } = useGetProperties();
+ } = useProperty();
 
  const [manager, setManager] = useState(null);
  const [loading, setLoading] = useState(true);

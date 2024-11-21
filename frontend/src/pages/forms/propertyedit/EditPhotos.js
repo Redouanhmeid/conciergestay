@@ -10,6 +10,8 @@ import {
  Button,
  Image,
  Alert,
+ Progress,
+ message,
 } from 'antd';
 import {
  DndContext,
@@ -27,11 +29,16 @@ import {
  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+ LoadingOutlined,
+ PlusOutlined,
+ ArrowRightOutlined,
+ ArrowLeftOutlined,
+} from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
 import useUpdateProperty from '../../../hooks/useUpdateProperty';
-import useGetProperty from '../../../hooks/useGetProperty';
+import useProperty from '../../../hooks/useProperty';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
@@ -83,14 +90,17 @@ const EditPhotos = () => {
  const { id } = queryString.parse(location.search);
  const navigate = useNavigate();
  const [form] = Form.useForm();
- const { property, loading } = useGetProperty(id);
- const { updatePropertyPhotos, isLoading, success } = useUpdateProperty(id);
- const { uploadPhotos } = useUploadPhotos();
+ const { property, loading, fetchProperty } = useProperty();
+ const {
+  updatePropertyPhotos,
+  isLoading: isUpdating,
+  success,
+ } = useUpdateProperty(id);
+ const { uploadPhotos, uploading, uploadProgress } = useUploadPhotos();
 
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
  const [fileList, setFileList] = useState([]);
- const [uploading, setUploading] = useState(false);
 
  const sensors = useSensors(
   useSensor(PointerSensor, {
@@ -114,7 +124,7 @@ const EditPhotos = () => {
 
  const handleSubmit = async () => {
   if (!fileList.length) {
-   console.error('No files to upload');
+   console.error('Aucun fichier à télécharger');
    return;
   }
   const filesWithOriginFileObj = fileList.filter((file) => file.originFileObj);
@@ -132,18 +142,8 @@ const EditPhotos = () => {
    await updatePropertyPhotos({ photos: photoUrls });
    navigate(-1);
   } catch (error) {
-   console.error('Error updating property:', error);
-  }
- };
-
- const beforeUpload = async (file) => {
-  try {
-   const preview = await getBase64(file);
-   file.preview = preview;
-   return false; // Prevent automatic upload
-  } catch (error) {
-   console.error('Error generating preview:', error);
-   return false;
+   console.error('Error handling photos:', error);
+   message.error('Échec du traitement des photos. Veuillez réessayer.');
   }
  };
 
@@ -151,25 +151,14 @@ const EditPhotos = () => {
   if (!file.url && !file.preview) {
    file.preview = await getBase64(file.originFileObj);
   }
+  file.error = false;
   setPreviewImage(file.url || file.preview);
   setPreviewOpen(true);
  };
 
- const handleChange = ({ fileList: newFileList }) => {
-  // Set all files' status to 'done' if they have been uploaded
-  const updatedFileList = newFileList.map((file) => {
-   if (file.status === 'uploading') {
-    return file; // Keep uploading files unchanged
-   }
-   return { ...file, status: 'done' }; // Mark other files as 'done'
-  });
-
-  // Update the fileList state
-  setFileList(updatedFileList);
-
-  // Update uploading state based on whether any file is still uploading
-  setUploading(updatedFileList.some((file) => file.status === 'uploading'));
- };
+ useEffect(() => {
+  fetchProperty(id);
+ }, [loading]);
 
  useEffect(() => {
   if (!loading && property && property.photos) {
@@ -237,7 +226,7 @@ const EditPhotos = () => {
   </div>
  );
 
- if (loading) {
+ if (loading || property.length === 0) {
   return (
    <div className="loading">
     <Spin size="large" />
@@ -257,18 +246,7 @@ const EditPhotos = () => {
      >
       Retour
      </Button>
-     <Title level={3}>Modifier les photos de votre logement</Title>
-     <div
-      style={{
-       textAlign: 'center',
-       margin: '10px 0',
-      }}
-     >
-      <Text type="secondary">
-       Vous pouvez réorganiser vos photos en les glissant-déposant
-      </Text>{' '}
-      🎯📷
-     </div>
+
      <Form
       name="editBasicInfo"
       form={form}
@@ -277,41 +255,57 @@ const EditPhotos = () => {
       layout="vertical"
      >
       <Row gutter={[8, 0]}>
-       <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={onDragEnd}
-        dropAnimation={{
-         ...defaultDropAnimation,
-         dragSourceOpacity: 0.5,
-        }}
-       >
-        <SortableContext
-         items={fileList.map((f) => f.uid)}
-         strategy={verticalListSortingStrategy}
-        >
-         <Upload
-          listType="picture-card"
-          className="custom-upload"
-          fileList={fileList}
-          onPreview={handlePreview}
-          onChange={handleChange}
-          beforeUpload={beforeUpload}
-          maxCount={16}
-          multiple
-          customRequest={({ onSuccess }) => onSuccess('ok')}
-          itemRender={(originNode, file) => (
-           <DraggableUploadListItem originNode={originNode} file={file} />
-          )}
+       <Col xs={24} md={24}>
+        <Title level={3}>Modifier les photos de votre logement</Title>
+        {fileList.length > 1 && (
+         <div
+          style={{
+           textAlign: 'center',
+           margin: '10px 0',
+          }}
          >
-          {fileList.length >= 16 ? null : uploadButton}
-         </Upload>
-        </SortableContext>
-       </DndContext>
+          <Text type="secondary">
+           Vous pouvez réorganiser vos photos en les glissant-déposant
+          </Text>{' '}
+          🎯📷
+         </div>
+        )}
+       </Col>
+       <Col xs={24} md={24}>
+        <DndContext
+         sensors={sensors}
+         collisionDetection={closestCenter}
+         onDragStart={handleDragStart}
+         onDragEnd={onDragEnd}
+         dropAnimation={{
+          ...defaultDropAnimation,
+          dragSourceOpacity: 0.5,
+         }}
+        >
+         <SortableContext
+          items={fileList.map((f) => f.uid)}
+          strategy={verticalListSortingStrategy}
+         >
+          <Upload
+           listType="picture-card"
+           className="custom-upload"
+           fileList={fileList}
+           onPreview={handlePreview}
+           onChange={({ fileList: newFileList }) => setFileList(newFileList)}
+           beforeUpload={() => false}
+           maxCount={16}
+           multiple
+           customRequest={({ onSuccess }) => onSuccess('ok')}
+           itemRender={(originNode, file) => (
+            <DraggableUploadListItem originNode={originNode} file={file} />
+           )}
+          >
+           {fileList.length >= 16 ? null : uploadButton}
+          </Upload>
+         </SortableContext>
+        </DndContext>
 
-       {previewOpen && (
-        <Col xs={24}>
+        {previewOpen && (
          <Image
           wrapperStyle={{ display: 'none' }}
           preview={{
@@ -320,8 +314,8 @@ const EditPhotos = () => {
           }}
           src={previewImage}
          />
-        </Col>
-       )}
+        )}
+       </Col>
 
        {fileList.length === 16 && (
         <Col xs={24}>
@@ -332,9 +326,20 @@ const EditPhotos = () => {
          <br />
         </Col>
        )}
+       {uploading && (
+        <Col xs={24}>
+         <Progress
+          percent={uploadProgress}
+          status="active"
+          strokeColor={{ from: '#ebdecd', to: '#aa7e42' }}
+         />
+        </Col>
+       )}
+      </Row>
 
-       <Col xs={24}>
-        <Button type="primary" htmlType="submit" loading={isLoading}>
+      <Row justify="end">
+       <Col xs={16} md={3}>
+        <Button type="primary" htmlType="submit" loading={isUpdating}>
          {success ? 'Mis à jour!' : 'Enregistrer les photos'}
         </Button>
        </Col>

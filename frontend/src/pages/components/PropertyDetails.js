@@ -35,8 +35,7 @@ import queryString from 'query-string';
 import MapMarker from './MapMarker';
 import NearbyPlacesCarousel from './nearbyplacescarousel';
 import { Helmet } from 'react-helmet';
-import useGetProperty from '../../hooks/useGetProperty';
-import useDeleteProperty from '../../hooks/useDeleteProperty';
+import useProperty from '../../hooks/useProperty';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useUserData } from '../../hooks/useUserData';
 import useAmenity from '../../hooks/useAmenity';
@@ -231,9 +230,8 @@ const PropertyDetails = () => {
  const location = useLocation();
  const { id } = queryString.parse(location.search);
  const navigate = useNavigate();
- const { property, loading } = useGetProperty(id);
- const { deleteProperty, deletesuccess, deleteloading, deleteerror } =
-  useDeleteProperty();
+ const { property, loading, success, error, fetchProperty, deleteProperty } =
+  useProperty();
  const { user } = useAuthContext();
  const storedUser = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserDataById, isLoading } = useUserData();
@@ -261,12 +259,12 @@ const PropertyDetails = () => {
 
  const confirmDelete = async () => {
   await deleteProperty(id);
-  if (!deleteerror) {
+  if (!error) {
    message.success('Propriété supprimée avec succès.');
    navigate(`/dashboard`);
   } else {
    message.error(
-    `Erreur lors de la suppression de la propriété: ${deleteerror.message}`
+    `Erreur lors de la suppression de la propriété: ${error.message}`
    );
   }
  };
@@ -309,6 +307,10 @@ const PropertyDetails = () => {
  const handleARulesCancel = () => {
   setIsARulesModalOpen(false);
  };
+
+ useEffect(() => {
+  fetchProperty(id);
+ }, [loading]);
 
  useEffect(() => {
   if (property.propertyManagerId) {
@@ -419,7 +421,7 @@ const PropertyDetails = () => {
     : property.houseRules,
  };
 
- if (loading) {
+ if (loading || property.length === 0) {
   return (
    <div className="loading">
     <Spin size="large" />
@@ -584,11 +586,9 @@ const PropertyDetails = () => {
           Actions
          </Dropdown.Button>
         )}
-        {deletesuccess && <p>Propriété supprimée avec succès.</p>}
-        {deleteerror && (
-         <p>
-          Erreur lors de la suppression de la propriété: {deleteerror.message}
-         </p>
+        {success && <p>Propriété supprimée avec succès.</p>}
+        {error && (
+         <p>Erreur lors de la suppression de la propriété: {error.message}</p>
         )}
        </div>
       </Flex>

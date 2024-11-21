@@ -60,6 +60,9 @@ const deleteAmenityFiles = async (amenity) => {
    'AMENITIES',
    deletionErrors
   );
+  if (!fileDeleted) {
+   console.warn(`Failed to delete file for amenity: ${amenity.id}`);
+  }
  }
  utils.handleDeletionErrors(deletionErrors);
 };

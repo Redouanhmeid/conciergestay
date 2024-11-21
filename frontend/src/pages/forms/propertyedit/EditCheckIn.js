@@ -22,7 +22,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import useUpdateProperty from '../../../hooks/useUpdateProperty';
-import useGetProperty from '../../../hooks/useGetProperty';
+import useProperty from '../../../hooks/useProperty';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
 
@@ -83,13 +83,17 @@ const EditCheckIn = () => {
  const { updatePropertyCheckIn, isLoading, success, error } =
   useUpdateProperty(id);
  const { uploadFrontPhoto } = useUploadPhotos();
- const { property, loading } = useGetProperty(id);
+ const { property, loading, fetchProperty } = useProperty();
 
  const [checkInTime, setCheckInTime] = useState(null);
  const [videoURL, setVideoURL] = useState('');
  const [fileList2, setFileList2] = useState([]);
  const [previewImage2, setPreviewImage2] = useState('');
  const [previewOpen2, setPreviewOpen2] = useState(false);
+
+ useEffect(() => {
+  fetchProperty(id);
+ }, [loading]);
 
  // Same time handling logic as in EditProperty
  useEffect(() => {
@@ -141,7 +145,6 @@ const EditCheckIn = () => {
  );
 
  const handleSubmit = async (values) => {
-  console.log(values);
   try {
    if (fileList2.length > 0) {
     const currentFile = fileList2[0];
@@ -175,7 +178,7 @@ const EditCheckIn = () => {
   }
  }, [success, error, navigate]);
 
- if (loading) {
+ if (loading || property.length === 0) {
   return (
    <div className="loading">
     <Spin size="large" />
