@@ -93,6 +93,37 @@ const useNearbyPlace = () => {
   }
  };
 
+ // Verify a nearby place
+ const verifyNearbyPlace = async (id) => {
+  setLoading(true);
+  setError(null);
+  try {
+   const response = await axios.put(`${API_BASE_URL}/${id}/verify`);
+   return response.data;
+  } catch (err) {
+   setError(err.message || `Failed to verify nearby place with ID: ${id}`);
+  } finally {
+   setLoading(false);
+  }
+ };
+
+ // Bulk verify properties
+ const bulkVerifyNearbyPlaces = async (ids) => {
+  setLoading(true);
+  setError(null);
+  try {
+   const response = await axios.post(`${API_BASE_URL}/bulkVerify`, { ids });
+   const { successful, failed } = response.data;
+
+   return { successful, failed }; // Return the results for further handling if needed
+  } catch (err) {
+   setError(err.message || 'Failed to bulk verify nearby places.');
+   return null; // Return null to indicate failure
+  } finally {
+   setLoading(false);
+  }
+ };
+
  return {
   loading,
   error,
@@ -102,6 +133,8 @@ const useNearbyPlace = () => {
   updateNearbyPlace,
   deleteNearbyPlace,
   getNearbyPlacesByLatLon,
+  verifyNearbyPlace,
+  bulkVerifyNearbyPlaces,
  };
 };
 

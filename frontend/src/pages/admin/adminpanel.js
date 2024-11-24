@@ -32,7 +32,9 @@ const { Title, Text } = Typography;
 const Dashboard = () => {
  const {
   properties = [],
+  pendingProperties,
   loading: PropertiesLoading,
+  fetchPendingProperties,
   fetchAllProperties,
  } = useProperty();
  const {
@@ -50,10 +52,6 @@ const Dashboard = () => {
  const [Mloading, setMLoading] = useState(false);
  const [Nloading, setNLoading] = useState(false);
 
- const pendingProperties = properties.filter(
-  (property) => property.status === 'pending'
- ).length;
-
  const pendingNearbyPlaces = NearbyPlaces.filter(
   (NearbyPlace) => NearbyPlace.isVerified === false
  ).length;
@@ -69,6 +67,7 @@ const Dashboard = () => {
 
  useEffect(() => {
   fetchAllProperties();
+  fetchPendingProperties();
   fetchAllManagers();
   fetchNearbyPlaces();
  }, []);
@@ -147,7 +146,7 @@ const Dashboard = () => {
     <Row gutter={[16, 16]}>
      <Col xs={24} md={12}>
       <a href={`/pendingproperties`}>
-       <Badge count={pendingProperties} status="warning" offset={[4, 4]}>
+       <Badge count={pendingProperties.length} status="warning" offset={[4, 4]}>
         <Statistic
          value="Propriétés en attente"
          prefix={
@@ -158,7 +157,7 @@ const Dashboard = () => {
       </a>
      </Col>
      <Col xs={24} md={12}>
-      <a href={`/#`}>
+      <a href={`/pendingnearbyplaces`}>
        <Badge count={pendingNearbyPlaces} status="warning" offset={[4, 4]}>
         <Statistic
          value="Lieux à proximité à vérifier"

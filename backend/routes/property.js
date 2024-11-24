@@ -18,7 +18,7 @@ const {
  updatePropertyPhotos,
  verifyProperty,
  bulkVerifyProperties,
- togglePublishProperty,
+ toggleEnableProperty,
 } = require('../controllers/PropertyController');
 
 // Route to get all properties
@@ -48,6 +48,6 @@ router.delete('/:id', deleteProperty);
 
 router.put('/:id/verify', verifyProperty);
 router.post('/bulkVerify', bulkVerifyProperties);
-router.put('/:id/togglePublish', togglePublishProperty);
+router.put('/:id/toggleenable', toggleEnableProperty);
 
 module.exports = router;

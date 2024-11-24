@@ -17,9 +17,17 @@ const getPropertiesByManagerId = async (req, res) => {
 };
 // find all Properties
 const getProperties = async (req, res) => {
- Property.findAll().then((property) => {
-  res.json(property);
- });
+ try {
+  const properties = await Property.findAll({
+   where: {
+    status: 'enable', // Filters properties with status 'enable'
+   },
+  });
+  res.json(properties); // Send the filtered properties as the response
+ } catch (error) {
+  console.error('Error fetching properties:', error);
+  res.status(500).json({ error: 'Failed to fetch properties' });
+ }
 };
 // find all Pending Properties
 const getPendingProperties = async (req, res) => {
@@ -106,7 +114,12 @@ const getPropertiesbyLatLon = async (propertyLat, propertyLon) => {
  // Get all places
  let places;
  try {
-  places = await Property.findAll();
+  // Fetch only properties with status 'enable'
+  places = await Property.findAll({
+   where: {
+    status: 'enable', // Filter to include only enabled properties
+   },
+  });
  } catch (error) {
   console.error('Error fetching places:', error); // Log any errors
   return [];
@@ -333,7 +346,7 @@ const bulkVerifyProperties = async (req, res) => {
   const results = await Promise.all(
    properties.map(async (property) => {
     if (property.status === 'pending') {
-     await property.update({ status: 'published' });
+     await property.update({ status: 'enable' });
      return { id: property.id, status: 'success' };
     }
     return {
@@ -360,7 +373,7 @@ const bulkVerifyProperties = async (req, res) => {
  }
 };
 
-const togglePublishProperty = async (req, res) => {
+const toggleEnableProperty = async (req, res) => {
  try {
   const { id } = req.params;
   const property = await Property.findByPk(id);
@@ -369,9 +382,8 @@ const togglePublishProperty = async (req, res) => {
    return res.status(404).json({ error: 'Property not found' });
   }
 
-  // Toggle between `published` and `unpublished`
-  const newStatus =
-   property.status === 'published' ? 'unpublished' : 'published';
+  // Toggle between `enable` and `disable`
+  const newStatus = property.status === 'enable' ? 'disable' : 'enable';
   await property.update({ status: newStatus });
   res
    .status(200)
@@ -400,5 +412,5 @@ module.exports = {
  updatePropertyPhotos,
  verifyProperty,
  bulkVerifyProperties,
- togglePublishProperty,
+ toggleEnableProperty,
 };

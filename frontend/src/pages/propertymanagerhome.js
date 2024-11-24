@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import Head from '../components/common/header';
 import Foot from '../components/common/footer';
-import { Layout, Spin, Card, Col, Row, Carousel, Image } from 'antd';
+import {
+ Layout,
+ Spin,
+ Card,
+ Col,
+ Row,
+ Carousel,
+ Image,
+ Popconfirm,
+ message,
+} from 'antd';
 import '../App.css';
 import AddPropertyCard from './components/AddPropertyCard';
 import ShareModal from '../components/common/ShareModal';
@@ -16,7 +26,13 @@ const PropertyManagerHome = () => {
  const { user } = useAuthContext();
  const { isLoading, userData, getUserData } = useUserData();
  const User = user || JSON.parse(localStorage.getItem('user'));
- const { properties, loading, fetchPropertiesbypm } = useProperty();
+ const {
+  properties,
+  error,
+  loading,
+  fetchPropertiesbypm,
+  toggleEnableProperty,
+ } = useProperty();
  const navigate = useNavigate();
  const [isShareModalVisible, setIsShareModalVisible] = useState(false);
  const [pageUrl, setPageUrl] = useState();
@@ -45,7 +61,7 @@ const PropertyManagerHome = () => {
  }, [user]);
 
  useEffect(() => {
-  if (!isLoading) {
+  if (userData.id) {
    fetchPropertiesbypm(userData.id);
   }
  }, [isLoading]);
@@ -61,6 +77,18 @@ const PropertyManagerHome = () => {
    };
    return newState;
   });
+ };
+
+ const toggleEnable = async (ID) => {
+  await toggleEnableProperty(ID);
+  if (!error) {
+   message.success('Propriété activer avec succès.');
+   await fetchPropertiesbypm(userData.id);
+  } else {
+   message.error(
+    `Erreur lors de la activation de la propriété: ${error.message}`
+   );
+  }
  };
 
  if (isLoading) {
@@ -117,6 +145,42 @@ const PropertyManagerHome = () => {
             <div key="share" onClick={() => showShareModal(property.id)}>
              <i className="Dashicon fa-light fa-share-nodes" />
             </div>,
+            <Popconfirm
+             title={
+              property.status === 'enable'
+               ? ' Désactiver la propriété'
+               : ' Activer la propriété'
+             }
+             description="Etes-vous sûr de vouloir activer cette propriété ?"
+             onConfirm={() => toggleEnable(property.id)}
+             okText="Oui"
+             cancelText="Non"
+             icon={
+              property.status === 'enable' ? (
+               <i
+                className="Dashicon fa-light fa-lock"
+                style={{ color: '#F5222D', marginRight: 6 }}
+               />
+              ) : (
+               <i
+                className="Dashicon fa-light fa-lock-open"
+                style={{ color: '#52C41A', marginRight: 6 }}
+               />
+              )
+             }
+            >
+             {property.status === 'enable' ? (
+              <i
+               className="Dashicon fa-light fa-lock-open"
+               style={{ color: '#52C41A' }}
+              />
+             ) : (
+              <i
+               className="Dashicon fa-light fa-lock"
+               style={{ color: '#F5222D' }}
+              />
+             )}
+            </Popconfirm>,
            ]}
           >
            <Card.Meta

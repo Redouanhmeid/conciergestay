@@ -21,7 +21,7 @@ import useProperty from '../../hooks/useProperty';
 const { Content } = Layout;
 const { Title } = Typography;
 
-const Pendingproperties = () => {
+const PendingProperties = () => {
  const navigate = useNavigate();
  const {
   pendingProperties,
@@ -29,7 +29,6 @@ const Pendingproperties = () => {
   error,
   verifyProperty,
   bulkVerifyProperties,
-  togglePublishProperty,
   fetchPendingProperties,
  } = useProperty();
 
@@ -164,6 +163,18 @@ const Pendingproperties = () => {
    ...getColumnSearchProps('name'),
   },
   {
+   title: 'Voir',
+   key: 'voir',
+   render: (_, record) => (
+    <Button
+     icon={<i className="Dashicon fa-light fa-eye" key="display" />}
+     onClick={() => navigate(`/propertydetails?id=${record.id}`)}
+     type="link"
+     shape="circle"
+    />
+   ),
+  },
+  {
    title: 'Type',
    dataIndex: 'type',
    key: 'type',
@@ -285,4 +296,4 @@ const Pendingproperties = () => {
  );
 };
 
-export default Pendingproperties;
+export default PendingProperties;

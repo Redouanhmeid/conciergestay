@@ -107,7 +107,7 @@ module.exports = (db, type) => {
   },
   status: {
    type: type.STRING(15),
-   enum: ['pending', 'verified', 'published', 'unpublished'],
+   enum: ['pending', 'enable', 'disable'],
    default: 'pending',
   },
  });

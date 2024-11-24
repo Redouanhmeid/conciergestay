@@ -39,12 +39,14 @@ const useProperty = () => {
 
  // Fetch properties by manager id
  const fetchPropertiesbypm = async (propertyManagerId) => {
+  setLoading(true);
+  setError(null);
   try {
    const response = await axios.get(`${apiBase}/bypm/${propertyManagerId}`);
    setProperties(response.data);
-   setLoading(false);
   } catch (error) {
    console.error('Error fetching properties:', error);
+  } finally {
    setLoading(false);
   }
  };
@@ -79,11 +81,11 @@ const useProperty = () => {
  };
 
  // Toggle property publish status
- const togglePublishProperty = async (id) => {
+ const toggleEnableProperty = async (id) => {
   setLoading(true);
   setError(null);
   try {
-   await axios.put(`${apiBase}/${id}/togglePublish`);
+   await axios.put(`${apiBase}/${id}/toggleenable`);
    // Optionally, refresh the data or provide feedback to the user
   } catch (err) {
    setError(
@@ -148,7 +150,7 @@ const useProperty = () => {
   fetchPendingProperties,
   verifyProperty,
   bulkVerifyProperties,
-  togglePublishProperty,
+  toggleEnableProperty,
   deleteProperty,
  };
 };

@@ -7,6 +7,8 @@ const {
  getNearbyPlaceById,
  deleteNearbyPlace,
  getNearbyPlacesByPlaceLatLon,
+ verifyNearbyPlace,
+ bulkVerifyNearbyPlaces,
 } = require('../controllers/NearbyPlaceController');
 
 // Route to get all properties
@@ -23,5 +25,9 @@ router.post('/', createNearbyPlace);
 router.put('/:id', updateNearbyPlace);
 // Route for deleting a NearbyPlace
 router.delete('/:id', deleteNearbyPlace);
+// Route to verify a NearbyPlace
+router.put('/:id/verify', verifyNearbyPlace);
+// Route to bulk verify NearbyPlaces
+router.post('/bulkVerify', bulkVerifyNearbyPlaces);
 
 module.exports = router;

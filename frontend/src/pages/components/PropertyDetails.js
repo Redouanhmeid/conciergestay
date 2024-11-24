@@ -230,8 +230,15 @@ const PropertyDetails = () => {
  const location = useLocation();
  const { id } = queryString.parse(location.search);
  const navigate = useNavigate();
- const { property, loading, success, error, fetchProperty, deleteProperty } =
-  useProperty();
+ const {
+  property,
+  loading,
+  success,
+  error,
+  fetchProperty,
+  toggleEnableProperty,
+  deleteProperty,
+ } = useProperty();
  const { user } = useAuthContext();
  const storedUser = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserDataById, isLoading } = useUserData();
@@ -255,6 +262,17 @@ const PropertyDetails = () => {
    };
    return newState;
   });
+ };
+
+ const toggleEnable = async () => {
+  await toggleEnableProperty(id);
+  if (!error) {
+   message.success('Propriété activer avec succès.');
+  } else {
+   message.error(
+    `Erreur lors de la activation de la propriété: ${error.message}`
+   );
+  }
  };
 
  const confirmDelete = async () => {
@@ -284,6 +302,24 @@ const PropertyDetails = () => {
   },
   {
    key: '2',
+   label: (
+    <div onClick={toggleEnable}>
+     {property.status === 'enable' ? (
+      <Text type="danger">
+       <i className="fa-light fa-lock" /> Désactiver votre logement sur
+       ConciergeStay
+      </Text>
+     ) : (
+      <Text type="success">
+       <i className="fa-light fa-lock-open" /> Activer votre logement sur
+       ConciergeStay
+      </Text>
+     )}
+    </div>
+   ),
+  },
+  {
+   key: '3',
    label: (
     <Popconfirm
      title="Supprimer la propriété"

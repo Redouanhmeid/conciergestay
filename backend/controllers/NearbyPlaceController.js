@@ -156,6 +156,78 @@ const getNearbyPlacesByPlaceLatLon = async (req, res) => {
  }
 };
 
+const verifyNearbyPlace = async (req, res) => {
+ try {
+  const { id } = req.params;
+  const nearbyPlace = await NearbyPlace.findByPk(id);
+
+  if (!nearbyPlace) {
+   return res.status(404).json({ error: 'nearby place not found' });
+  }
+
+  // Ensure only `unverified` nearbyPlace can be verified
+  if (Number(nearbyPlace.isVerified) !== 0) {
+   // Convert to number if necessary
+   return res.status(400).json({ error: 'Nearby place is already verified' });
+  }
+
+  // Set the nearbyPlace isVerified to `true` 1
+  await nearbyPlace.update({ isVerified: 1 });
+
+  res.status(200).json({
+   message: 'Nearby place verified successfully',
+   nearbyPlace,
+  });
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to verify nearby place' });
+ }
+};
+
+const bulkVerifyNearbyPlaces = async (req, res) => {
+ try {
+  const { ids } = req.body; // Expecting an array of IDs
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+   return res.status(400).json({ error: 'Invalid or missing IDs' });
+  }
+
+  const nearbyPlaces = await NearbyPlace.findAll({
+   where: {
+    id: ids,
+   },
+  });
+
+  if (nearbyPlaces.length === 0) {
+   return res
+    .status(404)
+    .json({ error: 'No nearby places found for the given IDs' });
+  }
+
+  const results = await Promise.all(
+   nearbyPlaces.map(async (place) => {
+    if (Number(place.isVerified) === 0) {
+     await place.update({ isVerified: 1 });
+     return { id: place.id, status: 'success' };
+    }
+    return { id: place.id, status: 'failed', reason: 'Already verified' };
+   })
+  );
+
+  const successful = results.filter((result) => result.status === 'success');
+  const failed = results.filter((result) => result.status === 'failed');
+
+  res.status(200).json({
+   message: 'Bulk verification completed',
+   successful,
+   failed,
+  });
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to bulk verify nearby places' });
+ }
+};
+
 module.exports = {
  createNearbyPlace,
  updateNearbyPlace,
@@ -163,4 +235,6 @@ module.exports = {
  getNearbyPlaces,
  deleteNearbyPlace,
  getNearbyPlacesByPlaceLatLon,
+ verifyNearbyPlace,
+ bulkVerifyNearbyPlaces,
 };

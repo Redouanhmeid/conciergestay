@@ -38,6 +38,7 @@ import VerifyResetCode from './pages/forms/sign/VerifyResetCode';
 import NewPassword from './pages/forms/sign/NewPassword';
 import EditCheckOut from './pages/forms/propertyedit/EditCheckOut';
 import Pendingproperties from './pages/admin/pendingproperties';
+import PendingNearbyPlaces from './pages/admin/pendingnearbyplaces';
 
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
  { path: '/nearbyplaces', element: <NearbyPlaces /> },
  { path: '/nearbyplace', element: <NearbyPlace /> },
  { path: '/pendingproperties', element: <Pendingproperties /> },
+ { path: '/pendingnearbyplaces', element: <PendingNearbyPlaces /> },
  { path: '/login', element: <Login /> },
  { path: '/signup', element: <Signup /> },
  { path: '/account', element: <Account /> },
