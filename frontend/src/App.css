@@ -221,6 +221,9 @@ body {
   .container-poperty-details {
     padding: 0 2em 2em 2em;
   }
+  .propertydtcarousel {
+    height: 224px;
+  }
 }
 
 .siderStyle {

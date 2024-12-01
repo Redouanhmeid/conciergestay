@@ -18,8 +18,8 @@ const useCreateProperty = () => {
     placeName: firstStepData.placeName,
     propertyManagerId: firstStepData.propertyManagerId,
     // Optional fields from step 1
-    airbnbUrl: firstStepData.airbnbUrl || '',
-    bookingUrl: firstStepData.bookingUrl || '',
+    airbnbUrl: firstStepData.airbnbUrl,
+    bookingUrl: firstStepData.bookingUrl,
     // Default values for required fields in the model
     basicAmenities: [],
     price: null,
@@ -38,8 +38,7 @@ const useCreateProperty = () => {
     additionalCheckOutInfo: '',
     photos: [],
     frontPhoto: '',
-    isVerified: 0,
-    isPublished: 0,
+    status: 'pending',
    };
 
    const response = await fetch('/api/v1/properties', {
@@ -53,6 +52,7 @@ const useCreateProperty = () => {
    const data = await response.json();
 
    if (!response.ok) {
+    console.log(response);
     throw new Error(data.message || 'Failed to create property');
    }
 

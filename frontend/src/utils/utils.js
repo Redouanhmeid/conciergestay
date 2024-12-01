@@ -1,3 +1,5 @@
+import { message } from 'antd';
+
 export const formatTimeFromDatetime = (datetimeString) => {
  const date = new Date(datetimeString);
  const hours = date.getHours();
@@ -47,4 +49,56 @@ export const getVideoThumbnail = (url) => {
   thumbnailUrl = `https://vumbnail.com/${videoId}.jpg`;
  }
  return thumbnailUrl;
+};
+
+const FALLBACK_CENTER = { lat: 34.0209, lng: -6.8416 };
+
+export const getLocationForCityOrUser = async (city) => {
+ const getUserLocation = () =>
+  new Promise((resolve) => {
+   if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+     (position) => {
+      resolve({
+       lat: position.coords.latitude,
+       lng: position.coords.longitude,
+      });
+     },
+     (error) => {
+      console.error('Error getting user location:', error);
+      message.warning(
+       "Impossible d'obtenir votre position. Utilisation de l'emplacement par défaut."
+      );
+      resolve(FALLBACK_CENTER);
+     }
+    );
+   } else {
+    console.error('Geolocation is not supported by this browser.');
+    message.warning(
+     "La géolocalisation n'est pas prise en charge par votre navigateur. Utilisation de l'emplacement par défaut."
+    );
+    resolve(FALLBACK_CENTER);
+   }
+  });
+
+ if (city) {
+  return new Promise((resolve) => {
+   const geocoder = new window.google.maps.Geocoder();
+   geocoder.geocode({ address: city }, async (results, status) => {
+    if (status === 'OK' && results[0]) {
+     const { lat, lng } = results[0].geometry.location;
+     resolve({ lat: lat(), lng: lng() });
+    } else {
+     console.error('Geocode was not successful: ' + status);
+     message.warning(
+      'Impossible de localiser la ville spécifiée. Utilisation de votre position actuelle.'
+     );
+     const userLocation = await getUserLocation();
+     resolve(userLocation);
+    }
+   });
+  });
+ } else {
+  return getUserLocation();
+ }
 };

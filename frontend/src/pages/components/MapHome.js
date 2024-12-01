@@ -13,6 +13,7 @@ import useDebounce from '../../hooks/useDebounce';
 import { useNavigate } from 'react-router-dom';
 import pinIcon from '../../assets/position.gif';
 import { filterProperties } from '../../utils/filterProperties';
+import { getLocationForCityOrUser } from '../../utils/utils';
 
 const { Text, Link } = Typography;
 // Fallback center (e.g., center of Rabat)
@@ -87,7 +88,6 @@ const MapHome = React.memo(
     setFilteredProperties(
      filterProperties(
       data,
-      '',
       checkedTypes,
       range,
       roomValue,
@@ -96,56 +96,17 @@ const MapHome = React.memo(
      )
     );
    }
+   console.log(filteredProperties);
   }, [data, checkedTypes, range, roomValue, paxValue, checkedbasicAmenities]);
 
   useEffect(() => {
-   const getUserLocation = () => {
-    if (navigator.geolocation) {
-     navigator.geolocation.getCurrentPosition(
-      (position) => {
-       setMapCenter({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-       });
-       setCurrentPosition({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-       });
-      },
-      (error) => {
-       console.error('Error getting user location:', error);
-       message.warning(
-        "Impossible d'obtenir votre position. Utilisation de l'emplacement par défaut."
-       );
-       setMapCenter(FALLBACK_CENTER);
-      }
-     );
-    } else {
-     console.error('Geolocation is not supported by this browser.');
-     message.warning(
-      "La géolocalisation n'est pas prise en charge par votre navigateur. Utilisation de l'emplacement par défaut."
-     );
-     setMapCenter(FALLBACK_CENTER);
-    }
+   const fetchLocation = async () => {
+    const location = await getLocationForCityOrUser(city);
+    setMapCenter(location);
+    setCurrentPosition(location);
    };
 
-   if (city) {
-    const geocoder = new window.google.maps.Geocoder();
-    geocoder.geocode({ address: city }, (results, status) => {
-     if (status === 'OK' && results[0]) {
-      const { lat, lng } = results[0].geometry.location;
-      setMapCenter({ lat: lat(), lng: lng() });
-     } else {
-      console.error('Geocode was not successful: ' + status);
-      message.warning(
-       'Impossible de localiser la ville spécifiée. Utilisation de votre position actuelle.'
-      );
-      getUserLocation();
-     }
-    });
-   } else {
-    getUserLocation();
-   }
+   fetchLocation();
   }, [city]);
 
   if (!isLoaded) {

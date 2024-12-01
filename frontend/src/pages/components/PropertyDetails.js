@@ -510,6 +510,7 @@ const PropertyDetails = () => {
         <Avatar
          size={{ xs: 54, md: 56, lg: 56, xl: 56, xxl: 56 }}
          src={userData.avatar}
+         onClick={() => navigate('/profile')}
         />
        }
        title={`${userData.firstname} ${userData.lastname}`}
@@ -670,7 +671,7 @@ const PropertyDetails = () => {
        </Col>
        <Col xs={24} sm={12}>
         <Flex gap="middle" align="center" justify="space-between">
-         <Title level={1}>{parsedProperty.name}</Title>
+         <Title level={2}>{parsedProperty.name}</Title>
          {isOwner && (
           <Button
            icon={<i className="fa-light fa-pen-to-square" />}
@@ -733,6 +734,7 @@ const PropertyDetails = () => {
            <Avatar
             size={{ xs: 54, md: 56, lg: 56, xl: 56, xxl: 56 }}
             src={userData.avatar}
+            onClick={() => navigate('/profile')}
            />
           }
           title={`${userData.firstname} ${userData.lastname}`}

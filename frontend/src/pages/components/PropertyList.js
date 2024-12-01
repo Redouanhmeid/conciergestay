@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import useProperty from '../../hooks/useProperty';
 import {
  Row,
  Col,
@@ -10,15 +9,21 @@ import {
  Tag,
  Typography,
  Carousel,
+ message,
 } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { filterProperties } from '../../utils/filterProperties';
+import { getLocationForCityOrUser } from '../../utils/utils';
 import fallback from '../../assets/fallback.png';
+import useProperty from '../../hooks/useProperty';
+import useGetPropertiesByLatLon from '../../hooks/useGetPropertiesByLatLon';
+import useDebounce from '../../hooks/useDebounce';
 
 const { Text } = Typography;
 
 const PropertyList = ({
  city,
+ mapCenter,
  checkedTypes,
  range,
  roomValue,
@@ -26,17 +31,21 @@ const PropertyList = ({
  checkedbasicAmenities,
 }) => {
  const navigate = useNavigate();
- const { properties, fetchAllProperties, loading, error } = useProperty();
+
+ const debouncedCenter = useDebounce(mapCenter, 300);
+ const { loading, data } = useGetPropertiesByLatLon(
+  debouncedCenter.lat,
+  debouncedCenter.lng
+ );
  const [filteredProperties, setFilteredProperties] = useState([]);
  const [imageAspectRatios, setImageAspectRatios] = useState({});
 
  // Effect to filter properties when properties or filter criteria change
  useEffect(() => {
-  if (properties) {
+  if (data) {
    setFilteredProperties(
     filterProperties(
-     properties,
-     city,
+     data,
      checkedTypes,
      range,
      roomValue,
@@ -46,7 +55,7 @@ const PropertyList = ({
    );
   }
  }, [
-  properties,
+  data,
   city,
   checkedTypes,
   range,
@@ -54,10 +63,6 @@ const PropertyList = ({
   paxValue,
   checkedbasicAmenities,
  ]);
-
- useEffect(() => {
-  fetchAllProperties();
- }, [loading]);
 
  const display = (id) => {
   navigate(`/propertydetails?id=${id}`);
@@ -76,7 +81,7 @@ const PropertyList = ({
   });
  };
 
- if (loading)
+ if (!mapCenter)
   return (
    <div className="loading">
     <Spin size="large" />

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
  Spin,
  Row,
@@ -21,6 +21,7 @@ import MapHome from './components/MapHome';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { Autocomplete } from '@react-google-maps/api';
 import { useGoogleMapsLoader } from '../services/GoogleMapService';
+import { getLocationForCityOrUser } from '../utils/utils';
 import './../App.css';
 import PropertyList from './components/PropertyList';
 
@@ -40,6 +41,8 @@ const Home = () => {
  const [checkedTypes, setCheckedTypes] = useState([]);
  const [showAllbasicAmenities, setShowAllBasicAmenities] = useState(false);
  const [checkedbasicAmenities, setCheckedbasicAmenities] = useState([]);
+
+ const [mapCenter, setMapCenter] = useState(null); // Track map center
 
  const propertyTypes = [
   {
@@ -67,6 +70,19 @@ const Home = () => {
   { value: 'washingMachine', label: 'Lave-linge' },
   { value: 'pool', label: 'Piscine' },
  ];
+
+ useEffect(() => {
+  const fetchLocation = async () => {
+   const location = await getLocationForCityOrUser(searchCity); // Get the center location
+   if (location) {
+    setMapCenter(location);
+   } else {
+    setMapCenter({ lat: 34.0209, lng: -6.8416 });
+   }
+  };
+
+  fetchLocation();
+ }, [searchCity]);
 
  const handleCityChange = (city) => {
   setSearchCity(city || '');
@@ -128,7 +144,7 @@ const Home = () => {
   }
  };
 
- if (!isLoaded) {
+ if (!isLoaded || !mapCenter) {
   return (
    <div className="loading">
     <Spin size="large" />
@@ -251,6 +267,7 @@ const Home = () => {
        ) : (
         <PropertyList
          city={searchCity}
+         mapCenter={mapCenter}
          checkedTypes={checkedTypes}
          range={range}
          roomValue={roomValue}

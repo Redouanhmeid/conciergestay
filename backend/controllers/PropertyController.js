@@ -1,6 +1,7 @@
 const haversine = require('haversine-distance');
 const { Property, Amenity } = require('../models');
 const { deletePropertyFiles } = require('../helpers/utils');
+const { Sequelize, Op } = require('sequelize');
 
 // find one Property
 const getProperty = async (req, res) => {
@@ -107,19 +108,25 @@ const deleteProperty = async (req, res) => {
 };
 
 const getPropertiesbyLatLon = async (propertyLat, propertyLon) => {
- const RADIUS = 10000; // Radius in meters (10 kilometers)
+ const RADIUS = 120000; // Radius in meters (120 kilometers)
  // Parse latitude and longitude as floats
  const lat = parseFloat(propertyLat);
  const lon = parseFloat(propertyLon);
  // Get all places
  let places;
  try {
-  // Fetch only properties with status 'enable'
-  places = await Property.findAll({
+  // Find properties with absolute difference in latitude and longitude
+  const places = await Property.findAll({
    where: {
-    status: 'enable', // Filter to include only enabled properties
+    status: 'enable',
    },
+   order: [
+    // Order by the combined absolute difference of latitude and longitude
+    Sequelize.literal(`ABS(latitude - ${lat}) + ABS(longitude - ${lon})`),
+   ],
   });
+
+  return places;
  } catch (error) {
   console.error('Error fetching places:', error); // Log any errors
   return [];
@@ -145,18 +152,26 @@ const getPropertiesbyLatLon = async (propertyLat, propertyLon) => {
 };
 
 const getPropertiesByPlaceLatLon = async (req, res) => {
- const { latitude, longitude } = req.query;
+ const { latitude, longitude, limit } = req.query;
 
  if (!latitude || !longitude) {
   return res.status(400).json({ error: 'Latitude and longitude are required' });
  }
 
  try {
-  const property = await getPropertiesbyLatLon(latitude, longitude);
-  if (property.length === 0) {
-   return res.status(500).json({ error: 'Something went wrong' });
+  // Use provided limit or default to 10 properties
+  const searchLimit = limit ? parseInt(limit) : 50;
+  const properties = await getPropertiesbyLatLon(
+   latitude,
+   longitude,
+   searchLimit
+  );
+
+  if (properties.length === 0) {
+   return res.status(500).json({ error: 'No properties found' });
   }
-  res.json(property);
+
+  res.json(properties);
  } catch (error) {
   res.status(500).json({ error: 'Something went wrong' });
  }

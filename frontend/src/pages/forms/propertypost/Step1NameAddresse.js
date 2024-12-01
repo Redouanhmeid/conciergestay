@@ -66,6 +66,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
  };
 
  const handlePlaceSelected = ({ latitude, longitude, placeName }) => {
+  console.log(latitude, longitude);
   setMapValues({
    latitude,
    longitude,
@@ -91,8 +92,8 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
     name: values.name,
     description: values.description,
     type: checkedType,
-    airbnbUrl: values.airbnbUrl?.trim() ? values.airbnbUrl : null,
-    bookingUrl: values.bookingUrl?.trim() ? values.bookingUrl : null,
+    airbnbUrl: values.airbnbUrl?.trim() ? values.airbnbUrl : '',
+    bookingUrl: values.bookingUrl?.trim() ? values.bookingUrl : '',
     latitude: mapValues.latitude,
     longitude: mapValues.longitude,
     placeName: mapValues.placeName,

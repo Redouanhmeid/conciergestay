@@ -39,6 +39,7 @@ import NewPassword from './pages/forms/sign/NewPassword';
 import EditCheckOut from './pages/forms/propertyedit/EditCheckOut';
 import Pendingproperties from './pages/admin/pendingproperties';
 import PendingNearbyPlaces from './pages/admin/pendingnearbyplaces';
+import Profile from './pages/components/Profile';
 
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
@@ -54,6 +55,7 @@ const router = createBrowserRouter([
  { path: '/login', element: <Login /> },
  { path: '/signup', element: <Signup /> },
  { path: '/account', element: <Account /> },
+ { path: '/profile', element: <Profile /> },
  { path: '/reset-password-request', element: <ResetPasswordRequest /> },
  { path: '/verify-reset-code', element: <VerifyResetCode /> },
  { path: '/new-password', element: <NewPassword /> },

@@ -1,7 +1,6 @@
 // utils/filterProperties.js
 export const filterProperties = (
  properties,
- city,
  checkedTypes,
  range,
  roomValue,
@@ -12,13 +11,13 @@ export const filterProperties = (
 
  let filtered = properties;
 
- if (typeof city === 'string' && city.trim()) {
+ /*  if (typeof city === 'string' && city.trim()) {
   filtered = filtered.filter(
    (property) =>
     property.placeName &&
     city.toLowerCase().includes(property.placeName.toLowerCase())
   );
- }
+ } */
 
  if (checkedTypes.length > 0) {
   filtered = filtered.filter((property) =>
