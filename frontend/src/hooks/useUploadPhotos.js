@@ -130,6 +130,47 @@ const useUploadPhotos = () => {
   }
  };
 
+ const uploadSignature = async (signatureData, firstname, lastname) => {
+  try {
+   setUploading(true);
+
+   // Convert base64 to blob
+   const byteString = atob(signatureData.split(',')[1]);
+   const mimeString = signatureData.split(',')[0].split(':')[1].split(';')[0];
+   const ab = new ArrayBuffer(byteString.length);
+   const ia = new Uint8Array(ab);
+
+   for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+   }
+
+   const blob = new Blob([ab], { type: mimeString });
+   const timestamp = new Date().getTime();
+   const filename = `signature_${firstname.toLowerCase()}_${lastname.toLowerCase()}_${timestamp}.png`;
+   const file = new File([blob], filename, { type: 'image/png' });
+
+   const formData = new FormData();
+   formData.append('signature', file);
+
+   const response = await fetch('/signatures', {
+    method: 'POST',
+    body: formData,
+   });
+
+   if (!response.ok) {
+    throw new Error('Failed to upload signature');
+   }
+
+   const data = await response.json();
+   setUploading(false);
+   return data.file.url;
+  } catch (error) {
+   console.error('Error uploading signature:', error);
+   setUploading(false);
+   throw error;
+  }
+ };
+
  const uploadWithProgress = async (formData, onProgress) => {
   return new Promise((resolve, reject) => {
    const xhr = new XMLHttpRequest();
@@ -183,12 +224,54 @@ const useUploadPhotos = () => {
   }
  };
 
+ const uploadIdentity = async (identity, firstname, lastname) => {
+  try {
+   // Get the original file
+   const originalFile = identity[0].originFileObj;
+
+   // Get file extension from original file
+   const fileExt = originalFile.name.split('.').pop();
+
+   // Create custom filename with firstname and lastname
+   const Firstname = firstname?.toLowerCase() || '';
+   const Lastname = lastname?.toLowerCase() || '';
+   const timestamp = new Date().getTime();
+   const newFileName = `identity_${Firstname}_${Lastname}_${timestamp}.${fileExt}`;
+
+   // Create new File object with custom name
+   const customFile = new File([originalFile], newFileName, {
+    type: originalFile.type,
+   });
+   const formData = new FormData();
+   formData.append('identity', customFile);
+
+   setUploading(true);
+   const response = await fetch('/identities', {
+    method: 'POST',
+    body: formData,
+   });
+   if (!response.ok) {
+    throw new Error('Failed to upload Identity');
+   }
+   const data = await response.json();
+   setUploading(false);
+
+   return data.file.url;
+  } catch (error) {
+   console.error('Error uploading Identity:', error);
+   setUploading(false);
+   throw error;
+  }
+ };
+
  return {
   uploadPhotos,
   uploadPlace,
   uploadAmenity,
   uploadFrontPhoto,
+  uploadSignature,
   uploadAvatar,
+  uploadIdentity,
   uploading,
   uploadProgress,
  };

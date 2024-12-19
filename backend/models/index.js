@@ -7,6 +7,7 @@ const PropertyModel = require('./PropertyModel');
 const NearbyPlaceModel = require('./NearbyPlaceModel');
 const AmenityModel = require('./AmenityModel');
 const PasswordResetModel = require('./PasswordResetModel');
+const ReservationContractModel = require('./ReservationContractModel');
 
 // create models
 const PropertyManager = PropertyManagerModel(db, Sequelize);
@@ -18,6 +19,7 @@ const Property = PropertyModel(db, Sequelize);
 const NearbyPlace = NearbyPlaceModel(db, Sequelize);
 const Amenity = AmenityModel(db, Sequelize);
 const PasswordReset = PasswordResetModel(db, Sequelize);
+const ReservationContract = ReservationContractModel(db, Sequelize);
 
 // define relationships
 // Property & PropertyManager (one -> many)
@@ -30,13 +32,23 @@ Property.belongsTo(PropertyManager, {
  foreignKey: 'propertyManagerId',
  as: 'propertyManager',
 });
-// PropertyManager & Guest (one -> many)
+// PropertyManager & Amenity (one -> many)
 Property.hasMany(Amenity, {
  foreignKey: 'propertyId', // Specify the name of the foreign key in the Amenity model
  allowNull: false, // Make the foreign key required
  onDelete: 'CASCADE', // Delete associated amenities when a property is deleted
 });
 Amenity.belongsTo(Property, {
+ foreignKey: 'propertyId', // Specify the name of the foreign key in the Amenity model
+});
+
+// PropertyManager & ReservationContract (one -> many)
+Property.hasMany(ReservationContract, {
+ foreignKey: 'propertyId', // Specify the name of the foreign key in the Amenity model
+ allowNull: false, // Make the foreign key required
+ onDelete: 'CASCADE', // Delete associated amenities when a property is deleted
+});
+ReservationContract.belongsTo(Property, {
  foreignKey: 'propertyId', // Specify the name of the foreign key in the Amenity model
 });
 
@@ -52,4 +64,5 @@ module.exports = {
  NearbyPlace,
  Amenity,
  PasswordReset,
+ ReservationContract,
 };

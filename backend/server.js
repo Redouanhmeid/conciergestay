@@ -111,6 +111,10 @@ const AMENITIES_PATH =
 const FRONTPHOTOS_PATH =
  process.env.FRONTPHOTOS_PATH || path.join(__dirname, 'frontphotos');
 const PLACES_PATH = process.env.PLACES_PATH || path.join(__dirname, 'places');
+const SIGNATURES_PATH =
+ process.env.SIGNATURES_PATH || path.join(__dirname, 'signatures');
+const IDENTITIES_PATH =
+ process.env.IDENTITIES_PATH || path.join(__dirname, 'identities');
 
 // Configure multer instances
 const upload = multer({
@@ -144,6 +148,20 @@ const frontPhotoUpload = multer({
 const singleUpload = multer({
  storage: storage(PLACES_PATH),
  limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit
+ fileFilter: function (req, file, cb) {
+  checkFileType(file, cb);
+ },
+});
+const signatureUpload = multer({
+ storage: storage(SIGNATURES_PATH),
+ limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit for signatures
+ fileFilter: function (req, file, cb) {
+  checkFileType(file, cb);
+ },
+});
+const identityUpload = multer({
+ storage: storage(IDENTITIES_PATH),
+ limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit for identities
  fileFilter: function (req, file, cb) {
   checkFileType(file, cb);
  },
@@ -233,11 +251,40 @@ app.post('/frontphotos', frontPhotoUpload.single('photo'), (req, res) => {
 });
 app.use('/frontphotos', express.static(FRONTPHOTOS_PATH));
 
+app.post('/signatures', signatureUpload.single('signature'), (req, res) => {
+ if (!req.file) {
+  return res.status(400).json({ error: 'No signature file uploaded' });
+ }
+
+ const file = {
+  filename: req.file.filename,
+  url: `/signatures/${req.file.filename}`,
+ };
+
+ res.json({ file });
+});
+app.use('/signatures', express.static(SIGNATURES_PATH));
+
+app.post('/identities', identityUpload.single('identity'), (req, res) => {
+ if (!req.file) {
+  return res.status(400).json({ error: 'No identity file uploaded' });
+ }
+
+ const file = {
+  filename: req.file.filename,
+  url: `/identities/${req.file.filename}`,
+ };
+
+ res.json({ file });
+});
+app.use('/identities', express.static(IDENTITIES_PATH));
+
 // require routes
 const PropertyManagerRouter = require('./routes/propertymanager');
 const PropertyRouter = require('./routes/property');
 const NearbyPlaceRouter = require('./routes/nearbyplace');
 const AmenityRouter = require('./routes/amenity');
+const ReservationContract = require('./routes/reservationcontract');
 
 // Routes
 // All of our routes will be prefixed with /api/v1/
@@ -245,6 +292,7 @@ app.use('/api/v1/propertymanagers', PropertyManagerRouter);
 app.use('/api/v1/properties', PropertyRouter);
 app.use('/api/v1/nearbyplaces', NearbyPlaceRouter);
 app.use('/api/v1/amenities', AmenityRouter);
+app.use('/api/v1/reservationcontract', ReservationContract);
 
 // Serve static files from the React app
 const REACT_APP_PATH =

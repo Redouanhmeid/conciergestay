@@ -303,6 +303,25 @@ const PropertyDetails = () => {
   {
    key: '2',
    label: (
+    <a href={`/guestform?id=${id}`}>
+     <i className="fa-light fa-file-signature" /> Formulaire de contrat de
+     réservation d'invité de ce logement
+    </a>
+   ),
+  },
+
+  {
+   key: '3',
+   label: (
+    <a href={`/contractslist?id=${id}`}>
+     <i className="fa-light fa-list-check" /> Gérer les contrats de réservation
+     de ce logement
+    </a>
+   ),
+  },
+  {
+   key: '4',
+   label: (
     <div onClick={toggleEnable}>
      {property.status === 'enable' ? (
       <Text type="danger">
@@ -319,7 +338,7 @@ const PropertyDetails = () => {
    ),
   },
   {
-   key: '3',
+   key: '5',
    label: (
     <Popconfirm
      title="Supprimer la propriété"

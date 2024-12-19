@@ -40,6 +40,7 @@ import EditCheckOut from './pages/forms/propertyedit/EditCheckOut';
 import Pendingproperties from './pages/admin/pendingproperties';
 import PendingNearbyPlaces from './pages/admin/pendingnearbyplaces';
 import Profile from './pages/components/Profile';
+import ContractsList from './pages/components/ContractsList';
 
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
@@ -74,6 +75,7 @@ const router = createBrowserRouter([
  { path: '/addamenity', element: <AddAmenity /> },
  { path: '/editamenity', element: <EditAmenity /> },
  { path: '/digitalguidebook', element: <DigitalGuidebook /> },
+ { path: '/contractslist', element: <ContractsList /> },
 ]);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
