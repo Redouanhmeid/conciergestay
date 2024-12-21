@@ -51,7 +51,7 @@ const ContractsList = () => {
    setContracts(Array.isArray(data) ? data : []);
   } catch (error) {
    console.error('Error fetching contracts:', error);
-   message.error('Failed to fetch contracts');
+   message.error('Impossible de récupérer les contrats');
    setContracts([]); // Set empty array on error
   } finally {
    setLoading(false);
@@ -61,10 +61,10 @@ const ContractsList = () => {
  const handleStatusChange = async (contractId, newStatus) => {
   try {
    await updateContractStatus(contractId, newStatus);
-   message.success('Contract status updated successfully');
+   message.success('Le statut du contrat a été mis à jour avec succès');
    fetchContracts(); // Refresh the list
   } catch (error) {
-   message.error('Failed to update contract status');
+   message.error('Échec de la mise à jour du statut du contrat');
   }
  };
 
@@ -88,7 +88,7 @@ const ContractsList = () => {
 
  const columns = [
   {
-   title: 'Guest',
+   title: 'Invité',
    key: 'guest',
    render: (text, record) => (
     <Space direction="vertical">
@@ -105,16 +105,6 @@ const ContractsList = () => {
    ),
   },
   {
-   title: 'Dates',
-   key: 'dates',
-   render: (text, record) => (
-    <Space direction="vertical">
-     <span>From: {new Date(record.startDate).toLocaleDateString()}</span>
-     <span>To: {new Date(record.endDate).toLocaleDateString()}</span>
-    </Space>
-   ),
-  },
-  {
    title: 'Identité',
    dataIndex: 'identity',
    key: 'identity',
@@ -122,8 +112,8 @@ const ContractsList = () => {
     <Image
      src={record.identityDocumentUrl}
      shape="square"
-     width={240}
-     height={140}
+     width={180}
+     height={100}
     />
    ),
   },
@@ -152,7 +142,7 @@ const ContractsList = () => {
        type="primary"
        onClick={() => handleStatusChange(record.id, 'SENT')}
       >
-       Send
+       Envoyer
       </Button>
      )}
      {record.status === 'SENT' && (
@@ -161,10 +151,10 @@ const ContractsList = () => {
         type="primary"
         onClick={() => handleStatusChange(record.id, 'SIGNED')}
        >
-        Mark as Signed
+        Marquer comme signé
        </Button>
        <Button danger onClick={() => handleStatusChange(record.id, 'REJECTED')}>
-        Reject
+        Rejeter
        </Button>
       </>
      )}
@@ -173,7 +163,7 @@ const ContractsList = () => {
        type="primary"
        onClick={() => handleStatusChange(record.id, 'COMPLETED')}
       >
-       Complete
+       Complète
       </Button>
      )}
     </Space>
@@ -200,7 +190,7 @@ const ContractsList = () => {
      >
       Retour
      </Button>
-     <Title level={2}>Contract Reservations</Title>
+     <Title level={2}>Réservations de contrat</Title>
      <Row gutter={[16, 4]}>
       {/* Status Summary Cards */}
       <Col span={24}>
@@ -221,6 +211,7 @@ const ContractsList = () => {
 
       {/* Contracts Table */}
       <Col span={24}>
+       <br />
        <Table
         columns={columns}
         dataSource={contracts}

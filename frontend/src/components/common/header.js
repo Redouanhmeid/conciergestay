@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLogout } from '../../hooks/useLogout';
 import { useAuthContext } from '../../hooks/useAuthContext';
@@ -100,11 +100,20 @@ const Head = () => {
   onClose();
  };
 
- useEffect(() => {
-  if (User && User.status !== 'EN ATTENTE') {
+ // Memoize the getUserData call
+ const fetchUserData = useCallback(() => {
+  if (
+   User?.email &&
+   User?.status !== 'EN ATTENTE' &&
+   (!userData || Object.keys(userData).length === 0)
+  ) {
    getUserData(User.email);
   }
- }, [User]);
+ }, [User?.email, User?.status, userData]);
+
+ useEffect(() => {
+  fetchUserData();
+ }, [fetchUserData]);
 
  return (
   <>
@@ -186,4 +195,4 @@ const Head = () => {
  );
 };
 
-export default Head;
+export default React.memo(Head);

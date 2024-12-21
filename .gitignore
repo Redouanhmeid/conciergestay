@@ -21,9 +21,5 @@ backend/amenities/
 backend/models/index.js
 backend/0server.js
 backend/server.js
-backend/identities/identity_red_redd_1734520730889-6.png
-backend/identities/identity_red_redd_1734525543666-2.jpeg
-backend/identities/identity_red_redd_1734538804173-2.jpg
-backend/signatures/signature_red_redd_1734520730565-5.png
-backend/signatures/signature_red_redd_1734525543565-1.png
-backend/signatures/signature_red_redd_1734538804075-1.png
+backend/identities/
+backend/signatures/

@@ -13,6 +13,10 @@ module.exports = (db, type) => {
    type: type.STRING(50),
    allowNull: false,
   },
+  middlename: {
+   type: type.STRING(50),
+   allowNull: true, // Optional field in the form
+  },
   birthDate: {
    type: type.DATEONLY,
    allowNull: false,
@@ -31,13 +35,6 @@ module.exports = (db, type) => {
   },
   phone: {
    type: type.STRING(50),
-  },
-  startDate: {
-   type: type.DATE,
-   allowNull: false,
-  },
-  endDate: {
-   type: type.DATE,
    allowNull: false,
   },
   residenceCountry: {
@@ -56,8 +53,22 @@ module.exports = (db, type) => {
    type: type.STRING(20),
    allowNull: false,
   },
-  totalPrice: {
-   type: type.DECIMAL(10, 2),
+  documentType: {
+   type: type.ENUM(
+    'PASSPORT',
+    'CIN',
+    'DRIVING_LICENSE',
+    'MOROCCAN_RESIDENCE',
+    'FOREIGNER_RESIDENCE'
+   ),
+   allowNull: false,
+  },
+  documentNumber: {
+   type: type.STRING(50),
+   allowNull: false,
+  },
+  documentIssueDate: {
+   type: type.DATEONLY,
    allowNull: false,
   },
   status: {
@@ -72,6 +83,14 @@ module.exports = (db, type) => {
   identityDocumentUrl: {
    type: type.STRING(500),
    allowNull: false,
+  },
+  propertyId: {
+   type: type.INTEGER,
+   allowNull: false,
+   references: {
+    model: 'properties', // This should match your properties table name
+    key: 'id',
+   },
   },
  });
 

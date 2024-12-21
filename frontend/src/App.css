@@ -247,7 +247,7 @@ body {
 
 .sigCanvas {
   width: 100%;
-  height: 240;
+  height: 180px;
   cursor: crosshair;
 }
 
@@ -605,5 +605,9 @@ body {
   height: auto !important;
 }
 .ant-upload-list-item-name {
+  display: none !important;
+}
+
+.hide-required-mark .ant-form-item-required::before {
   display: none !important;
 }
