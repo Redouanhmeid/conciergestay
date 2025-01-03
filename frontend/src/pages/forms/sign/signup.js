@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSignup } from '../../../hooks/useSignup';
 import {
  Button,
@@ -23,6 +23,7 @@ import { Link } from 'react-router-dom';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
 import { countries } from '../../../utils/countries';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -32,6 +33,7 @@ const onFinishFailed = (errorInfo) => {
 };
 
 const Signup = () => {
+ const { t } = useTranslation();
  const { signup, googleSignup, error, isLoading, message } = useSignup();
  const [email, setEmail] = useState('');
  const [password, setPassword] = useState('');
@@ -41,6 +43,31 @@ const Signup = () => {
  const [countryCode, setCountryCode] = useState(
   countries.find((country) => country.name === 'Maroc').dialCode
  ); // Default to first country
+ const [translations, setTranslations] = useState({
+  startFree: '',
+  createAccountText: '',
+  haveAccount: '',
+  loginHere: '',
+  signupWithGoogle: '',
+  orUseEmail: '',
+  lastName: '',
+  firstName: '',
+  email: '',
+  phone: '',
+  password: '',
+  confirmPassword: '',
+  startButton: '',
+  termsText: '',
+  termsLink: '',
+  // Validation messages
+  provideLastName: '',
+  provideFirstName: '',
+  provideEmail: '',
+  createPassword: '',
+  passwordLength: '',
+  passwordRequirements: '',
+  passwordMismatch: '',
+ });
 
  const handleCountryChange = (value) => {
   setCountryCode(value);
@@ -55,6 +82,70 @@ const Signup = () => {
   await googleSignup();
  };
 
+ useEffect(() => {
+  async function loadTranslations() {
+   setTranslations({
+    startFree: await t('signup.startFree', 'Commencez avec un compte gratuit'),
+    createAccountText: await t(
+     'signup.createAccountText',
+     'Créez un compte Trevio gratuit pour partager de magnifiques guides avec vos invités.'
+    ),
+    haveAccount: await t('signup.haveAccount', 'Vous avez déjà un compte?'),
+    loginHere: await t('signup.loginHere', 'Connectez-vous ici.'),
+    signupWithGoogle: await t(
+     'signup.withGoogle',
+     'Inscrivez-vous avec Google'
+    ),
+    orUseEmail: await t('signup.orUseEmail', 'Ou utilisez E-mail'),
+    lastName: await t('signup.lastName', 'Nom'),
+    firstName: await t('signup.firstName', 'Prénom'),
+    email: await t('signup.email', 'Email'),
+    phone: await t('signup.phone', 'N° Téléphone'),
+    password: await t('signup.password', 'Mot de passe'),
+    confirmPassword: await t(
+     'signup.confirmPassword',
+     'Confirmez le mot de passe'
+    ),
+    startButton: await t('signup.startButton', 'Commencez'),
+    termsText: await t(
+     'signup.termsText',
+     'En cliquant sur Commencez, vous acceptez'
+    ),
+    termsLink: await t('signup.termsLink', "les conditions d'utilisation."),
+    // Validation messages
+    provideLastName: await t(
+     'validation.lastName',
+     'Veuillez fournir votre Nom.'
+    ),
+    provideFirstName: await t(
+     'validation.firstName',
+     'Veuillez fournir votre Prénom.'
+    ),
+    provideEmail: await t(
+     'validation.email',
+     'Veuillez fournir une adresse Email valide.'
+    ),
+    createPassword: await t(
+     'validation.createPassword',
+     'Veuillez créer un mot de passe.'
+    ),
+    passwordLength: await t(
+     'validation.passwordLength',
+     'Le mot de passe doit contenir au moins 8 caractères.'
+    ),
+    passwordRequirements: await t(
+     'validation.passwordRequirements',
+     'Le mot de passe doit contenir au moins une minuscule, une majuscule et un chiffre.'
+    ),
+    passwordMismatch: await t(
+     'validation.passwordMismatch',
+     'Le nouveau mot de passe que vous avez saisi ne correspond pas!'
+    ),
+   });
+  }
+  loadTranslations();
+ }, [t]);
+
  return (
   <Layout className="sign-layout">
    <Head />
@@ -62,12 +153,11 @@ const Signup = () => {
     <Col xs={24} sm={12} md={8}>
      <div className="sign-container">
       <Title level={3} className="sign-title">
-       Commencez avec un compte gratuit
+       {translations.startFree}
       </Title>
       <Text className="sign-subtitle">
-       Créez un compte Concierge Stay gratuit pour partager de magnifiques
-       guides avec vos invités. Vous avez déjà un compte?{' '}
-       <Link to="/login">Connectez-vous ici.</Link>
+       {translations.createAccountText}{' '}
+       <Link to="/login">{translations.loginHere}</Link>
       </Text>
       <Divider />
       <Button
@@ -77,9 +167,9 @@ const Signup = () => {
        disabled={isLoading}
        className="sign-google-button"
       >
-       Inscrivez-vous avec Google
+       {translations.loginHere}
       </Button>
-      <Divider>Ou utilisez E-mail</Divider>
+      <Divider>{translations.orUseEmail}</Divider>
       <Form
        name="signup"
        initialValues={{ remember: true }}
@@ -93,18 +183,18 @@ const Signup = () => {
         name="lastname"
         onChange={(e) => setLastName(e.target.value)}
         value={lastname}
-        rules={[{ required: true, message: 'Veuillez fournir votre Nom.' }]}
+        rules={[{ required: true, message: translations.lastName }]}
        >
-        <Input placeholder="Nom" />
+        <Input placeholder={translations.lastName} />
        </Form.Item>
 
        <Form.Item
         name="firstname"
         onChange={(e) => setFirstName(e.target.value)}
         value={firstname}
-        rules={[{ required: true, message: 'Veuillez fournir votre Prénom.' }]}
+        rules={[{ required: true, message: translations.firstName }]}
        >
-        <Input placeholder="Prénom" />
+        <Input placeholder={translations.firstName} />
        </Form.Item>
 
        <Form.Item
@@ -115,11 +205,11 @@ const Signup = () => {
          {
           type: 'email',
           required: true,
-          message: 'Veuillez fournir une adresse Email valide.',
+          message: translations.provideEmail,
          },
         ]}
        >
-        <Input prefix={<MailOutlined />} placeholder="Email" />
+        <Input prefix={<MailOutlined />} placeholder={translations.email} />
        </Form.Item>
 
        <Form.Item
@@ -143,7 +233,7 @@ const Signup = () => {
           </Select>
          }
          style={{ width: '100%' }}
-         placeholder="N° Téléphone"
+         placeholder={translations.phone}
          controls={false}
         />
        </Form.Item>
@@ -153,19 +243,21 @@ const Signup = () => {
         onChange={(e) => setPassword(e.target.value)}
         value={password}
         rules={[
-         { required: true, message: 'Veuillez créer un mot de passe.' },
+         { required: true, message: translations.createPassword },
          {
           min: 8,
-          message: 'Le mot de passe doit contenir au moins 8 caractères.',
+          message: translations.passwordLength,
          },
          {
           pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/,
-          message:
-           'Le mot de passe doit contenir au moins une minuscule, une majuscule et un chiffre.',
+          message: translations.passwordRequirements,
          },
         ]}
        >
-        <Input.Password prefix={<LockOutlined />} placeholder="Mot de passe" />
+        <Input.Password
+         prefix={<LockOutlined />}
+         placeholder={translations.password}
+        />
        </Form.Item>
 
        <Form.Item
@@ -178,18 +270,14 @@ const Signup = () => {
            if (!value || getFieldValue('password') === value) {
             return Promise.resolve();
            }
-           return Promise.reject(
-            new Error(
-             'Le nouveau mot de passe que vous avez saisi ne correspond pas!'
-            )
-           );
+           return Promise.reject(new Error(translations.passwordMismatch));
           },
          }),
         ]}
        >
         <Input.Password
          prefix={<LockOutlined />}
-         placeholder="Confirmez le mot de passe"
+         placeholder={translations.confirmPassword}
         />
        </Form.Item>
 
@@ -211,13 +299,13 @@ const Signup = () => {
          htmlType="submit"
          className="sign-submit-button"
         >
-         Commencez
+         {translations.startButton}
         </Button>
        </Form.Item>
 
        <Form.Item>
-        <Text>En cliquant sur Commencez, vous acceptez </Text>
-        <Link to="/">les conditions d'utilisation.</Link>
+        <Text>{translations.termsText}</Text>
+        <Link to="/">{translations.passwordMismatch}</Link>
        </Form.Item>
       </Form>
      </div>

@@ -1,15 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Row, Col, Alert } from 'antd';
 import { useUserData } from '../../../hooks/useUserData';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const Changepassword = ({ Id }) => {
+ const { t } = useTranslation();
  const { isLoading, updatePassword, success, errorMsg } = useUserData();
+ const [translations, setTranslations] = useState({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+  mismatchError: '',
+  successMsg: '',
+  modify: '',
+ });
+
  const onFinish = async (values) => {
-  console.log('Values:', Id, values);
   const { currentPassword, newPassword } = values;
   const updated = await updatePassword(Id, currentPassword, newPassword);
  };
- console.log(success, errorMsg);
+ useEffect(() => {
+  async function loadTranslations() {
+   setTranslations({
+    currentPassword: await t('password.current', 'Mot de passe actuel'),
+    newPassword: await t('password.new', 'Nouveau Mot de passe'),
+    confirmPassword: await t('password.confirm', 'Confirmez le mot de passe'),
+    mismatchError: await t(
+     'password.mismatch',
+     'Le nouveau mot de passe que vous avez saisi ne correspond pas!'
+    ),
+    successMsg: await t(
+     'password.success',
+     'Mot de passe mis à jour avec succès'
+    ),
+    modify: await t('common.modify', 'Modifier'),
+   });
+  }
+  loadTranslations();
+ }, [t]);
+
  return (
   <Form
    name="dependencies"
@@ -21,7 +50,7 @@ const Changepassword = ({ Id }) => {
    layout="vertical"
   >
    <Form.Item
-    label="Mot de passe actuel"
+    label={translations.currentPassword}
     name="currentPassword"
     rules={[
      {
@@ -32,7 +61,7 @@ const Changepassword = ({ Id }) => {
     <Input />
    </Form.Item>
    <Form.Item
-    label="Nouveau Mot de passe"
+    label={translations.newPassword}
     name="newPassword"
     rules={[
      {
@@ -43,7 +72,7 @@ const Changepassword = ({ Id }) => {
     <Input />
    </Form.Item>
    <Form.Item
-    label="Confirmez le mot de passe"
+    label={translations.confirmPassword}
     name="newPassword2"
     dependencies={['newPassword']}
     rules={[
@@ -55,11 +84,7 @@ const Changepassword = ({ Id }) => {
        if (!value || getFieldValue('newPassword') === value) {
         return Promise.resolve();
        }
-       return Promise.reject(
-        new Error(
-         'Le nouveau mot de passe que vous avez saisi ne correspond pas!'
-        )
-       );
+       return Promise.reject(new Error(translations.mismatchError));
       },
      }),
     ]}
@@ -75,7 +100,7 @@ const Changepassword = ({ Id }) => {
        loading={!isLoading}
        disabled={success}
       >
-       Modifier
+       {translations.modify}
       </Button>
      </Form.Item>
     </Col>
@@ -84,12 +109,7 @@ const Changepassword = ({ Id }) => {
     <Alert message={errorMsg} type="warning" showIcon closable />
    )}
    {success && (
-    <Alert
-     message="Mot de passe mis à jour avec succès"
-     type="success"
-     showIcon
-     closable
-    />
+    <Alert message={translations.successMsg} type="success" showIcon closable />
    )}
   </Form>
  );

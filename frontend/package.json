@@ -21,6 +21,7 @@
     "antd-img-crop": "^4.21.0",
     "axios": "^1.6.8",
     "browser-image-compression": "^2.0.2",
+    "country-flag-icons": "^1.5.13",
     "firebase": "^10.12.3",
     "html2canvas": "^1.4.1",
     "html2pdf.js": "^0.10.1",

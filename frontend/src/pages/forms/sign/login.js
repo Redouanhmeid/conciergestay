@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLogin } from '../../../hooks/useLogin';
 import {
  Button,
@@ -17,6 +17,7 @@ import { Link } from 'react-router-dom';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
 import Logo from '../../../assets/logo.png';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Title, Text } = Typography;
 
@@ -25,9 +26,54 @@ const onFinishFailed = (errorInfo) => {
 };
 
 const Login = () => {
+ const { t } = useTranslation();
  const { login, googleLogin, error, isLoading } = useLogin();
  const [email, setEmail] = useState('');
  const [password, setPassword] = useState('');
+
+ const [translations, setTranslations] = useState({
+  login: '',
+  needAccount: '',
+  signupHere: '',
+  loginWithGoogle: '',
+  orUseEmail: '',
+  emailPlaceholder: '',
+  emailRequired: '',
+  passwordPlaceholder: '',
+  passwordRequired: '',
+  rememberMe: '',
+  forgotPassword: '',
+  loginButton: '',
+ });
+
+ useEffect(() => {
+  async function loadTranslations() {
+   setTranslations({
+    login: await t('auth.login', 'Se connecter'),
+    needAccount: await t('auth.needAccount', "Besoin d'un compte?"),
+    signupHere: await t('auth.signupHere', 'Inscrivez-vous ici'),
+    loginWithGoogle: await t(
+     'auth.loginWithGoogle',
+     'Connectez-vous avec Google'
+    ),
+    orUseEmail: await t('auth.orUseEmail', 'Ou utilisez E-mail'),
+    emailPlaceholder: await t('auth.emailPlaceholder', 'Email'),
+    emailRequired: await t(
+     'auth.emailRequired',
+     'Veuillez saisir votre email!'
+    ),
+    passwordPlaceholder: await t('auth.passwordPlaceholder', 'Mot de passe'),
+    passwordRequired: await t(
+     'auth.passwordRequired',
+     'Veuillez saisir votre Mot de passe!'
+    ),
+    rememberMe: await t('auth.rememberMe', 'Rappelez-vous de moi'),
+    forgotPassword: await t('auth.forgotPassword', 'Mot de passe oublié?'),
+    loginButton: await t('auth.loginButton', 'Se connecter'),
+   });
+  }
+  loadTranslations();
+ }, [t]);
 
  const handleSubmit = async (e) => {
   await login(email, password);
@@ -45,10 +91,11 @@ const Login = () => {
      <div className="sign-container">
       <img src={Logo} alt="Logo" className="sign-logo" />
       <Title level={2} className="sign-title">
-       Se connecter
+       {translations.login}
       </Title>
       <Text className="sign-subtitle">
-       Besoin d'un compte? <Link to="/signup">Inscrivez-vous ici</Link>
+       {translations.needAccount}{' '}
+       <Link to="/signup">{translations.signupHere}</Link>
       </Text>
       <Divider />
       <Button
@@ -58,9 +105,9 @@ const Login = () => {
        disabled={isLoading}
        className="sign-google-button"
       >
-       Connectez-vous avec Google
+       {translations.loginWithGoogle}
       </Button>
-      <Divider>Ou utilisez E-mail</Divider>
+      <Divider>{translations.orUseEmail}</Divider>
       <Form
        name="signin"
        initialValues={{ remember: true }}
@@ -78,11 +125,14 @@ const Login = () => {
          {
           type: 'email',
           required: true,
-          message: 'Veuillez saisir votre email!',
+          message: translations.emailRequired,
          },
         ]}
        >
-        <Input prefix={<UserOutlined />} placeholder="Email" />
+        <Input
+         prefix={<UserOutlined />}
+         placeholder={translations.emailPlaceholder}
+        />
        </Form.Item>
        <Form.Item
         name="password"
@@ -91,18 +141,21 @@ const Login = () => {
         rules={[
          {
           required: true,
-          message: 'Veuillez saisir votre Mot de passe!',
+          message: translations.passwordRequired,
          },
         ]}
        >
-        <Input.Password prefix={<LockOutlined />} placeholder="Mot de passe" />
+        <Input.Password
+         prefix={<LockOutlined />}
+         placeholder={translations.passwordPlaceholder}
+        />
        </Form.Item>
        <div className="sign-options">
         <Form.Item name="remember" valuePropName="checked" noStyle>
-         <Checkbox>Rappelez-vous de moi</Checkbox>
+         <Checkbox>{translations.rememberMe}</Checkbox>
         </Form.Item>
         <Link to="/reset-password-request" className="forgot-password-link">
-         Mot de passe oublié?
+         {translations.forgotPassword}
         </Link>
        </div>
        {error && (
@@ -117,7 +170,7 @@ const Login = () => {
          htmlType="submit"
          className="sign-submit-button"
         >
-         Se connecter
+         {translations.loginButton}
         </Button>
        </Form.Item>
       </Form>

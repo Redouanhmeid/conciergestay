@@ -18,6 +18,8 @@ import {
 import Logo from '../../assets/logo.png';
 import { Helmet } from 'react-helmet';
 import { useUserData } from '../../hooks/useUserData';
+import { LanguageSelector } from '../../utils/LanguageSelector';
+import { useTranslation } from '../../context/TranslationContext';
 
 /* const { Search } = Input; */
 const { Header } = Layout;
@@ -39,6 +41,34 @@ const Head = () => {
  const User = user || JSON.parse(localStorage.getItem('user'));
  const { userData = {}, getUserData } = useUserData();
  const navigate = useNavigate();
+ const { t } = useTranslation();
+ const [translations, setTranslations] = useState({
+  adminPanel: '',
+  dashboard: '',
+  account: '',
+  referral: '',
+  logout: '',
+  createAccount: '',
+  profile: '',
+  greeting: '',
+ });
+
+ useEffect(() => {
+  async function loadTranslations() {
+   const texts = {
+    adminPanel: await t('admin.panel', "Panneau d'administration"),
+    dashboard: await t('dashboard.title', 'Tableau de bord'),
+    account: await t('account.title', 'Mon compte'),
+    referral: await t('referral.title', 'Référez un ami'),
+    logout: await t('auth.logout', 'Se déconnecter'),
+    createAccount: await t('auth.createAccount', 'Créer un compte'),
+    profile: await t('profile.title', 'Profile'),
+    greeting: await t('profile.greeting', 'Bonjour'),
+   };
+   setTranslations(texts);
+  }
+  loadTranslations();
+ }, [t]);
 
  const handleLogOut = () => {
   logout();
@@ -60,22 +90,22 @@ const Head = () => {
  const menuItems = [
   userData.role === 'admin' &&
    getItem(
-    <Link to="/adminpanel">Panneau d'administration</Link>,
+    <Link to="/adminpanel">{translations.adminPanel}</Link>,
     '0',
     <i className="fa-light fa-folder-gear"></i>
    ),
   getItem(
-   <Link to="/dashboard">Tableau de bord</Link>,
+   <Link to="/dashboard">{translations.dashboard}</Link>,
    '1',
    <i className="fa-light fa-grid-2-plus"></i>
   ),
   getItem(
-   <Link to="/account">Mon compte</Link>,
+   <Link to="/account">{translations.account}</Link>,
    '2',
    <i className="fa-light fa-user-pen"></i>
   ),
   getItem(
-   <span onClick={handleReferFriend}>Référez un ami</span>,
+   <span onClick={handleReferFriend}>{translations.referral}</span>,
    '3',
    <i className="fa-light fa-users-medical"></i>
   ),
@@ -83,7 +113,7 @@ const Head = () => {
    type: 'divider',
   },
   getItem(
-   <Link onClick={handleLogOut}>Se déconnecter</Link>,
+   <Link onClick={handleLogOut}>{translations.logout}</Link>,
    '5',
    <i className="fa-light fa-right-from-bracket"></i>
   ),
@@ -132,38 +162,44 @@ const Head = () => {
      </Col>
 
      {Object.keys(userData).length > 0 && (
-      <Col
-       xs={{ span: 4, offset: 12 }}
-       sm={{ span: 1, offset: 17 }}
-       md={{ span: 1, offset: 19 }}
-      >
-       <Avatar
-        onClick={showDrawer}
-        size={{ xs: 46, sm: 50, md: 50, lg: 50, xl: 56, xxl: 56 }}
-        src={userData.avatar}
-        style={{ cursor: 'pointer' }}
-       />
-      </Col>
+      <>
+       <Col
+        xs={{ span: 9, offset: 3 }}
+        sm={{ span: 7, offset: 10 }}
+        md={{ span: 4, offset: 15 }}
+       >
+        <LanguageSelector />
+       </Col>
+       <Col xs={4} sm={1} md={1}>
+        <Avatar
+         onClick={showDrawer}
+         size={{ xs: 46, sm: 50, md: 50, lg: 50, xl: 56, xxl: 56 }}
+         src={userData.avatar}
+         style={{ cursor: 'pointer' }}
+        />
+       </Col>
+      </>
      )}
      {Object.keys(userData).length === 0 && (
-      <Col
-       xs={{ span: 13, offset: 3 }}
-       sm={{ span: 3, offset: 10 }}
-       md={{ span: 3, offset: 17 }}
-      >
-       <Space>
-        <Button
-         onClick={handleLogin}
-         type="primary"
-         icon={<i className="fa-light fa-user"></i>}
-         shape="circle"
-        />
-        <Button onClick={handleSignUp}>Créer un compte</Button>
-       </Space>
-      </Col>
+      <>
+       <Col xs={8} sm={{ span: 7, offset: 5 }} md={{ span: 4, offset: 13 }}>
+        <LanguageSelector />
+       </Col>
+       <Col xs={8} sm={6} md={3}>
+        <Space>
+         <Button
+          onClick={handleLogin}
+          type="primary"
+          icon={<i className="fa-light fa-user"></i>}
+          shape="circle"
+         />
+         <Button onClick={handleSignUp}>{translations.createAccount}</Button>
+        </Space>
+       </Col>
+      </>
      )}
     </Row>
-    <Drawer title="Profile" onClose={onClose} open={open}>
+    <Drawer title={translations.profile} onClose={onClose} open={open}>
      <List
       dataSource={[{ id: 1, name: 'Redouan' }]}
       bordered
@@ -176,7 +212,7 @@ const Head = () => {
            src={userData.avatar}
           />
          }
-         title="Bonjour"
+         title={translations.greeting}
          description={userData.email}
         />
        </List.Item>
