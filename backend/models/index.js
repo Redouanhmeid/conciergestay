@@ -8,6 +8,8 @@ const NearbyPlaceModel = require('./NearbyPlaceModel');
 const AmenityModel = require('./AmenityModel');
 const PasswordResetModel = require('./PasswordResetModel');
 const ReservationContractModel = require('./ReservationContractModel');
+const PropertyRevenueModel = require('./PropertyRevenueModel');
+const PropertyTaskModel = require('./PropertyTaskModel');
 
 // create models
 const PropertyManager = PropertyManagerModel(db, Sequelize);
@@ -20,6 +22,8 @@ const NearbyPlace = NearbyPlaceModel(db, Sequelize);
 const Amenity = AmenityModel(db, Sequelize);
 const PasswordReset = PasswordResetModel(db, Sequelize);
 const ReservationContract = ReservationContractModel(db, Sequelize);
+const PropertyRevenue = PropertyRevenueModel(db, Sequelize);
+const PropertyTask = PropertyTaskModel(db, Sequelize);
 
 // define relationships
 // Property & PropertyManager (one -> many)
@@ -51,6 +55,24 @@ Property.hasMany(ReservationContract, {
 ReservationContract.belongsTo(Property, {
  foreignKey: 'propertyId', // Specify the name of the foreign key in the Amenity model
 });
+Property.hasMany(PropertyRevenue, {
+ foreignKey: 'propertyId',
+ as: 'revenues',
+ onDelete: 'CASCADE',
+});
+PropertyRevenue.belongsTo(Property, {
+ foreignKey: 'propertyId',
+ as: 'property',
+});
+Property.hasMany(PropertyTask, {
+ foreignKey: 'propertyId',
+ as: 'tasks',
+ onDelete: 'CASCADE',
+});
+PropertyTask.belongsTo(Property, {
+ foreignKey: 'propertyId',
+ as: 'property',
+});
 
 // generate tables in DB
 db.sync({ alter: false }).then(() => {
@@ -65,4 +87,6 @@ module.exports = {
  Amenity,
  PasswordReset,
  ReservationContract,
+ PropertyRevenue,
+ PropertyTask,
 };

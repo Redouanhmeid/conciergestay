@@ -17,9 +17,9 @@ import {
 } from 'antd';
 import Logo from '../../assets/logo.png';
 import { Helmet } from 'react-helmet';
-import { useUserData } from '../../hooks/useUserData';
+import { useUserData } from '../../hooks/useUserData'; /* 
 import { LanguageSelector } from '../../utils/LanguageSelector';
-import { useTranslation } from '../../context/TranslationContext';
+import { useTranslation } from '../../context/TranslationContext'; */
 
 /* const { Search } = Input; */
 const { Header } = Layout;
@@ -35,13 +35,13 @@ function getItem(label, key, icon, children, type) {
 }
 
 /* const onSearch = (value, _e, info) => console.log(info?.source, value); */
-const Head = () => {
+const Head = ({ onUserData = () => {} }) => {
  const { logout } = useLogout();
  const { user } = useAuthContext();
  const User = user || JSON.parse(localStorage.getItem('user'));
  const { userData = {}, getUserData } = useUserData();
  const navigate = useNavigate();
- const { t } = useTranslation();
+ /*  const { t } = useTranslation(); */
  const [translations, setTranslations] = useState({
   adminPanel: '',
   dashboard: '',
@@ -53,7 +53,7 @@ const Head = () => {
   greeting: '',
  });
 
- useEffect(() => {
+ /*  useEffect(() => {
   async function loadTranslations() {
    const texts = {
     adminPanel: await t('admin.panel', "Panneau d'administration"),
@@ -68,7 +68,7 @@ const Head = () => {
    setTranslations(texts);
   }
   loadTranslations();
- }, [t]);
+ }, [t]); */
 
  const handleLogOut = () => {
   logout();
@@ -90,22 +90,26 @@ const Head = () => {
  const menuItems = [
   userData.role === 'admin' &&
    getItem(
-    <Link to="/adminpanel">{translations.adminPanel}</Link>,
+    <Link to="/adminpanel">
+     {/* {translations.adminPanel} */}Panneau d'administration
+    </Link>,
     '0',
     <i className="fa-light fa-folder-gear"></i>
    ),
   getItem(
-   <Link to="/dashboard">{translations.dashboard}</Link>,
+   <Link to="/dashboard">{/* {translations.dashboard} */}Tableau de bord</Link>,
    '1',
    <i className="fa-light fa-grid-2-plus"></i>
   ),
   getItem(
-   <Link to="/account">{translations.account}</Link>,
+   <Link to="/account">{/* {translations.account} */}Mon compte</Link>,
    '2',
    <i className="fa-light fa-user-pen"></i>
   ),
   getItem(
-   <span onClick={handleReferFriend}>{translations.referral}</span>,
+   <span onClick={handleReferFriend}>
+    {/* {translations.referral} */}Référez un ami
+   </span>,
    '3',
    <i className="fa-light fa-users-medical"></i>
   ),
@@ -113,7 +117,9 @@ const Head = () => {
    type: 'divider',
   },
   getItem(
-   <Link onClick={handleLogOut}>{translations.logout}</Link>,
+   <Link onClick={handleLogOut}>
+    {/* {translations.logout} */}Se déconnecter
+   </Link>,
    '5',
    <i className="fa-light fa-right-from-bracket"></i>
   ),
@@ -145,6 +151,12 @@ const Head = () => {
   fetchUserData();
  }, [fetchUserData]);
 
+ useEffect(() => {
+  if (userData && userData.id) {
+   onUserData(userData.id);
+  }
+ }, [userData, onUserData]);
+
  return (
   <>
    <Helmet>
@@ -168,7 +180,7 @@ const Head = () => {
         sm={{ span: 7, offset: 10 }}
         md={{ span: 4, offset: 15 }}
        >
-        <LanguageSelector />
+        {/* <LanguageSelector /> */}
        </Col>
        <Col xs={4} sm={1} md={1}>
         <Avatar
@@ -183,7 +195,7 @@ const Head = () => {
      {Object.keys(userData).length === 0 && (
       <>
        <Col xs={8} sm={{ span: 7, offset: 5 }} md={{ span: 4, offset: 13 }}>
-        <LanguageSelector />
+        {/* <LanguageSelector /> */}
        </Col>
        <Col xs={8} sm={6} md={3}>
         <Space>
@@ -199,7 +211,11 @@ const Head = () => {
       </>
      )}
     </Row>
-    <Drawer title={translations.profile} onClose={onClose} open={open}>
+    <Drawer
+     title="Profile"
+     /* {translations.profile} */ onClose={onClose}
+     open={open}
+    >
      <List
       dataSource={[{ id: 1, name: 'Redouan' }]}
       bordered
@@ -212,7 +228,7 @@ const Head = () => {
            src={userData.avatar}
           />
          }
-         title={translations.greeting}
+         title="Bonjour" /* {translations.greeting} */
          description={userData.email}
         />
        </List.Item>

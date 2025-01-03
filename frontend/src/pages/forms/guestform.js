@@ -69,6 +69,7 @@ const Guestform = () => {
  const [isperDataModalOpen, setIsperDataModalOpen] = useState(false);
  const [isOwner, setIsOwner] = useState(false);
  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+ const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
 
  const showShareModal = (id) => {
   setPageUrl();
@@ -82,12 +83,12 @@ const Guestform = () => {
 
  const getMoroccanDocumentTypes = () => [
   { label: "Carte d'identité nationale", value: 'CIN' },
-  { label: 'Permis de conduire', value: 'DRIVING_LICENSE' },
-  { label: 'Passeport', value: 'PASSPORT' },
+  { label: 'DRIVING_LICENSE', value: 'DRIVING_LICENSE' },
+  { label: 'PASSPORT', value: 'PASSPORT' },
  ];
 
  const getForeignerDocumentTypes = () => [
-  { label: 'Passeport', value: 'PASSPORT' },
+  { label: 'PASSPORT', value: 'PASSPORT' },
   { label: 'Permis de séjour marocain', value: 'MOROCCAN_RESIDENCE' },
   { label: 'Permis de séjour pour étranger', value: 'FOREIGNER_RESIDENCE' },
  ];
@@ -130,7 +131,7 @@ const Guestform = () => {
       values.lastname
      );
     } catch (uploadError) {
-     message.error('Échec du téléchargement de la signature');
+     message.error('Échec de la création du contrat');
      return;
     }
    }
@@ -172,7 +173,7 @@ const Guestform = () => {
    setFileList([]);
    sign?.clear();
   } catch (err) {
-   message.error(error || 'Failed to create contract');
+   message.error(error || 'Échec de la création du contrat');
    console.error('Error submitting form:', err);
   }
  };
@@ -257,7 +258,7 @@ const Guestform = () => {
     <Form.Item
      label={
       <Tooltip title="Date de création du document. (il ne s'agit pas de la date d'expiration)">
-       Date de délivrance{' '}
+       Veuillez saisir la date de délivrance{' '}
        <QuestionCircleOutlined style={{ color: '#aa7e42' }} />
       </Tooltip>
      }
@@ -287,7 +288,7 @@ const Guestform = () => {
        icon={<ArrowLeftOutlined />}
        onClick={() => navigate(-1)}
       >
-       Retour
+       Retour à l'accueil
       </Button>
       {isOwner && (
        <Button
@@ -314,7 +315,7 @@ const Guestform = () => {
          <Row gutter={[24, 24]}>
           <Col xs={24} md={14}>
            <Divider orientation="left">
-            Données personnelles{' '}
+            Saisissez vos données personnelles{' '}
             <i
              className="fa-light fa-square-question fa-lg"
              style={{ color: '#aa7e42', cursor: 'pointer' }}
@@ -521,7 +522,7 @@ const Guestform = () => {
            <Row gutter={[16, 0]}>
             <Col xs={24} md={12}>
              <Form.Item
-              label="Adresse de messagerie, Email "
+              label="Adresse de messagerie"
               name="email"
               rules={[
                {
@@ -600,10 +601,9 @@ const Guestform = () => {
             <br />
             <br />
             <Paragraph>
-             En cliquant sur <Text strong>'Signer le formulaire'</Text> vous
-             acceptez de signer le formulaire avec votre nom et le nom de
-             l'entreprise.{' '}
-             <Link href="#" target="_blank">
+             En cliquant sur (Formulaire de signature) vous acceptez de signer
+             le formulaire avec votre nom et le nom de l'entreprise.{' '}
+             <Link onClick={() => setIsPrivacyModalOpen(true)}>
               Politique de confidentialité
              </Link>
             </Paragraph>
@@ -657,7 +657,7 @@ const Guestform = () => {
     </Paragraph>
     <Paragraph>
      Toutes les données sont traitées conformément au règlement général sur la
-     protection des données.Plus d'informations sur notre politique de
+     protection des données. Plus d'informations sur notre politique de
      confidentialité.
     </Paragraph>
     <Link href="#" target="_blank">
@@ -673,7 +673,7 @@ const Guestform = () => {
    >
     <Result
      status="success"
-     title="Contrat envoyé avec succès!"
+     title="Contrat envoyé avec succès"
      subTitle={
       <div style={{ textAlign: 'center' }}>
        <p>Votre contrat de réservation a été créé et envoyé avec succès.</p>
@@ -691,6 +691,151 @@ const Guestform = () => {
       </Button>,
      ]}
     />
+   </Modal>
+
+   <Modal
+    title="Politique de confidentialité"
+    open={isPrivacyModalOpen}
+    onCancel={() => setIsPrivacyModalOpen(false)}
+    onOk={() => setIsPrivacyModalOpen(false)}
+    cancelText={null}
+    width={800}
+   >
+    <div className="privacy-policy" style={{ whiteSpace: 'pre-line' }}>
+     <Title level={4}>1. Objet du Contrat</Title>
+     <Paragraph>
+      Ce contrat a pour objet la location d'un bien immobilier pour une durée
+      déterminée. L'invité accepte de respecter le règlement intérieur du
+      logement pendant toute la durée du séjour.
+     </Paragraph>
+
+     <Title level={4}>2. Arrivée et Départ</Title>
+     <ul>
+      <li>
+       L'invité s'engage à informer l'hôte de son heure d'arrivée approximative
+       au moins 24 heures à l'avance.
+      </li>
+      <li>Le départ doit être effectué dans les délais convenus.</li>
+     </ul>
+
+     <Title level={4}>3. Comportement et Respect des Lieux</Title>
+     <ul>
+      <li>
+       L'invité s'engage à respecter la tranquillité du voisinage et à éviter
+       tout bruit excessif, en particulier pendant les heures de calme.
+      </li>
+      <li>
+       L'invité accepte de prendre soin du logement et de ses équipements. Toute
+       dégradation ou perte sera facturée à l'invité.
+      </li>
+      <li>
+       Il est formellement interdit de fumer à l'intérieur du logement. Des
+       zones fumeurs peuvent être disponibles à l'extérieur (si applicable).
+      </li>
+      <li>
+       Les animaux ne sont autorisés que sur demande préalable et avec l'accord
+       écrit de l'hôte.
+      </li>
+     </ul>
+
+     <Title level={4}>4. Utilisation des Installations</Title>
+     <ul>
+      <li>
+       L'invité s'engage à utiliser les équipements du logement conformément aux
+       instructions fournies par l'hôte. En cas de dysfonctionnement, l'invité
+       doit informer l'hôte immédiatement.
+      </li>
+      <li>
+       L'invité assume la responsabilité de toute mauvaise utilisation des
+       équipements, qui pourrait entraîner des frais supplémentaires.
+      </li>
+     </ul>
+
+     <Title level={4}>5. Propreté</Title>
+     <ul>
+      <li>
+       L'invité s'engage à maintenir le logement propre et rangé pendant son
+       séjour.
+      </li>
+      <li>
+       Un service de ménage est inclus dans la location. Toutefois, des frais
+       supplémentaires pourront être facturés si le logement est laissé dans un
+       état excessivement sale.
+      </li>
+     </ul>
+
+     <Title level={4}>6. Sécurité</Title>
+     <ul>
+      <li>
+       L'invité s'engage à verrouiller toutes les portes et fenêtres du logement
+       lorsqu'il quitte les lieux.
+      </li>
+      <li>
+       En cas d'urgence (incendie, fuite d'eau, etc.), l'invité doit contacter
+       immédiatement l'hôte et/ou les services d'urgence compétents.
+      </li>
+     </ul>
+
+     <Title level={4}>7. Respect des Lois du Maroc</Title>
+     <ul>
+      <li>
+       L'invité s'engage à respecter les lois du Maroc, notamment celles
+       régissant la location touristique et le comportement dans les espaces
+       publics.
+      </li>
+      <li>
+       En cas de non-respect des lois du Maroc ou des règles énoncées dans ce
+       contrat, l'hôte se réserve le droit de mettre fin à la location sans
+       remboursement et de signaler l'incident aux autorités compétentes.
+      </li>
+     </ul>
+
+     <Title level={4}>8. Utilisation de l'Internet</Title>
+     <ul>
+      <li>
+       L'accès à Internet est fourni gratuitement. L'invité s'engage à
+       l'utiliser de manière légale et respectueuse. Toute activité illégale en
+       ligne est strictement interdite.
+      </li>
+     </ul>
+
+     <Title level={4}>9. Règlement des Litiges</Title>
+     <ul>
+      <li>
+       En cas de litige, l'hôte et l'invité s'engagent à tenter de résoudre la
+       situation à l'amiable. Si cela n'est pas possible, le litige sera réglé
+       conformément aux lois en vigueur au Maroc.
+      </li>
+     </ul>
+
+     <Title level={4}>10. Annulation et Modifications</Title>
+     <ul>
+      <li>
+       Les conditions d'annulation et de modification de la réservation sont
+       précisées lors de la réservation et sont régies par les termes de ce
+       contrat.
+      </li>
+     </ul>
+
+     <Title level={4}>11. Interdiction des Invités Non Autorisés</Title>
+     <ul>
+      <li>
+       L'invité s'engage à ne pas accueillir ou héberger des personnes non
+       mentionnées dans la réservation initiale sans l'accord préalable et écrit
+       de l'hôte. Toute personne supplémentaire non déclarée pourra entraîner
+       des frais additionnels, l'annulation immédiate de la réservation sans
+       remboursement, et/ou des mesures légales conformément aux lois en vigueur
+       au Maroc.
+      </li>
+     </ul>
+
+     <Title level={4}>Signature électronique</Title>
+     <Paragraph>
+      En signant ce contrat, l'invité reconnaît avoir pris connaissance des
+      termes du présent règlement intérieur et s'engage à respecter toutes les
+      conditions énoncées.
+     </Paragraph>
+    </div>
    </Modal>
   </Layout>
  );

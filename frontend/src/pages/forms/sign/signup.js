@@ -13,12 +13,7 @@ import {
  Select,
  Alert,
 } from 'antd';
-import {
- LockOutlined,
- PhoneOutlined,
- MailOutlined,
- GoogleOutlined,
-} from '@ant-design/icons';
+import { LockOutlined, MailOutlined, GoogleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';

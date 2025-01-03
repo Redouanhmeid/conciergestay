@@ -8,6 +8,7 @@ import {
  Input,
  Button,
  Radio,
+ Spin,
  message,
 } from 'antd';
 import Head from '../../../components/common/header';
@@ -27,6 +28,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
  const { user } = useAuthContext();
  const User = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserData } = useUserData();
+
  const { loading, error, success, propertyId, createProperty } =
   useCreateProperty();
  const [form] = Form.useForm();
@@ -135,7 +137,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
       <Row gutter={[24, 0]}>
        <Col xs={24} md={24}>
         <Form.Item
-         label="Type de propriété"
+         label="Veuillez sélectionner un type de propriété!"
          name="type"
          rules={[
           {
@@ -174,13 +176,14 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
          rules={[
           {
            required: true,
-           message: 'Veuillez saisir votre nom!',
+           message: 'Description',
           },
          ]}
         >
          <Input onChange={handleFormData('name')} />
         </Form.Item>
        </Col>
+
        <Col xs={24} md={24}>
         <Form.Item
          label="Description"
@@ -203,7 +206,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
 
        <Col xs={24} md={12}>
         <Form.Item
-         label="Airbnb URL (facultatif)"
+         label="Airbnb URL"
          name="airbnbUrl"
          rules={[
           {
@@ -223,7 +226,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
 
        <Col xs={24} md={12}>
         <Form.Item
-         label="Booking URL (facultatif)"
+         label="Booking URL"
          name="bookingUrl"
          rules={[
           {
@@ -243,7 +246,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
 
        <Col xs={24} md={24}>
         <Form.Item
-         label="Emplacement"
+         label="Sélectionnez un emplacement sur la carte"
          required
          rules={[
           {

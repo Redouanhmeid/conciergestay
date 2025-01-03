@@ -8,7 +8,6 @@ backend/0.env.production
 backend/avatars
 backend/.env.development
 backend/.env.production
-frontend/node_modules
 frontend/package-lock.json
 frontend/build
 frontend/services
@@ -23,3 +22,4 @@ backend/0server.js
 backend/server.js
 backend/identities/
 backend/signatures/
+frontend/node_modules/

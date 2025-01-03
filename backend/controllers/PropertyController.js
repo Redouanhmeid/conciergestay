@@ -1,5 +1,5 @@
 const haversine = require('haversine-distance');
-const { Property, Amenity } = require('../models');
+const { Property, Amenity, PropertyTask } = require('../models');
 const { deletePropertyFiles } = require('../helpers/utils');
 const { Sequelize, Op } = require('sequelize');
 
@@ -409,6 +409,32 @@ const toggleEnableProperty = async (req, res) => {
  }
 };
 
+const getPropertyManagerTasks = async (req, res) => {
+ try {
+  const propertyManagerId = req.params.managerId;
+
+  const tasks = await PropertyTask.findAll({
+   include: [
+    {
+     model: Property,
+     as: 'property',
+     where: { propertyManagerId },
+     attributes: ['name', 'id'],
+    },
+   ],
+   order: [
+    ['dueDate', 'ASC'],
+    ['priority', 'DESC'],
+   ],
+  });
+
+  res.status(200).json(tasks);
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to fetch property manager tasks' });
+ }
+};
+
 module.exports = {
  getProperties,
  getPendingProperties,
@@ -428,4 +454,5 @@ module.exports = {
  verifyProperty,
  bulkVerifyProperties,
  toggleEnableProperty,
+ getPropertyManagerTasks,
 };

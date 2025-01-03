@@ -20,6 +20,7 @@ import ImgCrop from 'antd-img-crop';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import ReactPlayer from 'react-player';
 import useAmenity from '../../../hooks/useAmenity';
+import useAmenityTranslations from '../../../hooks/translations/useAmenityTranslation';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -71,6 +72,8 @@ const AddAmenity = () => {
  const navigate = useNavigate();
  const { uploadAmenity } = useUploadPhotos();
  const { loading, error, postAmenity } = useAmenity();
+
+ const translations = useAmenityTranslations();
  const [form] = Form.useForm();
  const [name, setName] = useState('');
  const [mediaType, setMediaType] = useState('Photo');
@@ -116,7 +119,7 @@ const AddAmenity = () => {
      marginTop: 8,
     }}
    >
-    Charger
+    {translations.upload}
    </div>
   </button>
  );
@@ -124,7 +127,7 @@ const AddAmenity = () => {
   values.name = amenity;
   values.propertyId = id;
   values.media = videoUrl;
-  if (mediaType === 'Photo' && fileList.length > 0) {
+  if (mediaType === translations.photo && fileList.length > 0) {
    const photoUrl = await uploadAmenity(fileList);
    values.media = photoUrl;
   }
@@ -150,11 +153,13 @@ const AddAmenity = () => {
      icon={<ArrowLeftOutlined />}
      onClick={goBack}
     >
-     Retour
+     {translations.back}
     </Button>
     <Row gutter={[16, 16]}>
      <Col xs={24}>
-      <Title level={2}>Ajouter une carte pour {name}</Title>
+      <Title level={2}>
+       {translations.addCard} {name}
+      </Title>
       <Form
        name="amenity_form"
        initialValues={{ remember: true }}
@@ -172,13 +177,13 @@ const AddAmenity = () => {
           onChange={onChangeMediaType}
          >
           <Radio.Group defaultValue="Photo" buttonStyle="solid" size="large">
-           <Radio.Button value="Photo">Photo</Radio.Button>
-           <Radio.Button value="Video">Video</Radio.Button>
+           <Radio.Button value="Photo">{translations.photo}</Radio.Button>
+           <Radio.Button value="Video">{translations.video}</Radio.Button>
           </Radio.Group>
          </Flex>
          <br />
          {mediaType === 'Photo' ? (
-          <Form.Item label="Media URL" name="media">
+          <Form.Item label={translations.mediaUrl} name="media">
            <div>
             <ImgCrop rotationSlider>
              <Upload
@@ -215,11 +220,9 @@ const AddAmenity = () => {
            label={
             <>
              <Text>
-              Video URL:
+              {translations.videoUrlLabel}
               <br />
-              <Text type="secondary">
-               Hébergez vos vidéos sur Vimeo ou Youtube avant
-              </Text>
+              <Text type="secondary">{translations.videoUrlHint}</Text>
              </Text>
             </>
            }
@@ -245,10 +248,7 @@ const AddAmenity = () => {
           offset: 2,
          }}
         >
-         <Form.Item
-          label="Que souhaitez-vous dire à vos invités sur ce sujet ?"
-          name="description"
-         >
+         <Form.Item label={translations.guestMessage} name="description">
           <Input.TextArea rows={6} showCount maxLength={500} />
          </Form.Item>
         </Col>
@@ -256,12 +256,12 @@ const AddAmenity = () => {
          <Col xs={24} md={12}>
           <Row gutter={[16, 32]}>
            <Col xs={24} md={12}>
-            <Form.Item label="Nom du Wi-Fi" name="wifiName">
+            <Form.Item label={translations.wifiName} name="wifiName">
              <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
            <Col xs={24} md={12}>
-            <Form.Item label="Mot de passe Wi-Fi" name="wifiPassword">
+            <Form.Item label={translations.wifiPassword} name="wifiPassword">
              <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
@@ -280,7 +280,7 @@ const AddAmenity = () => {
             htmlType="submit"
             loading={loading}
            >
-            Enregistrer
+            {translations.save}
            </Button>
           </Form.Item>
          </Col>

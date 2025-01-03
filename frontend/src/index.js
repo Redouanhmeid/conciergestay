@@ -42,10 +42,16 @@ import Pendingproperties from './pages/admin/pendingproperties';
 import PendingNearbyPlaces from './pages/admin/pendingnearbyplaces';
 import Profile from './pages/components/Profile';
 import ContractsList from './pages/components/ContractsList';
+import LogementDashboard from './pages/LogementDashboard';
+import PropertyRevenueDashboard from './pages/admin/PropertyRevenueDashboard';
+import PropertyTaskDashboard from './pages/admin/PropertyTaskDashboard';
 
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
  { path: '/dashboard', element: <PropertyManagerHome /> },
+ { path: '/logementdashboard', element: <LogementDashboard /> },
+ { path: '/propertyrevenuedashboard', element: <PropertyRevenueDashboard /> },
+ { path: '/propertytaskdashboard', element: <PropertyTaskDashboard /> },
  { path: '/adminpanel', element: <AdminPanel /> },
  { path: '/managers', element: <Managers /> },
  { path: '/manager', element: <Manager /> },
@@ -184,9 +190,7 @@ root.render(
   }}
  >
   <AuthContextProvider>
-   <TranslationProvider>
-    <RouterProvider router={router} />
-   </TranslationProvider>
+   <RouterProvider router={router} />
   </AuthContextProvider>
  </ConfigProvider>
 );

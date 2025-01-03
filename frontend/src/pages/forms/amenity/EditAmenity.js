@@ -23,6 +23,7 @@ import ImgCrop from 'antd-img-crop';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import ReactPlayer from 'react-player';
 import useAmenity from '../../../hooks/useAmenity';
+import useAmenityTranslations from '../../../hooks/translations/useAmenityTranslation';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -42,6 +43,7 @@ const EditAmenity = () => {
  const { uploadAmenity } = useUploadPhotos();
  const { loading, error, deleteAmenity, updateAmenity, getOneAmenity } =
   useAmenity();
+ const translations = useAmenityTranslations();
  const [form] = Form.useForm();
  const [amenity, setAmenity] = useState('');
  const [mediaType, setMediaType] = useState('Photo');
@@ -116,7 +118,7 @@ const EditAmenity = () => {
      marginTop: 8,
     }}
    >
-    Charger
+    {translations.upload}
    </div>
   </button>
  );
@@ -161,12 +163,10 @@ const EditAmenity = () => {
  const confirmDelete = async (id) => {
   await deleteAmenity(id);
   if (!error) {
-   message.success('Equipement supprimé avec succès.');
+   message.success(translations.deleteSuccess);
    navigate(-1);
   } else {
-   message.error(
-    `Erreur lors de la suppression de l'équipement: ${error.message}`
-   );
+   message.error(`${translations.deleteError}: ${error.message}`);
   }
  };
 
@@ -188,12 +188,14 @@ const EditAmenity = () => {
       icon={<ArrowLeftOutlined />}
       onClick={() => navigate(-1)}
      >
-      Retour
+      {translations.back}
      </Button>
 
      <Popconfirm
-      title="Etes-vous sûr de supprimer ?"
+      title={translations.confirmDelete}
       onConfirm={() => confirmDelete(amenity.id)}
+      okText={translations.confirmYes}
+      cancelText={translations.confirmNo}
      >
       <Button
        danger
@@ -211,7 +213,7 @@ const EditAmenity = () => {
     </Flex>
     <Row gutter={[16, 16]}>
      <Col xs={24}>
-      <Title level={2}>Ajouter une carte pour {amenity.name}</Title>
+      <Title level={2}>{`${translations.addCard} ${amenity.name}`}</Title>
       <Form
        name="amenity_form"
        initialValues={{ remember: true }}
@@ -233,14 +235,14 @@ const EditAmenity = () => {
          >
           <Form.Item name="mediaType">
            <Radio.Group buttonStyle="solid" size="large">
-            <Radio.Button value="Photo">Photo</Radio.Button>
-            <Radio.Button value="Video">Video</Radio.Button>
+            <Radio.Button value="Photo">{translations.photo}</Radio.Button>
+            <Radio.Button value="Video">{translations.video}</Radio.Button>
            </Radio.Group>
           </Form.Item>
          </Flex>
          <br />
          {mediaType === 'Photo' ? (
-          <Form.Item label="Media URL" name="media">
+          <Form.Item label={translations.mediaUrl} name="media">
            <div>
             <ImgCrop rotationSlider>
              <Upload
@@ -277,11 +279,9 @@ const EditAmenity = () => {
            label={
             <>
              <Text>
-              Video URL:
+              {translations.videoUrlLabel}
               <br />
-              <Text type="secondary">
-               Hébergez vos vidéos sur Vimeo ou Youtube avant
-              </Text>
+              <Text type="secondary">{translations.videoUrlHint}</Text>
              </Text>
             </>
            }
@@ -306,10 +306,7 @@ const EditAmenity = () => {
           offset: 2,
          }}
         >
-         <Form.Item
-          label="Que souhaitez-vous dire à vos invités sur ce sujet ?"
-          name="description"
-         >
+         <Form.Item label={translations.guestMessage} name="description">
           <Input.TextArea rows={6} showCount maxLength={500} />
          </Form.Item>
         </Col>
@@ -317,12 +314,12 @@ const EditAmenity = () => {
          <Col xs={24} md={12}>
           <Row gutter={[16, 0]}>
            <Col xs={24} md={12}>
-            <Form.Item label="WiFi Name" name="wifiName">
+            <Form.Item label={translations.wifiName} name="wifiName">
              <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
            <Col xs={24} md={12}>
-            <Form.Item label="WiFi Password" name="wifiPassword">
+            <Form.Item label={translations.wifiPassword} name="wifiPassword">
              <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
@@ -342,7 +339,7 @@ const EditAmenity = () => {
             loading={isSubmitting || loading}
             disabled={isSubmitting}
            >
-            Enregistrer
+            {translations.save}
            </Button>
           </Form.Item>
          </Col>

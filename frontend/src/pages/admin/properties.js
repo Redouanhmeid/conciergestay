@@ -305,6 +305,35 @@ const Properties = () => {
       type="link"
       shape="circle"
      />
+     <Button
+      icon={
+       <i
+        className="Dashicon fa-light fa-list-check"
+        style={{ color: '#2b2c32' }}
+        key="task"
+       />
+      }
+      onClick={() =>
+       navigate(`/propertytaskdashboard?id=${record.id}&name=${record.name}`)
+      }
+      type="link"
+      shape="circle"
+     />
+
+     <Button
+      icon={
+       <i
+        className="Dashicon fa-light fa-dollar-sign"
+        style={{ color: '#389e0d' }}
+        key="revenue"
+       />
+      }
+      onClick={() =>
+       navigate(`/propertyrevenuedashboard?id=${record.id}&name=${record.name}`)
+      }
+      type="link"
+      shape="circle"
+     />
      <Popconfirm
       title="Etes-vous sûr de supprimer ?"
       onConfirm={() => confirmDelete(record.id)}

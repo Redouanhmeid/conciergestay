@@ -14,7 +14,6 @@ const libraries = ['places'];
 
 const MapPicker = React.memo(({ onPlaceSelected }) => {
  const isLoaded = useGoogleMapsLoader();
-
  const [position, setPosition] = useState({ lat: 34.0083637, lng: -6.8538748 });
  const [placeName, setPlaceName] = useState('Rabat');
  const [placeURL, setPlaceURL] = useState('');
@@ -167,7 +166,7 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
     </Autocomplete>
     {touched && !placeName && (
      <div style={{ color: '#ff4d4f', marginTop: '4px' }}>
-      Veuillez sélectionner un emplacement
+      Veuillez sélectionner un emplacement sur la carte
      </div>
     )}
     <Map

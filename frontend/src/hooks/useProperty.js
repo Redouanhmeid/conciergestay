@@ -137,6 +137,20 @@ const useProperty = () => {
   fetchPendingProperties();
  }, [fetchPendingProperties]);
 
+ const getPropertyManagerTasks = async (managerId) => {
+  setLoading(true);
+  try {
+   let url = `${apiBase}/propertytask/manager/${managerId}/tasks`;
+   const response = await axios.get(url);
+   return response.data;
+  } catch (error) {
+   setError(error);
+   return null;
+  } finally {
+   setLoading(false);
+  }
+ };
+
  return {
   properties,
   property,
@@ -152,6 +166,7 @@ const useProperty = () => {
   bulkVerifyProperties,
   toggleEnableProperty,
   deleteProperty,
+  getPropertyManagerTasks,
  };
 };
 

@@ -19,6 +19,7 @@ const {
  verifyProperty,
  bulkVerifyProperties,
  toggleEnableProperty,
+ getPropertyManagerTasks,
 } = require('../controllers/PropertyController');
 
 // Route to get all properties
@@ -49,5 +50,7 @@ router.delete('/:id', deleteProperty);
 router.put('/:id/verify', verifyProperty);
 router.post('/bulkVerify', bulkVerifyProperties);
 router.put('/:id/toggleenable', toggleEnableProperty);
+
+router.get('/propertytask/manager/:managerId/tasks', getPropertyManagerTasks);
 
 module.exports = router;

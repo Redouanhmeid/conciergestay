@@ -16,11 +16,7 @@ import {
  Rate,
  Select,
 } from 'antd';
-import {
- ArrowLeftOutlined,
- PlusOutlined,
- DownloadOutlined,
-} from '@ant-design/icons';
+import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import MapPicker from './propertypost/MapPicker';
@@ -28,7 +24,7 @@ import { useNavigate } from 'react-router-dom';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
 import useUploadPhotos from '../../hooks/useUploadPhotos';
 import ImgCrop from 'antd-img-crop';
-import MapConfig from '../../mapconfig';
+import { useTranslation } from '../../context/TranslationContext';
 
 const { useBreakpoint } = Grid;
 
@@ -42,27 +38,102 @@ const getBase64 = (file) =>
   reader.onload = () => resolve(reader.result);
   reader.onerror = (error) => reject(error);
  });
-const OPTIONS = [
- 'Restaurant & Café',
- 'Activité',
- 'Attraction',
- 'Centre commercial',
-];
 
 const CreateNearbyPlace = () => {
- const { loading, error, createNearbyPlace } = useNearbyPlace();
+ const { loading, createNearbyPlace } = useNearbyPlace();
  const { uploadPlace } = useUploadPhotos();
  const navigate = useNavigate();
  const [form] = Form.useForm();
  const [Latitude, setLatitude] = useState(null);
  const [Longitude, setLongitude] = useState(null);
  const [placePhotos, setPlacePhotos] = useState([]);
- const [placePhoto, setPlacePhoto] = useState('');
  const [filelist, setFileList] = useState([]);
- const [previewOpen, setPreviewOpen] = useState(false);
- const [previewImage, setPreviewImage] = useState('');
  const [selectedItems, setSelectedItems] = useState([]);
  const [placeExists, setPlaceExists] = useState(false);
+ const { t } = useTranslation();
+ const [translations, setTranslations] = useState({
+  restaurantcafe: '',
+  activite: '',
+  attraction: '',
+  centrecommercial: '',
+  back: '',
+  addPlace: '',
+  name: '',
+  address: '',
+  googleUrl: '',
+  rating: '',
+  types: '',
+  photo: '',
+  upload: '',
+  tip: '',
+  tipStrong: '',
+  tipText: '',
+  customizeText: '',
+  placeExists: '',
+  fillRequired: '',
+  createSuccess: '',
+  createError: '',
+  selectType: '',
+  addPlaceButton: '',
+ });
+
+ useEffect(() => {
+  async function loadTranslations() {
+   setTranslations({
+    restaurantcafe: await t('nearbyPlace.restaurantcafe', 'Restaurant et Café'),
+    activite: await t('nearbyPlace.activite', 'Activité'),
+    attraction: await t('nearbyPlace.attraction', 'Attraction'),
+    mall: await t('nearbyPlace.mall', 'Centre commercial'),
+    back: await t('common.back', 'Retour'),
+    addPlace: await t('nearbyPlace.add', 'Ajouter un lieu à proximité'),
+    name: await t('nearbyPlace.name', 'Nom'),
+    address: await t('nearbyPlace.address', 'Adresse'),
+    googleUrl: await t('nearbyPlace.googleUrl', 'URL de la place dans Google'),
+    rating: await t('nearbyPlace.rating', 'Note'),
+    types: await t('nearbyPlace.types', 'Types'),
+    photo: await t('nearbyPlace.photo', 'Photo'),
+    upload: await t('common.upload', 'Charger'),
+    tip: await t('nearbyPlace.tip', 'Astuce:'),
+    tipText: await t(
+     'nearbyPlace.tipText',
+     "Téléchargez l'une des photo sur votre appareil et téléchargez-la à nouveau pour personnaliser votre de lieu à proximité!"
+    ),
+    customizeText: await t(
+     'nearbyPlace.customize',
+     'Enregistrez-la sur votre appareil, puis utilisez la fonction Charger pour ajouter votre propre touche !'
+    ),
+    placeExists: await t('nearbyPlace.exists', 'Le lieu existe déjà'),
+    fillRequired: await t(
+     'validation.required',
+     'Veuillez remplir tous les champs requis!'
+    ),
+    createSuccess: await t(
+     'nearbyPlace.createSuccess',
+     'Lieu à proximité créé avec succès'
+    ),
+    createError: await t(
+     'nearbyPlace.createError',
+     'Échec de la création du lieu à proximité'
+    ),
+    selectType: await t(
+     'nearbyPlace.selectType',
+     'Veuillez sélectionner au moins un type !'
+    ),
+    addPlaceButton: await t(
+     'nearbyPlace.addButton',
+     'Ajouter un lieu à proximité'
+    ),
+   });
+  }
+  loadTranslations();
+ }, [t]);
+
+ const OPTIONS = [
+  translations.restaurantcafe,
+  translations.activite,
+  translations.attraction,
+  translations.mall,
+ ];
 
  const screens = useBreakpoint();
  const getImageSize = () => {
@@ -103,8 +174,6 @@ const CreateNearbyPlace = () => {
   if (!file.url && !file.preview) {
    file.preview = await getBase64(file.originFileObj);
   }
-  setPreviewImage(file.url || file.preview);
-  setPreviewOpen(true);
  };
 
  const handleChange = ({ fileList: newFileList }) => {
@@ -114,12 +183,11 @@ const CreateNearbyPlace = () => {
  const uploadButton = (
   <div>
    <PlusOutlined />
-   <div style={{ marginTop: 8 }}>Charger</div>
+   <div style={{ marginTop: 8 }}>{translations.upload}</div>
   </div>
  );
 
  const onFinish = async (values) => {
-  let photoUrl = '';
   if (filelist.length > 0) {
    const photoUrls = await uploadPlace(filelist);
    values.photo = photoUrls;
@@ -131,7 +199,7 @@ const CreateNearbyPlace = () => {
   };
   try {
    await createNearbyPlace(mergedValues);
-   message.success('Lieu à proximité créé avec succès');
+   message.success(translations.createSuccess);
    form.resetFields();
    setFileList([]);
    setLatitude(null);
@@ -141,7 +209,7 @@ const CreateNearbyPlace = () => {
    if (error.response.data.error === 'Place already exists') {
     setPlaceExists(true);
    } else {
-    message.error('Échec de la création du lieu à proximité');
+    message.error(translations.createError);
    }
   }
  };
@@ -167,10 +235,10 @@ const CreateNearbyPlace = () => {
       icon={<ArrowLeftOutlined />}
       onClick={goBack}
      >
-      Retour
+      {translations.back}
      </Button>
      <Row gutter={[24, 0]}>
-      <Title level={2}>Ajouter un lieu à proximité</Title>
+      <Title level={2}>{translations.addPlace}</Title>
       <Col xs={24} md={24}>
        <Form
         form={form}
@@ -187,22 +255,22 @@ const CreateNearbyPlace = () => {
           </Form.Item>
          </Col>
          <Col xs={24} md={8}>
-          <Form.Item name="name" label="Nom">
+          <Form.Item name="name" label={translations.name}>
            <Input />
           </Form.Item>
          </Col>
          <Col xs={24} md={8}>
-          <Form.Item name="address" label="Adresse">
+          <Form.Item name="address" label={translations.address}>
            <Input />
           </Form.Item>
          </Col>
          <Col xs={24} md={8}>
-          <Form.Item name="url" label="URL de la place dans Google">
+          <Form.Item name="url" label={translations.googleUrl}>
            <Input />
           </Form.Item>
          </Col>
          <Col xs={24} md={4}>
-          <Form.Item name="rating" label="Note">
+          <Form.Item name="rating" label={translations.rating}>
            <Rate allowHalf style={{ color: '#aa7e42' }} />
           </Form.Item>
          </Col>
@@ -213,7 +281,7 @@ const CreateNearbyPlace = () => {
            rules={[
             {
              required: true,
-             message: 'Veuillez sélectionner au moins un type !',
+             message: translations.selectType,
             },
            ]}
           >
@@ -233,7 +301,7 @@ const CreateNearbyPlace = () => {
          <Col xs={24} md={6}>
           <Form.Item
            name="photo"
-           label="Photo"
+           label={translations.photo}
            valuePropName="filelist"
            getValueFromEvent={(e) => e.filelist}
           >
@@ -256,15 +324,10 @@ const CreateNearbyPlace = () => {
           <Col xs={24}>
            <Paragraph>
             <Text>
-             <Text strong>Astuce:</Text> Téléchargez l'une des photo sur votre
-             appareil et téléchargez-la à nouveau pour personnaliser votre de
-             lieu à proximité! 🎉
+             <Text strong>{translations.tip}</Text> {translations.tipText}
             </Text>
             <br />
-            <Text>
-             Enregistrez-la sur votre appareil, puis utilisez la fonction{' '}
-             <Text strong>Charger</Text> pour ajouter votre propre touche !
-            </Text>
+            <Text>{translations.customizeText}</Text>
            </Paragraph>
           </Col>
           {placePhotos.map((photo, index) => (
@@ -306,7 +369,7 @@ const CreateNearbyPlace = () => {
             htmlType="submit"
             loading={!loading}
            >
-            Ajouter un lieu à proximité
+            {translations.addPlaceButton}
            </Button>
           </Form.Item>
          </Col>
