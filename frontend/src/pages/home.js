@@ -22,6 +22,7 @@ import { APIProvider } from '@vis.gl/react-google-maps';
 import { Autocomplete } from '@react-google-maps/api';
 import { useGoogleMapsLoader } from '../services/GoogleMapService';
 import { getLocationForCityOrUser } from '../utils/utils';
+import { useTranslation } from '../context/TranslationContext';
 import './../App.css';
 import PropertyList from './components/PropertyList';
 
@@ -30,6 +31,7 @@ const { Content } = Layout;
 const { Title, Text } = Typography;
 
 const Home = () => {
+ const { t } = useTranslation();
  const isLoaded = useGoogleMapsLoader();
  const [searchCity, setSearchCity] = useState('');
  const autocomplete = useRef(null);
@@ -46,29 +48,29 @@ const Home = () => {
 
  const propertyTypes = [
   {
-   label: 'Maison',
+   label: t('type.house'),
    value: 'house',
    icon: <i className="checkboxicon fa-light fa-house"></i>,
   },
   {
-   label: 'Appartement',
+   label: t('type.apartment'),
    value: 'apartment',
    icon: <i className="checkboxicon fa-light fa-building"></i>,
   },
   {
-   label: "Maison d'hôtes",
+   label: t('type.guesthouse'),
    value: 'guesthouse',
    icon: <i className="checkboxicon fa-light fa-house-user"></i>,
   },
  ];
  const basicAmenities = [
-  { value: 'kitchen', label: 'Cuisine' },
-  { value: 'freeParking', label: 'Parking gratuit' },
-  { value: 'wifi', label: 'Wifi' },
-  { value: 'airConditioning', label: 'Climatisation' },
-  { value: 'television', label: 'Télévision' },
-  { value: 'washingMachine', label: 'Lave-linge' },
-  { value: 'pool', label: 'Piscine' },
+  { value: 'kitchen', label: t('amenity.categories.kitchen') },
+  { value: 'freeParking', label: t('amenity.freeParking') },
+  { value: 'wifi', label: t('amenity.wifi') },
+  { value: 'airConditioning', label: t('amenity.airConditioning') },
+  { value: 'television', label: t('amenity.television') },
+  { value: 'washingMachine', label: t('amenity.washingMachine') },
+  { value: 'pool', label: t('amenity.pool') },
  ];
 
  useEffect(() => {
@@ -169,7 +171,7 @@ const Home = () => {
          }}
         >
          <Input
-          placeholder="Indiquer une place"
+          placeholder={t('home.searchPlaceholder')}
           style={{ width: '100%', padding: '0.5rem' }}
          />
         </Autocomplete>
@@ -283,12 +285,12 @@ const Home = () => {
        <Switch
         checkedChildren={
          <>
-          Afficher la Map <i className="fa-light fa-map-location-dot"></i>
+          {t('home.showMap')} <i className="fa-light fa-map-location-dot"></i>
          </>
         }
         unCheckedChildren={
          <>
-          Afficher la Liste <i className="fa-light fa-grid-2"></i>
+          {t('home.showList')} <i className="fa-light fa-grid-2"></i>
          </>
         }
         checked={viewMode === 'list'}
@@ -302,23 +304,23 @@ const Home = () => {
     <Foot />
    </Layout>
    <Drawer
-    title="Filtres"
+    title={t('home.filters.title')}
     onClose={onClose}
     open={openFilter}
     placement="left"
     size="large"
     extra={
      <Space>
-      <Button onClick={onClear}>Tout effacer</Button>
+      <Button onClick={onClear}>{t('home.filters.clearAll')}</Button>
       <Button type="primary" onClick={onClose}>
-       Afficher
+       {t('home.filters.show')}
       </Button>
      </Space>
     }
    >
     <Row gutter={[16, 16]}>
      <Col xs={24}>
-      <Title level={4}>Type de propriété</Title>
+      <Title level={4}>{t('home.filters.propertyType')}</Title>
       <Checkbox.Group
        value={checkedTypes}
        onChange={handleCheckboxChange}
@@ -344,7 +346,7 @@ const Home = () => {
      </Col>
 
      <Col xs={24}>
-      <Title level={4}>Fourchette de prix (Dh)</Title>
+      <Title level={4}>{t('home.filters.priceRange')}</Title>
       <Row align="middle" gutter={16}>
        <Col xs={24}>
         <Slider
@@ -364,7 +366,10 @@ const Home = () => {
          value={range[0]}
          onChange={onMinChange}
          formatter={(value) =>
-          `Min ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+          `${t('home.filters.min')} ${value}`.replace(
+           /\B(?=(\d{3})+(?!\d))/g,
+           ','
+          )
          }
          size="large"
          style={{ width: '100%' }}
@@ -380,7 +385,10 @@ const Home = () => {
          max={10000}
          value={range[1]}
          formatter={(value) =>
-          `Max ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+          `${t('home.filters.max')} ${value}`.replace(
+           /\B(?=(\d{3})+(?!\d))/g,
+           ','
+          )
          }
          parser={(value) => value.replace(/Maximum\s?|(,*)/g, '')}
          onChange={onMaxChange}
@@ -392,9 +400,9 @@ const Home = () => {
      </Col>
 
      <Col xs={24}>
-      <Title level={4}>Chambres, lits et capacité</Title>
+      <Title level={4}>{t('home.filters.roomsAndCapacity')}</Title>
       <Col xs={24}>
-       <Text>Chambres</Text>
+       <Text>{t('home.filters.rooms')}</Text>
        <Row gutter={[16, 16]}>
         <Col span={18}>
          <Slider
@@ -417,7 +425,7 @@ const Home = () => {
           <InputNumber
            min={0}
            max={5}
-           placeholder="Tous"
+           placeholder={t('home.filters.all')}
            variant="filled"
            style={{ width: '100%' }}
            onFocus={() => setRoomValue(1)} // Set a default minimum value when focused
@@ -428,7 +436,9 @@ const Home = () => {
       </Col>
 
       <Col xs={24}>
-       <Text>Max Personnes</Text>
+       <Text>
+        <Text>{t('home.filters.maxPeople')}</Text>
+       </Text>
        <Row gutter={[16, 16]}>
         <Col span={18}>
          <Slider
@@ -451,7 +461,7 @@ const Home = () => {
           <InputNumber
            min={0}
            max={5}
-           placeholder="Tous"
+           placeholder={t('home.filters.all')}
            variant="filled"
            style={{ width: '100%' }}
            onFocus={() => setPaxValue(1)} // Set a default minimum value when focused
@@ -463,7 +473,7 @@ const Home = () => {
      </Col>
 
      <Col xs={24}>
-      <Title level={4}>Commodités de base</Title>
+      <Title level={4}>{t('home.filters.basicAmenities')}</Title>
       <Row gutter={[16, 16]}>
        {visiblebasicAmenitie.map((item, index) => (
         <Col xs={12} md={8} key={index}>
@@ -481,7 +491,9 @@ const Home = () => {
        onClick={toggleShowAllbasicAmenities}
        style={{ marginTop: '20px' }}
       >
-       {showAllbasicAmenities ? 'Afficher moins' : 'Afficher plus'}
+       {showAllbasicAmenities
+        ? t('home.filters.showLess')
+        : t('home.filters.showMore')}
       </Button>
      </Col>
     </Row>

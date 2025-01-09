@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLogout } from '../../hooks/useLogout';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import { useTranslation } from '../../context/TranslationContext';
 import {
  Drawer,
  Layout,
@@ -17,9 +18,8 @@ import {
 } from 'antd';
 import Logo from '../../assets/logo.png';
 import { Helmet } from 'react-helmet';
-import { useUserData } from '../../hooks/useUserData'; /* 
+import { useUserData } from '../../hooks/useUserData';
 import { LanguageSelector } from '../../utils/LanguageSelector';
-import { useTranslation } from '../../context/TranslationContext'; */
 
 /* const { Search } = Input; */
 const { Header } = Layout;
@@ -40,35 +40,8 @@ const Head = ({ onUserData = () => {} }) => {
  const { user } = useAuthContext();
  const User = user || JSON.parse(localStorage.getItem('user'));
  const { userData = {}, getUserData } = useUserData();
+ const { t, currentLanguage, setLanguage } = useTranslation();
  const navigate = useNavigate();
- /*  const { t } = useTranslation(); */
- const [translations, setTranslations] = useState({
-  adminPanel: '',
-  dashboard: '',
-  account: '',
-  referral: '',
-  logout: '',
-  createAccount: '',
-  profile: '',
-  greeting: '',
- });
-
- /*  useEffect(() => {
-  async function loadTranslations() {
-   const texts = {
-    adminPanel: await t('admin.panel', "Panneau d'administration"),
-    dashboard: await t('dashboard.title', 'Tableau de bord'),
-    account: await t('account.title', 'Mon compte'),
-    referral: await t('referral.title', 'Référez un ami'),
-    logout: await t('auth.logout', 'Se déconnecter'),
-    createAccount: await t('auth.createAccount', 'Créer un compte'),
-    profile: await t('profile.title', 'Profile'),
-    greeting: await t('profile.greeting', 'Bonjour'),
-   };
-   setTranslations(texts);
-  }
-  loadTranslations();
- }, [t]); */
 
  const handleLogOut = () => {
   logout();
@@ -81,45 +54,44 @@ const Head = ({ onUserData = () => {} }) => {
   logout();
   navigate('/signup');
  };
- const handleReferFriend = () => {
+ const handleReferFriend = async (t) => {
   const referralLink = `${window.location.origin}/signup?referralCode=${userData.id}`;
   navigator.clipboard.writeText(referralLink);
-  message.success('Lien de parrainage copié ! Partagez-le avec vos amis.');
+  message.success(t('messages.refereFriend'));
  };
 
  const menuItems = [
   userData.role === 'admin' &&
    getItem(
-    <Link to="/adminpanel">
-     {/* {translations.adminPanel} */}Panneau d'administration
-    </Link>,
+    <Link to="/adminpanel">{t('header.adminPanel')}</Link>,
     '0',
     <i className="fa-light fa-folder-gear"></i>
    ),
   getItem(
-   <Link to="/dashboard">{/* {translations.dashboard} */}Tableau de bord</Link>,
+   <Link to="/dashboard">{t('header.dashboard')}</Link>,
    '1',
    <i className="fa-light fa-grid-2-plus"></i>
   ),
   getItem(
-   <Link to="/account">{/* {translations.account} */}Mon compte</Link>,
+   <Link to="/revtasskdashboard">{t('header.Revandtasks')}</Link>,
    '2',
+   <i className="fa-light fa-chart-line"></i>
+  ),
+  getItem(
+   <Link to="/account">{t('header.account')}</Link>,
+   '3',
    <i className="fa-light fa-user-pen"></i>
   ),
   getItem(
-   <span onClick={handleReferFriend}>
-    {/* {translations.referral} */}Référez un ami
-   </span>,
-   '3',
+   <span onClick={() => handleReferFriend(t)}>{t('header.referral')}</span>,
+   '4',
    <i className="fa-light fa-users-medical"></i>
   ),
   {
    type: 'divider',
   },
   getItem(
-   <Link onClick={handleLogOut}>
-    {/* {translations.logout} */}Se déconnecter
-   </Link>,
+   <Link onClick={handleLogOut}>{t('header.logout')}</Link>,
    '5',
    <i className="fa-light fa-right-from-bracket"></i>
   ),
@@ -180,7 +152,7 @@ const Head = ({ onUserData = () => {} }) => {
         sm={{ span: 7, offset: 10 }}
         md={{ span: 4, offset: 15 }}
        >
-        {/* <LanguageSelector /> */}
+        <LanguageSelector />
        </Col>
        <Col xs={4} sm={1} md={1}>
         <Avatar
@@ -195,7 +167,7 @@ const Head = ({ onUserData = () => {} }) => {
      {Object.keys(userData).length === 0 && (
       <>
        <Col xs={8} sm={{ span: 7, offset: 5 }} md={{ span: 4, offset: 13 }}>
-        {/* <LanguageSelector /> */}
+        <LanguageSelector />
        </Col>
        <Col xs={8} sm={6} md={3}>
         <Space>
@@ -205,17 +177,13 @@ const Head = ({ onUserData = () => {} }) => {
           icon={<i className="fa-light fa-user"></i>}
           shape="circle"
          />
-         <Button onClick={handleSignUp}>{translations.createAccount}</Button>
+         <Button onClick={handleSignUp}>{t('header.createAccount')}</Button>
         </Space>
        </Col>
       </>
      )}
     </Row>
-    <Drawer
-     title="Profile"
-     /* {translations.profile} */ onClose={onClose}
-     open={open}
-    >
+    <Drawer title={t('header.profile')} onClose={onClose} open={open}>
      <List
       dataSource={[{ id: 1, name: 'Redouan' }]}
       bordered
@@ -228,7 +196,7 @@ const Head = ({ onUserData = () => {} }) => {
            src={userData.avatar}
           />
          }
-         title="Bonjour" /* {translations.greeting} */
+         title={t('header.greeting')}
          description={userData.email}
         />
        </List.Item>

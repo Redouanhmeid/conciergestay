@@ -13,11 +13,13 @@ import {
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '../../context/TranslationContext';
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
 
 const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
+ const { t } = useTranslation();
  const slider = useRef(null);
  const navigate = useNavigate();
 
@@ -45,7 +47,7 @@ const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
      setData(data);
     })
     .catch((err) => {
-     console.error('Échec du chargement des détails du lieu.');
+     console.error(t('map.messageError'));
     });
   }
  }, []);

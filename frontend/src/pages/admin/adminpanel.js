@@ -20,6 +20,7 @@ import {
  message,
 } from 'antd';
 import { UserOutlined, PlusOutlined } from '@ant-design/icons';
+import { useTranslation } from '../../context/TranslationContext';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import useProperty from '../../hooks/useProperty';
@@ -43,6 +44,7 @@ const Dashboard = () => {
   fetchAllManagers,
  } = useUserData();
  const { error, getAllNearbyPlaces, deleteNearbyPlace } = useNearbyPlace();
+ const { t } = useTranslation();
 
  const [NearbyPlaces, setNearbyPlaces] = useState([]);
  const [visibleProperties, setVisibleProperties] = useState(3);
@@ -61,7 +63,7 @@ const Dashboard = () => {
    const data = await getAllNearbyPlaces(); // Properly calling the function
    setNearbyPlaces(data);
   } catch (err) {
-   message.error('Échec du chargement des détails du lieu.');
+   message.error(t('error.update'));
   }
  };
 
@@ -107,7 +109,7 @@ const Dashboard = () => {
   !Mloading && visibleManagers < Managers.length ? (
    <div style={{ textAlign: 'center', marginTop: 12 }}>
     <Button type="primary" icon={<PlusOutlined />} onClick={handleMLoadMore}>
-     Charger plus
+     {t('button.loadmore')}
     </Button>
    </div>
   ) : null;
@@ -115,7 +117,7 @@ const Dashboard = () => {
   !Ploading && visibleProperties < properties.length ? (
    <div style={{ textAlign: 'center', marginTop: 12 }}>
     <Button type="primary" icon={<PlusOutlined />} onClick={handlePLoadMore}>
-     Charger plus
+     {t('button.loadmore')}
     </Button>
    </div>
   ) : null;
@@ -123,7 +125,7 @@ const Dashboard = () => {
   !Nloading && visibleNPlaces < NearbyPlaces.length ? (
    <div style={{ textAlign: 'center', marginTop: 12 }}>
     <Button type="primary" icon={<PlusOutlined />} onClick={handleNLoadMore}>
-     Charger plus
+     {t('button.loadmore')}
     </Button>
    </div>
   ) : null;
@@ -132,9 +134,9 @@ const Dashboard = () => {
   await deleteNearbyPlace(id);
   if (!error) {
    fetchNearbyPlaces();
-   message.success('Lieu supprimée avec succès.');
+   message.success(t('messages.deleteSuccess'));
   } else {
-   message.error(`Erreur lors de la suppression du lieu: ${error.message}`);
+   message.error(t('messages.deleteError') + error.message);
   }
  };
 
@@ -142,13 +144,13 @@ const Dashboard = () => {
   <Layout className="contentStyle">
    <Head />
    <Content className="container">
-    <Title level={2}>Examiner et approuver</Title>
+    <Title level={2}>{t('messages.reviewAndApprove')}</Title>
     <Row gutter={[16, 16]}>
      <Col xs={24} md={12}>
       <a href={`/pendingproperties`}>
        <Badge count={pendingProperties.length} status="warning" offset={[4, 4]}>
         <Statistic
-         value="Propriétés en attente"
+         value={t('property.pending')}
          prefix={
           <i className="fa-light fa-house" style={{ color: '#aa7e42' }} />
          }
@@ -160,7 +162,7 @@ const Dashboard = () => {
       <a href={`/pendingnearbyplaces`}>
        <Badge count={pendingNearbyPlaces} status="warning" offset={[4, 4]}>
         <Statistic
-         value="Lieux à proximité à vérifier"
+         value={t('nearbyPlace.pending')}
          prefix={
           <i
            className="fa-light fa-map-location"
@@ -173,11 +175,11 @@ const Dashboard = () => {
      </Col>
     </Row>
     <Divider />
-    <Title level={2}>Statistiques</Title>
+    <Title level={2}>{t('dashboard.statistics')}</Title>
     <Row gutter={[16, 16]}>
      <Col xs={24} md={6}>
       <Card
-       title="Nombre de managers"
+       title={t('dashboard.totalManagers')}
        className="custom-stat-card"
        bordered={false}
       >
@@ -186,7 +188,7 @@ const Dashboard = () => {
      </Col>
      <Col xs={24} md={6}>
       <Card
-       title="Nombre de propriétés"
+       title={t('dashboard.totalProperties')}
        className="custom-stat-card"
        bordered={false}
       >
@@ -194,13 +196,17 @@ const Dashboard = () => {
       </Card>
      </Col>
      <Col xs={24} md={6}>
-      <Card title="Prix ​​moyen" className="custom-stat-card" bordered={false}>
+      <Card
+       title={t('dashboard.averagePrice')}
+       className="custom-stat-card"
+       bordered={false}
+      >
        <Statistic value={averagePrice.toFixed(2)} precision={2} />
       </Card>
      </Col>
      <Col xs={24} md={6}>
       <Card
-       title="Lieux à proximité"
+       title={t('nearbyPlace.title')}
        className="custom-stat-card"
        bordered={false}
       >
@@ -215,7 +221,7 @@ const Dashboard = () => {
      <Col xs={24} sm={8}>
       <Card
        className="custom-stat-card"
-       title={<a href={`/managers`}>Managers</a>}
+       title={<a href={`/managers`}>{t('dashboard.managers')}</a>}
        bordered={false}
       >
        <List
@@ -259,7 +265,7 @@ const Dashboard = () => {
      <Col xs={24} sm={8}>
       <Card
        className="custom-stat-card"
-       title={<a href={`/properties`}>Propriétés</a>}
+       title={<a href={`/properties`}>{t('property.title')}</a>}
        bordered={false}
       >
        <List
@@ -296,7 +302,7 @@ const Dashboard = () => {
              <Tag
               icon={<i className="tag-icon-style fa-light fa-money-bill"></i>}
              >
-              {item.price} Dh
+              {item.price} {t('property.basic.priceNight')}
              </Tag>
             </Flex>
            }
@@ -316,7 +322,7 @@ const Dashboard = () => {
      <Col xs={24} sm={8}>
       <Card
        className="custom-stat-card"
-       title={<a href={`/nearbyplaces`}>Lieux à proximité</a>}
+       title={<a href={`/nearbyplaces`}>{t('nearbyPlace.title')}</a>}
        bordered={false}
       >
        <List
@@ -333,7 +339,7 @@ const Dashboard = () => {
             <i className="Dashicon fa-light fa-pen-to-square" key="edite" />
            </a>,
            <Popconfirm
-            title="Etes-vous sûr de supprimer?"
+            title={t('messages.deleteConfirm')}
             onConfirm={() => confirmDelete(item.id)}
            >
             <Button

@@ -15,6 +15,7 @@ import {
  message,
 } from 'antd';
 import { SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { useTranslation } from '../../context/TranslationContext';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import { useUserData } from '../../hooks/useUserData';
@@ -35,6 +36,7 @@ const Managers = () => {
  const [searchText, setSearchText] = useState('');
  const [searchedColumn, setSearchedColumn] = useState('');
  const navigate = useNavigate();
+ const { t } = useTranslation();
 
  useEffect(() => {
   fetchAllManagers();
@@ -60,7 +62,7 @@ const Managers = () => {
   }) => (
    <div style={{ padding: 8 }}>
     <Input
-     placeholder={`Rechercher`}
+     placeholder={t('common.search')}
      value={selectedKeys[0]}
      onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
      onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
@@ -74,14 +76,14 @@ const Managers = () => {
       size="small"
       style={{ width: 90 }}
      >
-      Chercher
+      {t('common.search')}
      </Button>
      <Button
       onClick={() => handleReset(clearFilters)}
       size="small"
       style={{ width: 90 }}
      >
-      Réinitialiser
+      {t('common.reset')}
      </Button>
     </Space>
    </div>
@@ -97,63 +99,65 @@ const Managers = () => {
 
  const columns = [
   {
-   title: 'Avatar',
+   title: t('common.avatar'),
    dataIndex: 'avatar',
    key: 'avatar',
    render: (avatar) => <Avatar src={avatar} />,
   },
   {
-   title: 'E-mail',
+   title: t('common.email'),
    dataIndex: 'email',
    key: 'email',
    sorter: (a, b) => a.email.localeCompare(b.email),
    ...getColumnSearchProps('email'),
   },
   {
-   title: 'Nom',
+   title: t('account.firstName'),
    dataIndex: 'firstname',
    key: 'firstname',
    sorter: (a, b) => a.firstname.localeCompare(b.firstname),
    ...getColumnSearchProps('firstname'),
   },
   {
-   title: 'Prénom',
+   title: t('account.lastName'),
    dataIndex: 'lastname',
    key: 'lastname',
    sorter: (a, b) => a.lastname.localeCompare(b.lastname),
    ...getColumnSearchProps('lastname'),
   },
   {
-   title: 'Téléphone',
+   title: t('common.phone'),
    dataIndex: 'phone',
    key: 'phone',
    sorter: (a, b) => a.phone.localeCompare(b.phone),
    ...getColumnSearchProps('phone'),
   },
   {
-   title: 'Vérifié',
+   title: t('manager.verified'),
    dataIndex: 'isVerified',
    key: 'isVerified',
    filters: [
-    { text: 'Vérifié', value: true },
-    { text: 'Non vérifié', value: false },
+    { text: t('manager.verifiedStatus.verified'), value: true },
+    { text: t('manager.verifiedStatus.unverified'), value: false },
    ],
    onFilter: (value, record) => record.isVerified === value,
    render: (isVerified) => (
     <Tag color={isVerified ? 'green' : 'red'}>
-     {isVerified ? 'Vérifié' : 'Non vérifié'}
+     {isVerified
+      ? t('manager.verifiedStatus.verified')
+      : t('manager.verifiedStatus.unverified')}
     </Tag>
    ),
   },
   {
-   title: 'Créé le',
+   title: t('manager.createdAt'),
    dataIndex: 'createdAt',
    key: 'createdAt',
    sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
    render: (createdAt) => new Date(createdAt).toLocaleString(),
   },
   {
-   title: 'Actions',
+   title: t('property.actions.actions'),
    key: 'actions',
    render: (_, record) => (
     <Space>
@@ -164,7 +168,7 @@ const Managers = () => {
       type="link"
      />
      <Popconfirm
-      title="Êtes-vous sûr de supprimer ?"
+      title={t('messages.deleteConfirm')}
       onConfirm={() => confirmDelete(record.id)}
      >
       <Button
@@ -188,9 +192,9 @@ const Managers = () => {
  const confirmDelete = async (id) => {
   await deleteManagerById(id);
   if (!error) {
-   message.success('Manager supprimée avec succès.');
+   message.success(t('manager.deleteSuccess'));
   } else {
-   message.error(`Erreur lors de la suppression du Manager: ${error.message}`);
+   message.error(t('manager.deleteError', { error: error.message }));
   }
  };
 
@@ -211,9 +215,9 @@ const Managers = () => {
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
     >
-     Retour
+     {t('button.back')}
     </Button>
-    <Title level={2}>Managers</Title>
+    <Title level={2}>{t('dashboard.managers')}</Title>
     <Row gutter={[16, 16]}>
      <Col xs={24} md={24}>
       <Table

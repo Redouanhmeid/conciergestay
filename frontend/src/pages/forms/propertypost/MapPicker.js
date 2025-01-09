@@ -9,6 +9,7 @@ import {
 } from '@vis.gl/react-google-maps';
 import { Autocomplete, useJsApiLoader } from '@react-google-maps/api';
 import { useGoogleMapsLoader } from '../../../services/GoogleMapService';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const libraries = ['places'];
 
@@ -21,6 +22,7 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
  const [placeRating, setPlaceRating] = useState(0);
  const [placePhotos, setPlacePhotos] = useState([]);
  const [placeTypes, setPlaceTypes] = useState([]);
+ const { t } = useTranslation();
 
  const [touched, setTouched] = useState(false);
  const inputRef = useRef(null);
@@ -166,7 +168,7 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
     </Autocomplete>
     {touched && !placeName && (
      <div style={{ color: '#ff4d4f', marginTop: '4px' }}>
-      Veuillez sélectionner un emplacement sur la carte
+      {t('validation.selectLocation')}
      </div>
     )}
     <Map

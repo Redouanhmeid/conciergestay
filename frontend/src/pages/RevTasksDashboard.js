@@ -28,6 +28,7 @@ import {
  Legend,
  ResponsiveContainer,
 } from 'recharts';
+import { useTranslation } from '../context/TranslationContext';
 import Head from '../components/common/header';
 import Foot from '../components/common/footer';
 import useProperty from '../hooks/useProperty';
@@ -39,7 +40,8 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 const { useBreakpoint } = Grid;
 
-const LogementDashboard = () => {
+const RevTasksDashboard = () => {
+ const { t } = useTranslation();
  const screens = useBreakpoint();
  const [tasks, setTasks] = useState([]);
  const [propertyRevenues, setPropertyRevenues] = useState({});
@@ -70,7 +72,7 @@ const LogementDashboard = () => {
    const fetchedTasks = await getPropertyManagerTasks(userId);
    setTasks(fetchedTasks || []);
   } catch (err) {
-   console.error('Failed to fetch tasks', err);
+   console.error(t('error.tasksFetch'), err);
   }
  };
 
@@ -82,7 +84,7 @@ const LogementDashboard = () => {
     const revenue = await getAnnualRevenue(property.id, selectedYear);
     revenues[property.id] = revenue?.totalRevenue || 0;
    } catch (err) {
-    console.error(`Failed to fetch revenue for property ${property.id}`, err);
+    console.error(t('error.revenueFetch', { id: property.id }), err);
     revenues[property.id] = 0;
    }
   });
@@ -117,9 +119,9 @@ const LogementDashboard = () => {
    low: 'green',
   };
   const priorityInFrench = {
-   high: 'URGENT',
-   medium: 'MOYENNE',
-   low: 'FAIBLE',
+   high: t('tasks.priority.high'),
+   medium: t('tasks.priority.medium'),
+   low: t('tasks.priority.low'),
   };
   return <Tag color={colors[priority]}>{priorityInFrench[priority]}</Tag>;
  };
@@ -151,7 +153,7 @@ const LogementDashboard = () => {
    setChartData(monthlyData);
    setIsModalVisible(true);
   } catch (error) {
-   console.error('Failed to fetch revenue data', error);
+   console.error(t('error.revenueDataFetch'), error);
   }
  };
 
@@ -164,7 +166,7 @@ const LogementDashboard = () => {
      <Col xs={24} md={8}>
       <Card>
        <Statistic
-        title="Tâches totales"
+        title={t('dashboard.totalTasks')}
         value={tasks.length}
         prefix={<i className="fa-light fa-clipboard-check "></i>}
        />
@@ -173,7 +175,7 @@ const LogementDashboard = () => {
      <Col xs={24} md={8}>
       <Card>
        <Statistic
-        title="Propriétés totales"
+        title={t('dashboard.totalProperties')}
         value={properties.length}
         prefix={<i className="fa-light fa-house "></i>}
        />
@@ -181,17 +183,21 @@ const LogementDashboard = () => {
      </Col>
      <Col xs={24} md={8}>
       <Card>
-       <Statistic title="Total Revenue" value={totalRevenue} suffix="DHs" />
+       <Statistic
+        title={t('dashboard.totalRevenue')}
+        value={totalRevenue}
+        suffix="DHs"
+       />
       </Card>
      </Col>
     </Row>
 
     {/* Tasks Section */}
     <Card
-     title={<Title level={4}>Tâches à faire</Title>}
+     title={<Title level={4}>{t('tasks.title')}</Title>}
      style={{ marginTop: 24 }}
     >
-     {error && <Text type="danger">Erreur de chargement des tâches</Text>}
+     {error && <Text type="danger">{t('error.tasksLoad')}</Text>}
      <List
       itemLayout="horizontal"
       dataSource={tasks}
@@ -220,7 +226,7 @@ const LogementDashboard = () => {
 
     {/* Logements Section */}
     <Card
-     title={<Title level={4}>Revenus</Title>}
+     title={<Title level={4}>{t('revenue.title')}</Title>}
      style={{ marginTop: 24 }}
      extra={
       <Flex gap="middle">
@@ -249,20 +255,24 @@ const LogementDashboard = () => {
            src={logement.frontPhoto || logement.photos?.[0]}
            alt={logement.name}
            fallback={fallback}
-           placeholder={<div className="image-placeholder">Chargement...</div>}
+           placeholder={
+            <div className="image-placeholder">{t('common.loading')}</div>
+           }
            width={64}
           />
          }
          title={<Text strong>{logement.name}</Text>}
          description={
           <Flex vertical={screens.xs ? true : false} gap="small">
-           <Tag>Revenu total: {propertyRevenues[logement.id] || 0}</Tag>
+           <Tag>
+            {t('revenue.total')}: {propertyRevenues[logement.id] || 0}
+           </Tag>
            <Button
             type="primary"
             icon={<BarChartOutlined />}
             onClick={() => showRevenueChart(logement)}
            >
-            Voir les revenus
+            {t('revenue.viewChart')}
            </Button>
           </Flex>
          }
@@ -274,7 +284,10 @@ const LogementDashboard = () => {
 
     {/* Revenue Chart Modal */}
     <Modal
-     title={`Revenus ${selectedProperty?.name || ''} - ${selectedYear}`}
+     title={t('revenue.chartTitle', {
+      name: selectedProperty?.name || '',
+      year: selectedYear,
+     })}
      open={isModalVisible}
      onCancel={() => setIsModalVisible(false)}
      footer={null}
@@ -302,4 +315,4 @@ const LogementDashboard = () => {
  );
 };
 
-export default LogementDashboard;
+export default RevTasksDashboard;

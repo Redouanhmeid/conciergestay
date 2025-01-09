@@ -20,6 +20,7 @@ import useCreateProperty from '../../../hooks/useCreateProperty';
 import MapPicker from './MapPicker';
 import airbnb from '../../../assets/airbnb.png';
 import booking from '../../../assets/booking.png';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -28,6 +29,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
  const { user } = useAuthContext();
  const User = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserData } = useUserData();
+ const { t } = useTranslation();
 
  const { loading, error, success, propertyId, createProperty } =
   useCreateProperty();
@@ -47,17 +49,17 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
 
  const propertyTypes = [
   {
-   label: 'Maison',
+   label: t('type.house'),
    value: 'house',
    icon: <i className="Radioicon fa-light fa-house"></i>,
   },
   {
-   label: 'Appartement',
+   label: t('type.apartment'),
    value: 'apartment',
    icon: <i className="Radioicon fa-light fa-building"></i>,
   },
   {
-   label: "Maison d'hôtes",
+   label: t('type.guesthouse'),
    value: 'guesthouse',
    icon: <i className="Radioicon fa-light fa-house-user"></i>,
   },
@@ -83,7 +85,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
  const submitFormData = async () => {
   // Check if map values are present
   if (!mapValues.latitude || !mapValues.longitude || !mapValues.placeName) {
-   message.error('Veuillez sélectionner un emplacement sur la carte');
+   message.error(t('validation.selectLocation'));
    return;
   }
 
@@ -114,7 +116,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
     handleFormData('propertyId')({ target: { value: newProperty.id } });
     next();
    } else {
-    message.error('Impossible de créer la propriété');
+    message.error(t('validation.createProperty'));
    }
   } catch (info) {
    console.log('Validate Failed:', info);
@@ -133,16 +135,16 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
       onFinish={submitFormData}
       size="large"
      >
-      <Title level={3}>Enregistrez les informations de votre propriété</Title>
+      <Title level={3}>{t('property.basic.title')}</Title>
       <Row gutter={[24, 0]}>
        <Col xs={24} md={24}>
         <Form.Item
-         label="Veuillez sélectionner un type de propriété!"
+         label={t('type.select')}
          name="type"
          rules={[
           {
            required: true,
-           message: 'Veuillez sélectionner un type de propriété!',
+           message: t('type.select'),
           },
          ]}
         >
@@ -171,12 +173,12 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
 
        <Col xs={24} md={24}>
         <Form.Item
-         label="Nom"
+         label={t('property.basic.name')}
          name="name"
          rules={[
           {
            required: true,
-           message: 'Description',
+           message: t('validation.enterName'),
           },
          ]}
         >
@@ -186,12 +188,12 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
 
        <Col xs={24} md={24}>
         <Form.Item
-         label="Description"
+         label={t('property.basic.description')}
          name="description"
          rules={[
           {
            required: true,
-           message: 'Veuillez saisir une description!',
+           message: t('validation.enterDescription'),
           },
          ]}
         >
@@ -206,12 +208,12 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
 
        <Col xs={24} md={12}>
         <Form.Item
-         label="Airbnb URL"
+         label={t('property.basic.airbnbUrl')}
          name="airbnbUrl"
          rules={[
           {
            type: 'url',
-           message: 'Veuillez saisir une URL valide!',
+           message: t('validation.validUrl'),
           },
          ]}
         >
@@ -226,12 +228,12 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
 
        <Col xs={24} md={12}>
         <Form.Item
-         label="Booking URL"
+         label={t('property.basic.bookingUrl')}
          name="bookingUrl"
          rules={[
           {
            type: 'url',
-           message: 'Veuillez saisir une URL valide!',
+           message: t('validation.validUrl'),
           },
          ]}
         >
@@ -246,7 +248,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
 
        <Col xs={24} md={24}>
         <Form.Item
-         label="Sélectionnez un emplacement sur la carte"
+         label={t('property.basic.selectLocation')}
          required
          rules={[
           {
@@ -256,9 +258,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
              !mapValues.longitude ||
              !mapValues.placeName
             ) {
-             return Promise.reject(
-              'Veuillez sélectionner un emplacement sur la carte'
-             );
+             return Promise.reject(t('property.basic.selectLocation'));
             }
             return Promise.resolve();
            },
@@ -274,7 +274,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
        <Col xs={{ span: 12, offset: 12 }} md={{ span: 4, offset: 20 }}>
         <Form.Item>
          <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-          Continue {<ArrowRightOutlined />}
+          {t('button.continue')} {<ArrowRightOutlined />}
          </Button>
         </Form.Item>
        </Col>

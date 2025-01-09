@@ -1,68 +1,48 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import MapConfig from '../mapconfig';
+import React, { createContext, useState, useContext } from 'react';
+import enTranslations from '../translations/en.json';
+import frTranslations from '../translations/fr.json';
 
 const TranslationContext = createContext();
-const GOOGLE_API_KEY = MapConfig.REACT_APP_GOOGLE_MAP_API_KEY;
-const API_URL = 'https://translation.googleapis.com/language/translate/v2';
 
-// Translation cache to avoid redundant API calls
-const translationCache = new Map();
+// Combine all translations
+const translations = {
+ en: enTranslations,
+ fr: frTranslations,
+};
 
 export const TranslationProvider = ({ children }) => {
- const [currentLanguage, setCurrentLanguage] = useState('fr');
- const [translations, setTranslations] = useState({});
- const [loading, setLoading] = useState(false);
+ // Get initial language from localStorage or default to 'fr'
+ const [currentLanguage, setCurrentLanguage] = useState(
+  localStorage.getItem('preferredLanguage') || 'fr'
+ );
 
- const translateText = async (text, targetLang) => {
-  const cacheKey = `${text}_${targetLang}`;
+ // Function to get translation
+ const t = (key, defaultText = key) => {
+  // Split the key by dots to handle nested objects
+  const keys = key.split('.');
+  let translation = translations[currentLanguage];
 
-  if (translationCache.has(cacheKey)) {
-   return translationCache.get(cacheKey);
+  // Traverse the nested object
+  for (const k of keys) {
+   translation = translation?.[k];
+   if (translation === undefined) {
+    console.warn(
+     `Translation missing for key: ${key} in language: ${currentLanguage}`
+    );
+    return defaultText;
+   }
   }
 
-  try {
-   const response = await fetch(`${API_URL}?key=${GOOGLE_API_KEY}`, {
-    method: 'POST',
-    headers: {
-     'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-     q: text,
-     target: targetLang,
-    }),
-   });
-
-   const data = await response.json();
-   const translatedText = data.data.translations[0].translatedText;
-
-   translationCache.set(cacheKey, translatedText);
-   return translatedText;
-  } catch (error) {
-   console.error('Translation error:', error);
-   return text;
-  }
+  return translation;
  };
 
- const t = async (key, defaultText = key) => {
-  if (translations[currentLanguage]?.[key]) {
-   return translations[currentLanguage][key];
-  }
-
-  try {
-   setLoading(true);
-   const translatedText = await translateText(defaultText, currentLanguage);
-
-   setTranslations((prev) => ({
-    ...prev,
-    [currentLanguage]: {
-     ...prev[currentLanguage],
-     [key]: translatedText,
-    },
-   }));
-
-   return translatedText;
-  } finally {
-   setLoading(false);
+ // Function to change the current language
+ const setLanguage = (language) => {
+  if (translations[language]) {
+   setCurrentLanguage(language);
+   localStorage.setItem('preferredLanguage', language);
+  } else {
+   console.warn(`Language ${language} is not supported`);
   }
  };
 
@@ -71,8 +51,7 @@ export const TranslationProvider = ({ children }) => {
    value={{
     t,
     currentLanguage,
-    setLanguage: setCurrentLanguage,
-    loading,
+    setLanguage,
    }}
   >
    {children}
@@ -87,3 +66,5 @@ export const useTranslation = () => {
  }
  return context;
 };
+
+export default TranslationContext;

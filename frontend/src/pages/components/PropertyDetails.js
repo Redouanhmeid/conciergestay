@@ -28,6 +28,7 @@ import {
  EyeOutlined,
  SettingOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from '../../context/TranslationContext';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -47,188 +48,10 @@ const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
 const { Meta } = Card;
 
-const getAmenityDetails = (type, item, showARulesModal) => {
- const details = {
-  basic: {
-   /* Salle de bain */
-   shower: {
-    avatar: <i className="fa-light fa-shower fa-xl" />,
-    title: 'Douche',
-   },
-   jacuzzi: {
-    avatar: <i className="fa-light fa-hot-tub-person fa-xl" />,
-    title: 'Jacuzzi',
-   },
-   bathtub: {
-    avatar: <i className="fa-light fa-bath fa-xl" />,
-    title: 'Baignoire',
-   },
-   /* Chambre et linge */
-   washingMachine: {
-    avatar: <i className="fa-light fa-washing-machine fa-xl" />,
-    title: 'Machine à laver',
-   },
-   dryerheat: {
-    avatar: <i className="fa-light fa-dryer-heat fa-xl" />,
-    title: 'Sèche-linge',
-   },
-   vacuum: {
-    avatar: <i className="fa-light fa-vacuum fa-xl" />,
-    title: 'Aspirateur',
-   },
-   vault: {
-    avatar: <i className="fa-light fa-vault fa-xl" />,
-    title: 'Coffre-fort',
-   },
-   babybed: {
-    avatar: <i className="fa-light fa-baby fa-xl" />,
-    title: 'Lit bébé',
-   },
-   /* Divertissement */
-   television: {
-    avatar: <i className="fa-light fa-tv fa-xl" />,
-    title: 'Télévision',
-   },
-   speaker: {
-    avatar: <i className="fa-light fa-speaker fa-xl" />,
-    title: 'Système audio',
-   },
-   gameconsole: {
-    avatar: <i className="fa-light fa-gamepad-modern fa-xl" />,
-    title: 'Console de jeux',
-   },
-   /* Cuisine et salle à manger */
-   oven: {
-    avatar: <i className="fa-light fa-oven fa-xl" />,
-    title: 'Four',
-   },
-   microwave: {
-    avatar: <i className="fa-light fa-microwave fa-xl" />,
-    title: 'Micro-ondes',
-   },
-   coffeemaker: {
-    avatar: <i className="fa-light fa-coffee-pot fa-xl" />,
-    title: 'cafétière',
-   },
-   fridge: {
-    avatar: <i className="fa-light fa-refrigerator fa-xl" />,
-    title: 'Réfrigérateur',
-   },
-   fireburner: {
-    avatar: <i className="fa-light fa-fire-burner fa-xl" />,
-    title: 'Cuisinière',
-   },
-   /* Chauffage et climatisation */
-   heating: {
-    avatar: <i className="fa-light fa-temperature-arrow-up fa-xl" />,
-    title: 'Chauffage',
-   },
-   airConditioning: {
-    avatar: <i className="fa-light fa-snowflake fa-xl" />,
-    title: 'Climatisation',
-   },
-   fireplace: {
-    avatar: <i className="fa-light fa-fireplace fa-xl" />,
-    title: 'Cheminée',
-   },
-   ceilingfan: {
-    avatar: <i className="fa-light fa-fan fa-xl" />,
-    title: 'Ventilateur de plafond',
-   },
-   tablefan: {
-    avatar: <i className="fa-light fa-fan-table fa-xl" />,
-    title: 'Ventilateur de table',
-   },
-   /* Sécurité à la maison */
-   fingerprint: {
-    avatar: <i className="fa-light fa-fingerprint fa-xl" />,
-    title: 'Serrure biometrique à empreinte digitale',
-   },
-   lockbox: {
-    avatar: <i className="fa-light fa-lock-hashtag fa-xl" />,
-    title: 'Boite à serrure',
-   },
-   parkingaccess: {
-    avatar: <i className="fa-light fa-square-parking fa-xl" />,
-    title: 'Accès parking',
-   },
-   /* Internet et bureau  */
-   wifi: {
-    avatar: <i className="fa-light fa-wifi fa-xl" />,
-    title: 'Wifi',
-   },
-   dedicatedworkspace: {
-    avatar: <i className="fa-light fa-chair-office fa-xl" />,
-    title: 'Espace dédié de travail',
-   },
-   /* Parking et installations */
-   freeParking: {
-    avatar: <i className="fa-light fa-circle-parking fa-xl" />,
-    title: 'Parking gratuit',
-   },
-   paidParking: {
-    avatar: <i className="fa-light fa-square-parking fa-xl" />,
-    title: 'Stationnement payant',
-   },
-   pool: {
-    avatar: <i className="fa-light fa-water-ladder fa-xl" />,
-    title: 'Piscine',
-   },
-   garbageCan: {
-    avatar: <i className="fa-light fa-trash-can fa-xl" />,
-    title: 'Benne à ordures',
-   },
-  },
-  houseRules: {
-   noNoise: {
-    avatar: <i className="fa-light fa-volume-slash fa-xl" />,
-    title: 'Pas de bruit après 23h',
-   },
-   noFoodDrinks: {
-    avatar: <i className="fa-light fa-utensils-slash fa-xl" />,
-    title: 'Pas de nourriture ni de boissons dans les chambres à coucher',
-   },
-   noParties: {
-    avatar: <i className="fa-light fa-champagne-glasses fa-xl" />,
-    title: "Pas de fêtes ni d'événements",
-   },
-   noSmoking: {
-    avatar: <i className="fa-light fa-ban-smoking fa-xl" />,
-    title: 'Défense de fumer',
-   },
-   noPets: {
-    avatar: <i className="fa-light fa-paw-simple fa-xl" />,
-    title: "Pas d'animaux de compagnie",
-   },
-   noUnmarriedCouple: {
-    avatar: <i className="fa-light fa-ban fa-xl" />,
-    title: 'Pas de couple non marié',
-   },
-   additionalRules: {
-    avatar: (
-     <i
-      onClick={showARulesModal}
-      style={{ color: '#aa7e42', cursor: 'pointer' }}
-      className="fa-light fa-circle-info fa-xl"
-     />
-    ),
-    title: (
-     <span
-      style={{ color: '#aa7e42', cursor: 'pointer' }}
-      onClick={showARulesModal}
-     >
-      Règles supplémentaires
-     </span>
-    ),
-   },
-  },
- };
- return details[type]?.[item] || { avatar: null, title: '' };
-};
-
 const PropertyDetails = () => {
  const location = useLocation();
  const { id } = queryString.parse(location.search);
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const {
   property,
@@ -250,6 +73,88 @@ const PropertyDetails = () => {
  const [isARulesModalOpen, setIsARulesModalOpen] = useState(false);
  const [isOwner, setIsOwner] = useState(false);
  const [imageAspectRatios, setImageAspectRatios] = useState({});
+
+ const getAmenityDetails = (type, item, showARulesModal) => {
+  const icons = {
+   basic: {
+    shower: 'fa-shower',
+    jacuzzi: 'fa-hot-tub-person',
+    bathtub: 'fa-bath',
+    washingMachine: 'fa-washing-machine',
+    dryerheat: 'fa-dryer-heat',
+    vacuum: 'fa-vacuum',
+    vault: 'fa-vault',
+    babybed: 'fa-baby',
+    television: 'fa-tv',
+    speaker: 'fa-speaker',
+    gameconsole: 'fa-gamepad-modern',
+    oven: 'fa-oven',
+    microwave: 'fa-microwave',
+    coffeemaker: 'fa-coffee-pot',
+    fridge: 'fa-refrigerator',
+    fireburner: 'fa-fire-burner',
+    heating: 'fa-temperature-arrow-up',
+    airConditioning: 'fa-snowflake',
+    fireplace: 'fa-fireplace',
+    ceilingfan: 'fa-fan',
+    tablefan: 'fa-fan-table',
+    fingerprint: 'fa-fingerprint',
+    lockbox: 'fa-lock-hashtag',
+    parkingaccess: 'fa-square-parking',
+    wifi: 'fa-wifi',
+    dedicatedworkspace: 'fa-chair-office',
+    freeParking: 'fa-circle-parking',
+    paidParking: 'fa-square-parking',
+    pool: 'fa-water-ladder',
+    garbageCan: 'fa-trash-can',
+   },
+   rules: {
+    noNoise: 'fa-volume-slash',
+    noFoodDrinks: 'fa-utensils-slash',
+    noParties: 'fa-champagne-glasses',
+    noSmoking: 'fa-ban-smoking',
+    noPets: 'fa-paw-simple',
+    noUnmarriedCouple: 'fa-ban',
+    additionalRules: 'fa-circle-info',
+   },
+  };
+
+  const details = {
+   basic: {
+    [item]: {
+     avatar: <i className={`fa-light ${icons.basic[item]} fa-xl`} />,
+     title: t(`amenity.${item}`),
+    },
+   },
+   houseRules: {
+    [item]: {
+     avatar:
+      item === 'additionalRules' ? (
+       <i
+        className={`fa-light ${icons.rules[item]} fa-xl`}
+        onClick={showARulesModal}
+        style={{ color: '#aa7e42', cursor: 'pointer' }}
+       />
+      ) : (
+       <i className={`fa-light ${icons.rules[item]} fa-xl`} />
+      ),
+     title:
+      item === 'additionalRules' ? (
+       <span
+        onClick={showARulesModal}
+        style={{ color: '#aa7e42', cursor: 'pointer' }}
+       >
+        {t('rules.additional')}
+       </span>
+      ) : (
+       t(`rules.${item}`)
+      ),
+    },
+   },
+  };
+
+  return details[type]?.[item] || { avatar: null, title: '' };
+ };
 
  const handleImageLoad = (e, index) => {
   const { naturalWidth, naturalHeight } = e.target;
@@ -296,7 +201,7 @@ const PropertyDetails = () => {
    key: '1',
    label: (
     <a href={`/digitalguidebook?id=${id}`}>
-     <i className="fa-light fa-house-lock" /> Accéder au guidebook digital
+     <i className="fa-light fa-house-lock" /> {t('property.actions.guidebook')}
     </a>
    ),
   },
@@ -304,8 +209,8 @@ const PropertyDetails = () => {
    key: '2',
    label: (
     <a href={`/guestform?id=${id}`}>
-     <i className="fa-light fa-file-signature" /> Formulaire de contrat de
-     réservation d'invité de ce logement
+     <i className="fa-light fa-file-signature" />{' '}
+     {t('property.actions.guestForm')}
     </a>
    ),
   },
@@ -314,8 +219,7 @@ const PropertyDetails = () => {
    key: '3',
    label: (
     <a href={`/contractslist?id=${id}`}>
-     <i className="fa-light fa-list-check" /> Gérer les contrats de réservation
-     de ce logement
+     <i className="fa-light fa-list-check" /> {t('property.actions.contracts')}
     </a>
    ),
   },
@@ -325,13 +229,11 @@ const PropertyDetails = () => {
     <div onClick={toggleEnable}>
      {property.status === 'enable' ? (
       <Text type="danger">
-       <i className="fa-light fa-lock" /> Désactiver votre logement sur
-       ConciergeStay
+       <i className="fa-light fa-lock" /> {t('property.actions.enable')}
       </Text>
      ) : (
       <Text type="success">
-       <i className="fa-light fa-lock-open" /> Activer votre logement sur
-       ConciergeStay
+       <i className="fa-light fa-lock-open" /> {t('property.actions.disable')}
       </Text>
      )}
     </div>
@@ -341,15 +243,15 @@ const PropertyDetails = () => {
    key: '5',
    label: (
     <Popconfirm
-     title="Supprimer la propriété"
-     description="Etes-vous sûr de vouloir supprimer cette propriété ?"
+     title={t('property.actions.delete')}
+     description={t('messages.deleteConfirm')}
      onConfirm={confirmDelete}
      onCancel={cancelDelete}
      okText="Oui"
      cancelText="Non"
     >
      <a>
-      <i className="fa-light fa-trash-can" /> Supprimer
+      <i className="fa-light fa-trash-can" /> {t('property.actions.delete')}
      </a>
     </Popconfirm>
    ),
@@ -566,7 +468,7 @@ const PropertyDetails = () => {
            }}
           >
            <i className="Anchoricon fa-light fa-square-info" />
-           <span>Informations</span>
+           <span>{t('property.sections.info')}</span>
           </div>
          ),
         },
@@ -582,7 +484,7 @@ const PropertyDetails = () => {
            }}
           >
            <i className="Anchoricon fa-light fa-wifi" />
-           <span>Manuelle de la maison</span>
+           <span>{t('property.sections.manual')}</span>
           </div>
          ),
         },
@@ -598,7 +500,7 @@ const PropertyDetails = () => {
            }}
           >
            <i className="Anchoricon fa-light fa-map-marker-alt" />
-           <span>Lieux à proximité</span>
+           <span>{t('property.sections.nearby')}</span>
           </div>
          ),
         },
@@ -614,7 +516,7 @@ const PropertyDetails = () => {
            }}
           >
            <i className="Anchoricon fa-light fa-ban-smoking" />
-           <span>Reglement intérieur</span>
+           <span>{t('property.sections.rules')}</span>
           </div>
          ),
         },
@@ -629,7 +531,7 @@ const PropertyDetails = () => {
         icon={<ArrowLeftOutlined />}
         onClick={goBack}
        >
-        Retour
+        {t('button.back')}
        </Button>
        <div>
         {isOwner && (
@@ -639,12 +541,15 @@ const PropertyDetails = () => {
           }}
           className="right-button"
          >
-          Actions
+          {t('property.actions.actions')}
          </Dropdown.Button>
         )}
-        {success && <p>Propriété supprimée avec succès.</p>}
+        {success && <p>{t('property.messages.success')}</p>}
         {error && (
-         <p>Erreur lors de la suppression de la propriété: {error.message}</p>
+         <p>
+          {t('property.messages.error')}
+          {error.message}
+         </p>
         )}
        </div>
       </Flex>
@@ -652,7 +557,7 @@ const PropertyDetails = () => {
        (userData.role === 'manager' || userData.role === 'admin') && (
         <FloatButton
          icon={<i className="fa-light fa-location-plus" />}
-         tooltip={<div>Ajouter un lieu à proximité</div>}
+         tooltip={<div>{t('nearbyPlace.add')}</div>}
          type="primary"
          onClick={nearbyPlace}
         />
@@ -701,16 +606,18 @@ const PropertyDetails = () => {
           />
          )}
         </Flex>
-        <Title level={3}>{parsedProperty.price} Dh / Nuit</Title>
+        <Title level={3}>
+         {parsedProperty.price} {t('property.basic.priceNight')}
+        </Title>
         <Flex gap="4px 0" wrap>
          <Tag icon={<i className="tag-icon-style fa-light fa-bed-front" />}>
-          {parsedProperty.rooms} Chambres
+          {parsedProperty.rooms} {t('property.basic.rooms')}
          </Tag>
          <Tag icon={<i className="tag-icon-style fa-light fa-users" />}>
-          {parsedProperty.capacity} Voyageurs
+          {parsedProperty.capacity} {t('property.basic.people')}
          </Tag>
          <Tag icon={<i className="tag-icon-style fa-light fa-bed" />}>
-          {parsedProperty.beds} Lit
+          {parsedProperty.beds} {t('property.basic.beds')}
          </Tag>
         </Flex>
         <Divider />
@@ -769,7 +676,7 @@ const PropertyDetails = () => {
        <Divider id="manuelle" />
        {parsedProperty.basicAmenities && (
         <Col xs={24} sm={24}>
-         <Title level={3}>Manuelle de la maison:</Title>
+         <Title level={3}>{t('property.sections.manual')}:</Title>
          <br />
          <Row gutter={[16, 0]}>
           {parsedProperty.basicAmenities.slice(0, 6).map((amenity, index) => {
@@ -797,7 +704,7 @@ const PropertyDetails = () => {
             size="large"
             onClick={showAmenitiesModal}
            >
-            Afficher tous les équipements
+            {t('button.showAllEquipement')}
            </Button>
           </Col>
          </Row>
@@ -815,7 +722,7 @@ const PropertyDetails = () => {
               type="primary"
               onClick={() => EditAmenity(selectedAmenityDetails.id)}
              >
-              Modifier la carte
+              {t('property.actions.editCard')}
              </Button>
             )
            }
@@ -840,10 +747,14 @@ const PropertyDetails = () => {
             {selectedAmenityDetails.name === 'wifi' && (
              <>
               <Divider>
-               <Text strong>Accéder au Wi-Fi</Text>
+               <Text strong>{t('property.accessWifi')}</Text>
               </Divider>
-              <Text>Nom de réseau : {selectedAmenityDetails.wifiName}</Text>
-              <Text>Mot de passe : {selectedAmenityDetails.wifiPassword}</Text>
+              <Text>
+               {t('property.networkName')}: {selectedAmenityDetails.wifiName}
+              </Text>
+              <Text>
+               {t('property.password')}: {selectedAmenityDetails.wifiPassword}
+              </Text>
              </>
             )}
            </Flex>
@@ -853,7 +764,7 @@ const PropertyDetails = () => {
        )}
        <Divider id="map&nearbyplaces" />
        <Col xs={24} sm={24}>
-        <Title level={3}>Où se situe le logement</Title>
+        <Title level={3}>{t('property.accommodationLocated')}</Title>
         <MapMarker
          latitude={parsedProperty.latitude}
          longitude={parsedProperty.longitude}
@@ -869,7 +780,7 @@ const PropertyDetails = () => {
        <Divider id="rules" />
        {parsedProperty.houseRules && (
         <Col xs={24} sm={24}>
-         <Title level={3}>Reglement intérieur:</Title>
+         <Title level={3}>{t('property.sections.rules')}:</Title>
          {isOwner && (
           <Button
            icon={<i className="fa-light fa-pen-to-square" />}
@@ -915,7 +826,7 @@ const PropertyDetails = () => {
     <Foot />
    </Layout>
    <Modal
-    title="Règles supplémentaires"
+    title={t('rules.additionalRules')}
     open={isARulesModalOpen}
     onCancel={handleARulesCancel}
     footer={null}
@@ -945,7 +856,7 @@ const PropertyDetails = () => {
        onClick={() => navigate(`/editequipements?id=${id}`)}
        icon={<i className="fa-light fa-pen-to-square" />}
       >
-       Modifier les équipements
+       {t('property.actions.modifyEquipement')}
       </Button>
      ),
      <Button key="back" onClick={handleAmenitiesCancel}>
@@ -968,7 +879,10 @@ const PropertyDetails = () => {
            isOwner && (amenityExists ? showModal(amenity) : AddAmenity(amenity))
           }
          >
-          {isOwner && (amenityExists ? 'Voir la carte' : 'Ajouter une carte')}
+          {isOwner &&
+           (amenityExists
+            ? t('property.actions.viewCard')
+            : t('property.actions.addCard'))}
          </a>,
         ]}
        >

@@ -42,6 +42,7 @@ import useProperty from '../../../hooks/useProperty';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -86,6 +87,7 @@ const DraggableUploadListItem = ({ originNode, file }) => {
 };
 
 const EditPhotos = () => {
+ const { t } = useTranslation();
  const location = useLocation();
  const { id } = queryString.parse(location.search);
  const navigate = useNavigate();
@@ -124,7 +126,7 @@ const EditPhotos = () => {
 
  const handleSubmit = async () => {
   if (!fileList.length) {
-   console.error('Aucun fichier à télécharger');
+   console.error(t('photo.noFiles'));
    return;
   }
   const filesWithOriginFileObj = fileList.filter((file) => file.originFileObj);
@@ -143,7 +145,7 @@ const EditPhotos = () => {
    navigate(-1);
   } catch (error) {
    console.error('Error handling photos:', error);
-   message.error('Échec du traitement des photos. Veuillez réessayer.');
+   message.error(t('photo.uploadError'));
   }
  };
 
@@ -216,11 +218,11 @@ const EditPhotos = () => {
    }}
   >
    {uploading ? (
-    <div>Téléchargement en cours...</div>
+    <div>{t('photo.uploading')}</div>
    ) : (
     <>
      <PlusOutlined />
-     <div style={{ marginTop: 8 }}>Ajouter des Photos</div>
+     <div style={{ marginTop: 8 }}>{t('validation.addPhotos')}</div>
     </>
    )}
   </div>
@@ -244,7 +246,7 @@ const EditPhotos = () => {
       icon={<ArrowLeftOutlined />}
       onClick={() => navigate(-1)}
      >
-      Retour
+      {t('button.back')}
      </Button>
 
      <Form
@@ -256,7 +258,9 @@ const EditPhotos = () => {
      >
       <Row gutter={[8, 0]}>
        <Col xs={24} md={24}>
-        <Title level={3}>Modifier les photos de votre logement</Title>
+        <Title level={3}>
+         {t('photo.editTitle', 'Modifier les photos de votre logement')}
+        </Title>
         {fileList.length > 1 && (
          <div
           style={{
@@ -264,10 +268,7 @@ const EditPhotos = () => {
            margin: '10px 0',
           }}
          >
-          <Text type="secondary">
-           Vous pouvez réorganiser vos photos en les glissant-déposant
-          </Text>{' '}
-          🎯📷
+          <Text type="secondary">{t('photo.dragDrop')}</Text> 🎯📷
          </div>
         )}
        </Col>
@@ -319,10 +320,7 @@ const EditPhotos = () => {
 
        {fileList.length === 16 && (
         <Col xs={24}>
-         <Alert
-          message="Vous avez atteint le nombre maximum de photos."
-          type="info"
-         />
+         <Alert message={t('photo.maxReached')} type="info" />
          <br />
         </Col>
        )}
@@ -340,7 +338,7 @@ const EditPhotos = () => {
       <Row justify="end">
        <Col xs={16} md={3}>
         <Button type="primary" htmlType="submit" loading={isUpdating}>
-         {success ? 'Mis à jour!' : 'Enregistrer les photos'}
+         {success ? t('messages.updateSuccess') : t('button.save')}
         </Button>
        </Col>
       </Row>

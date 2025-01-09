@@ -21,6 +21,7 @@ import {
  ArrowLeftOutlined,
 } from '@ant-design/icons';
 import useReservationContract from '../../hooks/useReservationContract';
+import { useTranslation } from '../../context/TranslationContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
 import Head from '../../components/common/header';
@@ -30,6 +31,7 @@ const { Title } = Typography;
 const { Content } = Layout;
 
 const ContractsList = () => {
+ const { t } = useTranslation();
  const location = useLocation();
  const { id: propertyId } = queryString.parse(location.search);
  const [contracts, setContracts] = useState([]);
@@ -43,28 +45,13 @@ const ContractsList = () => {
   fetchContracts();
  }, [propertyId]);
 
- const fetchContracts = async () => {
-  try {
-   setLoading(true);
-   const data = await getContractsByProperty(propertyId);
-   // Ensure we're setting an array
-   setContracts(Array.isArray(data) ? data : []);
-  } catch (error) {
-   console.error('Error fetching contracts:', error);
-   message.error('Impossible de récupérer les contrats');
-   setContracts([]); // Set empty array on error
-  } finally {
-   setLoading(false);
-  }
- };
-
  const handleStatusChange = async (contractId, newStatus) => {
   try {
    await updateContractStatus(contractId, newStatus);
-   message.success('Le statut du contrat a été mis à jour avec succès');
+   message.success(t('contracts.success.statusUpdate'));
    fetchContracts(); // Refresh the list
   } catch (error) {
-   message.error('Échec de la mise à jour du statut du contrat');
+   message.error(t('contracts.error.statusUpdate'));
   }
  };
 
@@ -88,7 +75,7 @@ const ContractsList = () => {
 
  const columns = [
   {
-   title: 'Invité',
+   title: t('contracts.guest'),
    key: 'guest',
    render: (text, record) => (
     <Space direction="vertical">
@@ -105,7 +92,7 @@ const ContractsList = () => {
    ),
   },
   {
-   title: 'Identité',
+   title: t('contracts.identity'),
    dataIndex: 'identity',
    key: 'identity',
    render: (text, record) => (
@@ -118,7 +105,7 @@ const ContractsList = () => {
    ),
   },
   {
-   title: 'Signature',
+   title: t('contracts.signature'),
    dataIndex: 'signature',
    key: 'signature',
    render: (text, record) => (
@@ -126,14 +113,14 @@ const ContractsList = () => {
    ),
   },
   {
-   title: 'Status',
+   title: t('contracts.status'),
    key: 'status',
    render: (text, record) => (
     <Tag color={statusColors[record.status]}>{record.status}</Tag>
    ),
   },
   {
-   title: 'Actions',
+   title: t('contracts.actions'),
    key: 'actions',
    render: (text, record) => (
     <Space>
@@ -142,7 +129,7 @@ const ContractsList = () => {
        type="primary"
        onClick={() => handleStatusChange(record.id, 'SENT')}
       >
-       Envoyer
+       {t('contracts.actions.send')}
       </Button>
      )}
      {record.status === 'SENT' && (
@@ -151,10 +138,10 @@ const ContractsList = () => {
         type="primary"
         onClick={() => handleStatusChange(record.id, 'SIGNED')}
        >
-        Marquer comme signé
+        {t('contracts.actions.markSigned')}
        </Button>
        <Button danger onClick={() => handleStatusChange(record.id, 'REJECTED')}>
-        Rejeter
+        {t('contracts.actions.reject')}
        </Button>
       </>
      )}
@@ -163,13 +150,27 @@ const ContractsList = () => {
        type="primary"
        onClick={() => handleStatusChange(record.id, 'COMPLETED')}
       >
-       Complète
+       {t('contracts.actions.complete')}
       </Button>
      )}
     </Space>
    ),
   },
  ];
+
+ const fetchContracts = async () => {
+  try {
+   setLoading(true);
+   const data = await getContractsByProperty(propertyId);
+   // Ensure we're setting an array
+   setContracts(Array.isArray(data) ? data : []);
+  } catch (error) {
+   message.error(t('contracts.error.fetch'));
+   setContracts([]); // Set empty array on error
+  } finally {
+   setLoading(false);
+  }
+ };
 
  // Calculate status counts whenever contracts change
  const statusCounts = contracts.reduce((acc, contract) => {
@@ -188,9 +189,10 @@ const ContractsList = () => {
       icon={<ArrowLeftOutlined />}
       onClick={() => navigate(-1)}
      >
-      Retour
+      {t('button.back')}
      </Button>
-     <Title level={2}>Réservations de contrat</Title>
+     <Title level={2}>{t('contracts.title')}</Title>
+
      <Row gutter={[16, 4]}>
       {/* Status Summary Cards */}
       <Col span={24}>
@@ -199,7 +201,7 @@ const ContractsList = () => {
          <Col span={4} key={status}>
           <Card>
            <Statistic
-            title={status}
+            title={t(`contracts.statuses.${status.toLowerCase()}`)}
             value={count}
             valueStyle={{ color: statusColors[status] }}
            />
@@ -221,21 +223,24 @@ const ContractsList = () => {
          expandedRowRender: (record) => (
           <Space direction="vertical">
            <p>
-            <strong>Nationality:</strong> {record.nationality}
+            <strong>{t('contracts.details.nationality')}:</strong>{' '}
+            {record.nationality}
            </p>
            <p>
-            <strong>Address:</strong> {record.residenceAddress},{' '}
-            {record.residenceCity}
+            <strong>{t('contracts.details.address')}:</strong>{' '}
+            {record.residenceAddress}, {record.residenceCity}
            </p>
            <p>
-            <strong>Postal Code:</strong> {record.residencePostalCode}
+            <strong>{t('contracts.details.postalCode')}:</strong>{' '}
+            {record.residencePostalCode}
            </p>
            <p>
-            <strong>Country:</strong> {record.residenceCountry}
+            <strong>{t('contracts.details.country')}:</strong>{' '}
+            {record.residenceCountry}
            </p>
            {record.birthDate && (
             <p>
-             <strong>Birth Date:</strong>{' '}
+             <strong>{t('contracts.details.birthDate')}:</strong>{' '}
              {new Date(record.birthDate).toLocaleDateString()}
             </p>
            )}

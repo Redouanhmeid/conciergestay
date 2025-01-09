@@ -18,6 +18,7 @@ import fallback from '../../assets/fallback.png';
 import useProperty from '../../hooks/useProperty';
 import useGetPropertiesByLatLon from '../../hooks/useGetPropertiesByLatLon';
 import useDebounce from '../../hooks/useDebounce';
+import { useTranslation } from '../../context/TranslationContext';
 
 const { Text } = Typography;
 
@@ -31,6 +32,7 @@ const PropertyList = ({
  checkedbasicAmenities,
 }) => {
  const navigate = useNavigate();
+ const { t } = useTranslation();
 
  const debouncedCenter = useDebounce(mapCenter, 300);
  const { loading, data } = useGetPropertiesByLatLon(
@@ -112,7 +114,9 @@ const PropertyList = ({
             src={photo}
             preview={false}
             fallback={fallback}
-            placeholder={<div className="image-placeholder">Chargement...</div>}
+            placeholder={
+             <div className="image-placeholder">{t('common.loading')}</div>
+            }
             className={`card-image ${imageAspectRatios[index]}`}
             onLoad={(e) => handleImageLoad(e, index)}
            />
@@ -145,14 +149,14 @@ const PropertyList = ({
            bordered={false}
            icon={<i className="tag-icon-style fa-light fa-bed"></i>}
           >
-           {property.beds} Lit
+           {property.beds} {t('manual.bed')}
           </Tag>
           <Tag
            className="custom-tag"
            bordered={false}
            icon={<i className="tag-icon-style fa-light fa-bed-front"></i>}
           >
-           {property.rooms} Chambre
+           {property.rooms} {t('manual.room')}
           </Tag>
          </Flex>
         }

@@ -17,6 +17,7 @@ import AddPropertyCard from './components/AddPropertyCard';
 import ShareModal from '../components/common/ShareModal';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useUserData } from '../hooks/useUserData';
+import { useTranslation } from '../context/TranslationContext';
 import useProperty from '../hooks/useProperty';
 import { useNavigate } from 'react-router-dom';
 import fallback from '../assets/fallback.png';
@@ -26,6 +27,7 @@ const PropertyManagerHome = () => {
  const { user } = useAuthContext();
  const { isLoading, userData, getUserData } = useUserData();
  const User = user || JSON.parse(localStorage.getItem('user'));
+ const { t } = useTranslation();
  const {
   properties,
   error,
@@ -82,12 +84,10 @@ const PropertyManagerHome = () => {
  const toggleEnable = async (ID) => {
   await toggleEnableProperty(ID);
   if (!error) {
-   message.success('Propriété activer avec succès.');
+   message.success(t('property.toggleSuccess'));
    await fetchPropertiesbypm(userData.id);
   } else {
-   message.error(
-    `Erreur lors de la activation de la propriété: ${error.message}`
-   );
+   message.error(t('property.toggleError', { error: error.message }));
   }
  };
 
@@ -125,7 +125,7 @@ const PropertyManagerHome = () => {
                 src={photo}
                 preview={false}
                 placeholder={
-                 <div className="image-placeholder">Chargement...</div>
+                 <div className="image-placeholder">{t('common.loading')}</div>
                 }
                 fallback={fallback}
                 className={`card-image ${imageAspectRatios[index]}`}
@@ -145,16 +145,17 @@ const PropertyManagerHome = () => {
             <div key="share" onClick={() => showShareModal(property.id)}>
              <i className="Dashicon fa-light fa-share-nodes" />
             </div>,
+
             <Popconfirm
              title={
               property.status === 'enable'
-               ? ' Désactiver la propriété'
-               : ' Activer la propriété'
+               ? t('property.disable')
+               : t('property.enable')
              }
-             description="Etes-vous sûr de vouloir activer cette propriété ?"
+             description={t('property.confirmToggle')}
              onConfirm={() => toggleEnable(property.id)}
-             okText="Oui"
-             cancelText="Non"
+             okText={t('common.yes')}
+             cancelText={t('common.no')}
              icon={
               property.status === 'enable' ? (
                <i

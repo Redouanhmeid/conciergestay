@@ -72,6 +72,7 @@ const downloadQRCode = () => {
 };
 
 const Account = () => {
+ const { t } = useTranslation();
  const [form] = Form.useForm();
  const { user } = useAuthContext();
  const {
@@ -97,23 +98,6 @@ const Account = () => {
  ); // Default to first country
 
  const pageUrl = window.location.href;
- const { t } = useTranslation();
- const [translations, setTranslations] = useState({
-  manageAccount: '',
-  infoPrivacy: '',
-  createHostCard: '',
-  lastName: '',
-  firstName: '',
-  phone: '',
-  upload: '',
-  updateProfile: '',
-  changeAvatar: '',
-  quickLinks: '',
-  changePassword: '',
-  download: '',
-  passwordUpdateSuccess: '',
-  detailsUpdateError: '',
- });
 
  useEffect(() => {
   const initializeUserData = async () => {
@@ -124,43 +108,6 @@ const Account = () => {
   };
   initializeUserData();
  }, [currentUser?.email]);
-
- useEffect(() => {
-  async function loadTranslations() {
-   setTranslations({
-    manageAccount: await t('account.manage', 'Gérer mon compte'),
-    infoPrivacy: await t(
-     'account.privacy',
-     'Ces informations sont uniquement destinées à votre compte, les invités ne les verront pas.'
-    ),
-    createHostCard: await t(
-     'account.hostCard',
-     "Créez une carte d'hôte pour partager vos coordonnées avec les invités."
-    ),
-    lastName: await t('account.lastName', 'Nom'),
-    firstName: await t('account.firstName', 'Prénom'),
-    phone: await t('account.phone', 'Téléphone'),
-    upload: await t('common.upload', 'Charger'),
-    updateProfile: await t('account.updateProfile', 'Mettre à jour du profil'),
-    changeAvatar: await t('account.changeAvatar', "Changer l'avatar"),
-    quickLinks: await t('account.quickLinks', 'Liens rapides'),
-    changePassword: await t(
-     'account.changePassword',
-     'Modifier le mot de passe'
-    ),
-    download: await t('common.download', 'Télécharger'),
-    passwordUpdateSuccess: await t(
-     'account.passwordUpdateSuccess',
-     'Détails mis à jour avec succès!'
-    ),
-    detailsUpdateError: await t(
-     'account.updateError',
-     'Erreur lors de la mise à jour des détails!'
-    ),
-   });
-  }
-  loadTranslations();
- }, [t]);
 
  // Update form values when userData changes
  useEffect(() => {
@@ -206,9 +153,9 @@ const Account = () => {
 
  // Handle success and error messages
  useEffect(() => {
-  if (success) message.success(translations.passwordUpdateSuccess);
-  if (error) message.warning(translations.detailsUpdateError);
- }, [success, error]);
+  if (success) message.success(t('account.passwordUpdateSuccess'));
+  if (error) message.warning(t('account.updateError'));
+ }, [success, error, t]);
 
  const urlToFile = async (url, filename) => {
   try {
@@ -288,7 +235,7 @@ const Account = () => {
      marginTop: 8,
     }}
    >
-    {translations.upload}
+    <div style={{ marginTop: 8 }}>{t('common.upload')}</div>
    </div>
   </button>
  );
@@ -306,10 +253,10 @@ const Account = () => {
    <Content className="container">
     <Row gutter={[16, 16]}>
      <Col xs={24} sm={14}>
-      <Title level={2}>{translations.manageAccount}</Title>
-      <Text>{translations.infoPrivacy}</Text>
+      <Title level={2}>{t('account.manage')}</Title>
+      <Text>{t('account.privacy')}</Text>
       <br />
-      <Text>{translations.createHostCard}</Text>
+      <Text>{t('account.hostCard')}</Text>
       <br />
       <Divider />
       <Form
@@ -321,13 +268,13 @@ const Account = () => {
        labelAlign="left"
        size="large"
       >
-       <Form.Item name="lastname" label={translations.lastName}>
+       <Form.Item name="lastname" label={t('account.lastName')}>
         <Input />
        </Form.Item>
-       <Form.Item name="firstname" label={translations.firstName}>
+       <Form.Item name="firstname" label={t('account.firstName')}>
         <Input />
        </Form.Item>
-       <Form.Item name="phone" label={translations.phone}>
+       <Form.Item name="phone" label={t('account.phone')}>
         <InputNumber
          type="number"
          addonBefore={
@@ -349,7 +296,7 @@ const Account = () => {
        </Form.Item>
        <Form.Item>
         <Button type="primary" htmlType="submit" loading={isLoading}>
-         {translations.updateProfile}
+         {t('account.updateProfile')}
         </Button>
        </Form.Item>
       </Form>
@@ -394,7 +341,7 @@ const Account = () => {
          <Col xs={12}>
           <Form.Item>
            <Button type="primary" htmlType="submit" loading={uploading}>
-            {translations.changeAvatar}
+            {t('account.changeAvatar')}
            </Button>
           </Form.Item>
          </Col>
@@ -406,7 +353,7 @@ const Account = () => {
      <Col xs={24} sm={10}>
       <Flex justify="center" align="center" style={{ height: 'auto' }}>
        <Card
-        title={translations.quickLinks}
+        title={t('account.quickLinks')}
         style={{ width: '80%', textAlign: 'center' }}
        >
         <Space size="small" direction="vertical">
@@ -414,7 +361,7 @@ const Account = () => {
           <Link to="/">Gérer l'abonnement</Link>
          </p> */}
          <p>
-          <Link onClick={showPWDModal}>{translations.changePassword}</Link>
+          <Link onClick={showPWDModal}>{t('account.changePassword')}</Link>
          </p>
          <div id="qrcode">
           <QRCode size={220} value={pageUrl} />
@@ -422,7 +369,7 @@ const Account = () => {
          <br />
          <Flex gap="small" wrap="wrap">
           <Button icon={<DownloadOutlined />} onClick={downloadQRCode}>
-           {translations.download}
+           {t('common.download')}
           </Button>
           <Button
            type="link"
@@ -441,7 +388,7 @@ const Account = () => {
        </Card>
 
        <Modal
-        title="Modifier le mot de passe"
+        title={t('account.changePassword')}
         open={isModalOpen}
         onCancel={handlePWDCancel}
         footer={null}

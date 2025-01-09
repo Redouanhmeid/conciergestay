@@ -18,6 +18,7 @@ import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import { useNavigate } from 'react-router-dom';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
+import { useTranslation } from '../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -25,6 +26,7 @@ const { Title } = Typography;
 const NearbyPlaces = () => {
  const { error, getAllNearbyPlaces, deleteNearbyPlace } = useNearbyPlace();
  const navigate = useNavigate();
+ const { t } = useTranslation();
  const [searchText, setSearchText] = useState('');
  const [searchedColumn, setSearchedColumn] = useState('');
  const [dataSource, setDataSource] = useState([]);
@@ -46,7 +48,7 @@ const NearbyPlaces = () => {
    });
    setLoading(false);
   } catch (err) {
-   message.error('Échec du chargement des détails du lieu.');
+   message.error(t('map.messageError'));
   }
  };
 
@@ -77,7 +79,7 @@ const NearbyPlaces = () => {
   }) => (
    <div style={{ padding: 8 }}>
     <Input
-     placeholder={`Chercher`}
+     placeholder={t('common.search')}
      value={selectedKeys[0]}
      onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
      onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
@@ -91,14 +93,14 @@ const NearbyPlaces = () => {
       size="small"
       style={{ width: 90 }}
      >
-      Search
+      {t('common.search')}
      </Button>
      <Button
       onClick={() => handleReset(clearFilters)}
       size="small"
       style={{ width: 90 }}
      >
-      Réinitialiser
+      {t('common.reset')}
      </Button>
     </Space>
    </div>
@@ -114,7 +116,7 @@ const NearbyPlaces = () => {
 
  const columns = [
   {
-   title: 'Photo',
+   title: t('common.photo'),
    dataIndex: 'photo',
    key: 'photo',
    render: (photo) => (
@@ -122,50 +124,52 @@ const NearbyPlaces = () => {
    ),
   },
   {
-   title: 'Nom',
+   title: t('nearbyPlace.name'),
    dataIndex: 'name',
    key: 'name',
    sorter: (a, b) => a.name.localeCompare(b.name),
    ...getColumnSearchProps('name'),
   },
   {
-   title: 'Adresse',
+   title: t('nearbyPlace.address'),
    dataIndex: 'address',
    key: 'address',
    sorter: (a, b) => a.address.localeCompare(b.address),
    ...getColumnSearchProps('address'),
   },
   {
-   title: 'Note',
+   title: t('nearbyPlace.rating'),
    dataIndex: 'rating',
    key: 'rating',
    sorter: (a, b) => a.rating - b.rating,
    render: (rating) => <span>{rating} / 5</span>,
   },
   {
-   title: 'Vérifié',
+   title: t('manager.verified'),
    dataIndex: 'isVerified',
    key: 'isVerified',
    filters: [
-    { text: 'Vérifié', value: true },
-    { text: 'Non vérifié', value: false },
+    { text: t('manager.verifiedStatus.verified'), value: true },
+    { text: t('manager.verifiedStatus.unverified'), value: false },
    ],
    onFilter: (value, record) => record.isVerified === value,
    render: (isVerified) => (
     <Tag color={isVerified ? 'green' : 'red'}>
-     {isVerified ? 'Vérifié' : 'Non vérifié'}
+     {isVerified
+      ? t('manager.verifiedStatus.verified')
+      : t('manager.verifiedStatus.unverified')}
     </Tag>
    ),
   },
   {
-   title: 'Créé le',
+   title: t('manager.createdAt'),
    dataIndex: 'createdAt',
    key: 'createdAt',
    sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
    render: (createdAt) => new Date(createdAt).toLocaleString(),
   },
   {
-   title: 'Actions',
+   title: t('property.actions.actions'),
    key: 'actions',
    render: (_, record) => (
     <Space>
@@ -176,7 +180,7 @@ const NearbyPlaces = () => {
       shape="circle"
      />
      <Popconfirm
-      title="Etes-vous sûr de supprimer?"
+      title={t('messages.deleteConfirm')}
       onConfirm={() => confirmDelete(record.id)}
      >
       <Button
@@ -196,9 +200,9 @@ const NearbyPlaces = () => {
   await deleteNearbyPlace(id);
   if (!error) {
    fetchData();
-   message.success('Lieu supprimée avec succès.');
+   message.success(t('messages.deleteSuccess'));
   } else {
-   message.error(`Erreur lors de la suppression du lieu: ${error.message}`);
+   message.error(t('messages.deleteError', { error: error.message }));
   }
  };
 
@@ -212,9 +216,9 @@ const NearbyPlaces = () => {
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
     >
-     Retour
+     {t('button.back')}
     </Button>
-    <Title level={2}>Lieux à proximité</Title>
+    <Title level={2}>{t('nearbyPlace.title')}</Title>
     <Row gutter={[16, 16]}>
      <Col xs={24} md={24}>
       <Table

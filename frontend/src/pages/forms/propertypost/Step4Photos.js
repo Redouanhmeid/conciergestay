@@ -39,6 +39,7 @@ import {
 } from '@ant-design/icons';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import useUpdateProperty from '../../../hooks/useUpdateProperty';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -133,6 +134,7 @@ const DraggableUploadListItem = ({ originNode, file }) => {
 };
 
 const Step4Photos = ({ next, prev, values }) => {
+ const { t } = useTranslation();
  const {
   updatePropertyPhotos,
   isLoading: isUpdating,
@@ -234,7 +236,7 @@ const Step4Photos = ({ next, prev, values }) => {
    next();
   } catch (error) {
    console.error('Error handling photos:', error);
-   message.error('Échec du traitement des photos. Veuillez réessayer.');
+   message.error(t('photo.uploadError'));
   }
  };
 
@@ -254,16 +256,12 @@ const Step4Photos = ({ next, prev, values }) => {
 
  useEffect(() => {
   if (updateError) {
-   message.error(
-    'Échec de la mise à jour des photos de la propriété : ' + updateError
-   );
+   message.error(t('photo.uploadError'));
   }
   if (updateSuccess) {
-   message.success(
-    'Les photos de la propriété ont été mises à jour avec succès'
-   );
+   message.success(t('photo.uploadSuccess'));
   }
- }, [updateError, updateSuccess]);
+ }, [updateError, updateSuccess, t]);
 
  const uploadButton = (
   <div
@@ -276,7 +274,7 @@ const Step4Photos = ({ next, prev, values }) => {
    }}
   >
    {uploading ? (
-    <div style={{ marginTop: 8 }}>Téléchargement en cours...</div>
+    <div style={{ marginTop: 8 }}>{t('photo.uploading')}</div>
    ) : (
     <button
      style={{
@@ -286,13 +284,7 @@ const Step4Photos = ({ next, prev, values }) => {
      type="button"
     >
      <PlusOutlined />
-     <div
-      style={{
-       marginTop: 8,
-      }}
-     >
-      Ajouter des Photos
-     </div>
+     <div style={{ marginTop: 8 }}>{t('validation.addPhotos')}</div>
     </button>
    )}
   </div>
@@ -306,7 +298,7 @@ const Step4Photos = ({ next, prev, values }) => {
      <Form name="step4" layout="vertical" onFinish={handleSubmit} size="large">
       <Row gutter={[24, 0]}>
        <Col xs={24} md={24}>
-        <Title level={2}>Ajouter des Photos de votre logement</Title>
+        <Title level={2}>{t('photo.title')}</Title>
         {fileList.length > 1 && (
          <div
           style={{
@@ -314,10 +306,7 @@ const Step4Photos = ({ next, prev, values }) => {
            margin: '10px 0',
           }}
          >
-          <Text type="secondary">
-           Vous pouvez réorganiser vos photos en les glissant-déposant
-          </Text>{' '}
-          🎯📷
+          <Text type="secondary">{t('photo.dragDrop')}</Text> 🎯📷
          </div>
         )}
        </Col>
@@ -370,10 +359,7 @@ const Step4Photos = ({ next, prev, values }) => {
        </Col>
        {fileList.length === 16 && (
         <Col xs={24}>
-         <Alert
-          message="Vous avez atteint le nombre maximum de photos."
-          type="info"
-         />
+         <Alert message={t('photo.maxReached')} type="info" />
          <br />
         </Col>
        )}
@@ -407,7 +393,7 @@ const Step4Photos = ({ next, prev, values }) => {
           style={{ width: '100%' }}
           loading={uploading || isUpdating}
          >
-          Continue {<ArrowRightOutlined />}
+          {t('button.continue')} {<ArrowRightOutlined />}
          </Button>
         </Form.Item>
        </Col>

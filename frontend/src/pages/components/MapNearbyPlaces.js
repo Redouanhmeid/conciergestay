@@ -9,12 +9,14 @@ import {
 } from '@vis.gl/react-google-maps';
 import { useGoogleMapsLoader } from '../../services/GoogleMapService';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
+import { useTranslation } from '../../context/TranslationContext';
 
 // Define libraries as a const variable outside of the component
 const libraries = ['places', 'geometry'];
 const { Text, Paragraph } = Typography;
 
 const MapNearbyPlaces = React.memo(({ latitude, longitude, type }) => {
+ const { t } = useTranslation();
  const isLoaded = useGoogleMapsLoader();
 
  const { loading, error, getNearbyPlacesByLatLon } = useNearbyPlace();
@@ -46,7 +48,7 @@ const MapNearbyPlaces = React.memo(({ latitude, longitude, type }) => {
      setPlaces(data);
     })
     .catch((err) => {
-     message.error('Échec du chargement des détails du lieu.');
+     message.error(t('map.messageError'));
     });
   }
  }, [latitude, longitude]);

@@ -17,11 +17,13 @@ import useUpdateProperty from '../../../hooks/useUpdateProperty';
 import useProperty from '../../../hooks/useProperty';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 const EditBasicInfo = () => {
+ const { t } = useTranslation();
  const location = useLocation();
  const { id } = queryString.parse(location.search);
  const navigate = useNavigate();
@@ -32,17 +34,17 @@ const EditBasicInfo = () => {
 
  const propertyTypes = [
   {
-   label: 'Maison',
+   label: t('type.house'),
    value: 'house',
    icon: <i className="Radioicon fa-light fa-house"></i>,
   },
   {
-   label: 'Appartement',
+   label: t('type.apartment'),
    value: 'apartment',
    icon: <i className="Radioicon fa-light fa-building"></i>,
   },
   {
-   label: "Maison d'hôtes",
+   label: t('type.guesthouse'),
    value: 'guesthouse',
    icon: <i className="Radioicon fa-light fa-house-user"></i>,
   },
@@ -54,13 +56,7 @@ const EditBasicInfo = () => {
 
  useEffect(() => {
   if (!loading && property) {
-   if (property.type == 'house') {
-    setCheckedType('house');
-   } else if (property.type == 'apartment') {
-    setCheckedType('apartment');
-   } else if (property.type == 'guesthouse') {
-    setCheckedType('guesthouse');
-   }
+   setCheckedType(property.type);
    form.setFieldsValue({
     name: property.name,
     description: property.description,
@@ -95,11 +91,9 @@ const EditBasicInfo = () => {
       icon={<ArrowLeftOutlined />}
       onClick={() => navigate(-1)}
      >
-      Retour
+      {t('button.back')}
      </Button>
-     <Title level={3}>
-      Modifier les informations de base de votre propriété
-     </Title>
+     <Title level={3}>{t('property.edit.title')}</Title>
      <Form
       name="editBasicInfo"
       form={form}
@@ -110,12 +104,12 @@ const EditBasicInfo = () => {
       <Row gutter={[16, 8]}>
        <Col xs={24} md={24}>
         <Form.Item
-         label="Type de propriété"
+         label={t('property.basic.type')}
          name="type"
          rules={[
           {
            required: true,
-           message: 'Veuillez sélectionner un type de propriété!',
+           message: t('validation.selectType'),
           },
          ]}
         >
@@ -144,8 +138,8 @@ const EditBasicInfo = () => {
        <Col xs={24}>
         <Form.Item
          name="name"
-         label="Nom"
-         rules={[{ required: true, message: 'Veuillez saisir un nom!' }]}
+         label={t('property.basic.name')}
+         rules={[{ required: true, message: t('validation.enterName') }]}
         >
          <Input />
         </Form.Item>
@@ -153,27 +147,25 @@ const EditBasicInfo = () => {
        <Col xs={24}>
         <Form.Item
          name="description"
-         label="Description"
-         rules={[
-          { required: true, message: 'Veuillez saisir une description!' },
-         ]}
+         label={t('property.basic.description')}
+         rules={[{ required: true, message: t('validation.enterDescription') }]}
         >
          <Input.TextArea showCount maxLength={500} rows={6} />
         </Form.Item>
        </Col>
        <Col xs={24} md={12}>
-        <Form.Item name="airbnbUrl" label="Airbnb URL">
+        <Form.Item name="airbnbUrl" label={t('property.basic.airbnbUrl')}>
          <Input />
         </Form.Item>
        </Col>
        <Col xs={24} md={12}>
-        <Form.Item name="bookingUrl" label="Booking URL">
+        <Form.Item name="bookingUrl" label={t('property.basic.bookingUrl')}>
          <Input />
         </Form.Item>
        </Col>
        <Col xs={24}>
         <Button type="primary" htmlType="submit" loading={isLoading}>
-         {success ? 'Mis à jour!' : 'Enregistrer les informations de base'}
+         {success ? t('messages.updateSuccess') : t('button.save')}
         </Button>
        </Col>
       </Row>

@@ -40,6 +40,7 @@ const getBase64 = (file) =>
  });
 
 const CreateNearbyPlace = () => {
+ const { t } = useTranslation();
  const { loading, createNearbyPlace } = useNearbyPlace();
  const { uploadPlace } = useUploadPhotos();
  const navigate = useNavigate();
@@ -50,91 +51,13 @@ const CreateNearbyPlace = () => {
  const [filelist, setFileList] = useState([]);
  const [selectedItems, setSelectedItems] = useState([]);
  const [placeExists, setPlaceExists] = useState(false);
- const { t } = useTranslation();
- const [translations, setTranslations] = useState({
-  restaurantcafe: '',
-  activite: '',
-  attraction: '',
-  centrecommercial: '',
-  back: '',
-  addPlace: '',
-  name: '',
-  address: '',
-  googleUrl: '',
-  rating: '',
-  types: '',
-  photo: '',
-  upload: '',
-  tip: '',
-  tipStrong: '',
-  tipText: '',
-  customizeText: '',
-  placeExists: '',
-  fillRequired: '',
-  createSuccess: '',
-  createError: '',
-  selectType: '',
-  addPlaceButton: '',
- });
-
- useEffect(() => {
-  async function loadTranslations() {
-   setTranslations({
-    restaurantcafe: await t('nearbyPlace.restaurantcafe', 'Restaurant et Café'),
-    activite: await t('nearbyPlace.activite', 'Activité'),
-    attraction: await t('nearbyPlace.attraction', 'Attraction'),
-    mall: await t('nearbyPlace.mall', 'Centre commercial'),
-    back: await t('common.back', 'Retour'),
-    addPlace: await t('nearbyPlace.add', 'Ajouter un lieu à proximité'),
-    name: await t('nearbyPlace.name', 'Nom'),
-    address: await t('nearbyPlace.address', 'Adresse'),
-    googleUrl: await t('nearbyPlace.googleUrl', 'URL de la place dans Google'),
-    rating: await t('nearbyPlace.rating', 'Note'),
-    types: await t('nearbyPlace.types', 'Types'),
-    photo: await t('nearbyPlace.photo', 'Photo'),
-    upload: await t('common.upload', 'Charger'),
-    tip: await t('nearbyPlace.tip', 'Astuce:'),
-    tipText: await t(
-     'nearbyPlace.tipText',
-     "Téléchargez l'une des photo sur votre appareil et téléchargez-la à nouveau pour personnaliser votre de lieu à proximité!"
-    ),
-    customizeText: await t(
-     'nearbyPlace.customize',
-     'Enregistrez-la sur votre appareil, puis utilisez la fonction Charger pour ajouter votre propre touche !'
-    ),
-    placeExists: await t('nearbyPlace.exists', 'Le lieu existe déjà'),
-    fillRequired: await t(
-     'validation.required',
-     'Veuillez remplir tous les champs requis!'
-    ),
-    createSuccess: await t(
-     'nearbyPlace.createSuccess',
-     'Lieu à proximité créé avec succès'
-    ),
-    createError: await t(
-     'nearbyPlace.createError',
-     'Échec de la création du lieu à proximité'
-    ),
-    selectType: await t(
-     'nearbyPlace.selectType',
-     'Veuillez sélectionner au moins un type !'
-    ),
-    addPlaceButton: await t(
-     'nearbyPlace.addButton',
-     'Ajouter un lieu à proximité'
-    ),
-   });
-  }
-  loadTranslations();
- }, [t]);
 
  const OPTIONS = [
-  translations.restaurantcafe,
-  translations.activite,
-  translations.attraction,
-  translations.mall,
+  t('nearbyPlace.restaurantcafe'),
+  t('nearbyPlace.activite'),
+  t('nearbyPlace.attraction'),
+  t('nearbyPlace.mall'),
  ];
-
  const screens = useBreakpoint();
  const getImageSize = () => {
   if (screens.xs) {
@@ -183,7 +106,7 @@ const CreateNearbyPlace = () => {
  const uploadButton = (
   <div>
    <PlusOutlined />
-   <div style={{ marginTop: 8 }}>{translations.upload}</div>
+   <div style={{ marginTop: 8 }}>{t('common.upload')}</div>
   </div>
  );
 
@@ -199,7 +122,7 @@ const CreateNearbyPlace = () => {
   };
   try {
    await createNearbyPlace(mergedValues);
-   message.success(translations.createSuccess);
+   message.success(t('nearbyPlace.createSuccess'));
    form.resetFields();
    setFileList([]);
    setLatitude(null);
@@ -209,7 +132,7 @@ const CreateNearbyPlace = () => {
    if (error.response.data.error === 'Place already exists') {
     setPlaceExists(true);
    } else {
-    message.error(translations.createError);
+    message.error(t('nearbyPlace.createError'));
    }
   }
  };
@@ -235,17 +158,17 @@ const CreateNearbyPlace = () => {
       icon={<ArrowLeftOutlined />}
       onClick={goBack}
      >
-      {translations.back}
+      {t('button.back')}
      </Button>
      <Row gutter={[24, 0]}>
-      <Title level={2}>{translations.addPlace}</Title>
+      <Title level={2}>{t('nearbyPlace.add')}</Title>
       <Col xs={24} md={24}>
        <Form
         form={form}
         layout="vertical"
         onFinish={onFinish}
         onFinishFailed={() => {
-         message.error('Veuillez remplir tous les champs requis!');
+         message.error(t('validation.required'));
         }}
        >
         <Row gutter={[24, 0]}>
@@ -255,33 +178,33 @@ const CreateNearbyPlace = () => {
           </Form.Item>
          </Col>
          <Col xs={24} md={8}>
-          <Form.Item name="name" label={translations.name}>
+          <Form.Item name="name" label={t('nearbyPlace.name')}>
            <Input />
           </Form.Item>
          </Col>
          <Col xs={24} md={8}>
-          <Form.Item name="address" label={translations.address}>
+          <Form.Item name="address" label={t('nearbyPlace.address')}>
            <Input />
           </Form.Item>
          </Col>
          <Col xs={24} md={8}>
-          <Form.Item name="url" label={translations.googleUrl}>
+          <Form.Item name="url" label={t('nearbyPlace.googleUrl')}>
            <Input />
           </Form.Item>
          </Col>
          <Col xs={24} md={4}>
-          <Form.Item name="rating" label={translations.rating}>
+          <Form.Item name="rating" label={t('nearbyPlace.rating')}>
            <Rate allowHalf style={{ color: '#aa7e42' }} />
           </Form.Item>
          </Col>
          <Col xs={24} md={14}>
           <Form.Item
            name="types"
-           label="Types"
+           label={t('nearbyPlace.types')}
            rules={[
             {
              required: true,
-             message: translations.selectType,
+             message: t('nearbyPlace.selectType'),
             },
            ]}
           >
@@ -301,7 +224,7 @@ const CreateNearbyPlace = () => {
          <Col xs={24} md={6}>
           <Form.Item
            name="photo"
-           label={translations.photo}
+           label={t('nearbyPlace.photo')}
            valuePropName="filelist"
            getValueFromEvent={(e) => e.filelist}
           >
@@ -324,10 +247,11 @@ const CreateNearbyPlace = () => {
           <Col xs={24}>
            <Paragraph>
             <Text>
-             <Text strong>{translations.tip}</Text> {translations.tipText}
+             <Text strong>{t('nearbyPlace.tip')}</Text>{' '}
+             {t('nearbyPlace.tipText')}
             </Text>
             <br />
-            <Text>{translations.customizeText}</Text>
+            <Text>{t('nearbyPlace.customize')}</Text>
            </Paragraph>
           </Col>
           {placePhotos.map((photo, index) => (
@@ -350,7 +274,7 @@ const CreateNearbyPlace = () => {
           <Col xs={24} md={6}>
            <br />
            <Alert
-            message="Le lieu existe déjà"
+            message={t('nearbyPlace.exists')}
             type="warning"
             showIcon
             closable
@@ -369,7 +293,7 @@ const CreateNearbyPlace = () => {
             htmlType="submit"
             loading={!loading}
            >
-            {translations.addPlaceButton}
+            {t('nearbyPlace.addButton')}
            </Button>
           </Form.Item>
          </Col>

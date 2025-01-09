@@ -18,6 +18,7 @@ import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import { useNavigate } from 'react-router-dom';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
+import { useTranslation } from '../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -32,6 +33,8 @@ const PendingNearbyPlaces = () => {
   bulkVerifyNearbyPlaces,
  } = useNearbyPlace();
  const navigate = useNavigate();
+ const { t } = useTranslation();
+
  const [searchText, setSearchText] = useState('');
  const [searchedColumn, setSearchedColumn] = useState('');
  const [dataSource, setDataSource] = useState([]);
@@ -56,7 +59,7 @@ const PendingNearbyPlaces = () => {
     total: data.totalCount, // Total count from server
    });
   } catch (err) {
-   message.error('Échec du chargement des détails du lieu.');
+   message.error(t('map.messageError'));
   }
  };
 
@@ -67,7 +70,7 @@ const PendingNearbyPlaces = () => {
  const handleVerifyNearbyPlace = async (ID) => {
   const result = await verifyNearbyPlace(ID);
   if (result) {
-   message.success(`Le lieux a proximite a été vérifié!`);
+   message.success(t('nearbyPlace.verifySuccess'));
    await fetchData();
   }
  };
@@ -75,13 +78,15 @@ const PendingNearbyPlaces = () => {
  // Handle bulk verification
  const handleBulkVerify = async () => {
   if (selectedRowKeys.length === 0) {
-   message.warning('Aucune lieux à proximité sélectionné pour vérification.');
+   message.warning(t('nearbyPlace.noPlacesSelected'));
    return;
   }
 
   const results = await bulkVerifyNearbyPlaces(selectedRowKeys);
   if (results) {
-   message.success(`${selectedRowKeys.length} Lieux à proximité vérifiés!`);
+   message.success(
+    t('nearbyPlace.bulkVerifySuccess', { count: selectedRowKeys.length })
+   );
    setSelectedRowKeys([]); // Clear selection after verification
    await fetchData();
   }
@@ -117,7 +122,7 @@ const PendingNearbyPlaces = () => {
   }) => (
    <div style={{ padding: 8 }}>
     <Input
-     placeholder={`Chercher`}
+     placeholder={t('common.search')}
      value={selectedKeys[0]}
      onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
      onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
@@ -131,14 +136,14 @@ const PendingNearbyPlaces = () => {
       size="small"
       style={{ width: 90 }}
      >
-      Search
+      {t('common.search')}
      </Button>
      <Button
       onClick={() => handleReset(clearFilters)}
       size="small"
       style={{ width: 90 }}
      >
-      Réinitialiser
+      {t('common.reset')}
      </Button>
     </Space>
    </div>
@@ -154,7 +159,7 @@ const PendingNearbyPlaces = () => {
 
  const columns = [
   {
-   title: 'Photo',
+   title: t('common.photo'),
    dataIndex: 'photo',
    key: 'photo',
    render: (photo) => (
@@ -162,35 +167,35 @@ const PendingNearbyPlaces = () => {
    ),
   },
   {
-   title: 'Nom',
+   title: t('nearbyPlace.name'),
    dataIndex: 'name',
    key: 'name',
    sorter: (a, b) => a.name.localeCompare(b.name),
    ...getColumnSearchProps('name'),
   },
   {
-   title: 'Adresse',
+   title: t('nearbyPlace.address'),
    dataIndex: 'address',
    key: 'address',
    sorter: (a, b) => a.address.localeCompare(b.address),
    ...getColumnSearchProps('address'),
   },
   {
-   title: 'Note',
+   title: t('nearbyPlace.rating'),
    dataIndex: 'rating',
    key: 'rating',
    sorter: (a, b) => a.rating - b.rating,
    render: (rating) => <span>{rating} / 5</span>,
   },
   {
-   title: 'Créé le',
+   title: t('manager.createdAt'),
    dataIndex: 'createdAt',
    key: 'createdAt',
    sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
    render: (createdAt) => new Date(createdAt).toLocaleString(),
   },
   {
-   title: 'Actions',
+   title: t('property.actions.actions'),
    key: 'actions',
    render: (_, record) => (
     <Space>
@@ -201,7 +206,7 @@ const PendingNearbyPlaces = () => {
       shape="circle"
      />
      <Popconfirm
-      title="Etes-vous sûr de supprimer?"
+      title={t('messages.deleteConfirm')}
       onConfirm={() => confirmDelete(record.id)}
      >
       <Button
@@ -214,7 +219,7 @@ const PendingNearbyPlaces = () => {
      </Popconfirm>
 
      <Button type="primary" onClick={() => handleVerifyNearbyPlace(record.id)}>
-      Vérifier
+      {t('nearbyPlace.verify')}
      </Button>
     </Space>
    ),
@@ -225,9 +230,9 @@ const PendingNearbyPlaces = () => {
   await deleteNearbyPlace(id);
   if (!error) {
    fetchData();
-   message.success('Lieu supprimée avec succès.');
+   message.success(t('messages.deleteSuccess'));
   } else {
-   message.error(`Erreur lors de la suppression du lieu: ${error.message}`);
+   message.error(t('messages.deleteError', { error: error.message }));
   }
  };
 
@@ -241,9 +246,9 @@ const PendingNearbyPlaces = () => {
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
     >
-     Retour
+     {t('button.back')}
     </Button>
-    <Title level={2}>Lieux à proximité</Title>
+    <Title level={2}>{t('nearbyPlace.pending')}</Title>
     <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
      <Col>
       <Button
@@ -251,7 +256,7 @@ const PendingNearbyPlaces = () => {
        disabled={selectedRowKeys.length === 0}
        onClick={handleBulkVerify}
       >
-       Vérifier les lieux à proximité sélectionnés
+       {t('nearbyPlace.verifySelected')}
       </Button>
      </Col>
     </Row>

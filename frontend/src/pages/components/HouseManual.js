@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Row, Col, Divider, Card, Typography, Image, Grid } from 'antd';
 import ReactPlayer from 'react-player';
+import { useTranslation } from '../../context/TranslationContext';
 
 const { Text, Paragraph } = Typography;
 const { Meta } = Card;
@@ -39,76 +40,43 @@ const amenityIcons = {
  garbageCan: <i className="fa-light fa-trash-can fa-xl" />,
 };
 
-const amenityTitles = {
- shower: 'Douche',
- jacuzzi: 'Jacuzzi',
- bathtub: 'Baignoire',
- washingMachine: 'Machine à laver',
- dryerheat: 'Sèche-linge',
- vacuum: 'Aspirateur',
- vault: 'Coffre-fort',
- babybed: 'Lit bébé',
- television: 'Télévision',
- speaker: 'Système audio',
- gameconsole: 'Console de jeux',
- oven: 'Four',
- microwave: 'Micro-ondes',
- coffeemaker: 'Cafétière',
- fridge: 'Réfrigérateur',
- fireburner: 'Cuisinière',
- heating: 'Chauffage',
- airConditioning: 'Climatisation',
- fireplace: 'Cheminée',
- ceilingfan: 'Ventilateur de plafond',
- tablefan: 'Ventilateur de table',
- fingerprint: 'Serrure biometrique à empreinte digitale',
- lockbox: 'Boite à serrure',
- parkingaccess: 'Accès parking',
- wifi: 'Wifi',
- dedicatedworkspace: 'Espace dédié de travail',
- freeParking: 'Parking gratuit',
- paidParking: 'Stationnement payant',
- pool: 'Piscine',
- garbageCan: 'Benne à ordures',
-};
-
-const amenityCategories = {
- 'Salle de bain': ['shower', 'jacuzzi', 'bathtub'],
- 'Chambre et linge': [
-  'washingMachine',
-  'dryerheat',
-  'vacuum',
-  'vault',
-  'babybed',
- ],
- Divertissement: ['television', 'speaker', 'gameconsole'],
- 'Cuisine et salle à manger': [
-  'oven',
-  'microwave',
-  'coffeemaker',
-  'fridge',
-  'fireburner',
- ],
- 'Chauffage et climatisation': [
-  'heating',
-  'airConditioning',
-  'fireplace',
-  'ceilingfan',
-  'tablefan',
- ],
- 'Sécurité à la maison': ['fingerprint', 'lockbox', 'parkingaccess'],
- 'Internet et bureau': ['wifi', 'dedicatedworkspace'],
- 'Parking et installations': [
-  'freeParking',
-  'paidParking',
-  'pool',
-  'garbageCan',
- ],
-};
-
 const AmenityCard = React.memo(
  ({ amenity, description, media, wifiName, wifiPassword, shouldBeFullRow }) => {
+  const { t } = useTranslation();
   const screens = useBreakpoint();
+  const amenityTitles = {
+   shower: t('amenity.shower'),
+   jacuzzi: t('amenity.jacuzzi'),
+   bathtub: t('amenity.bathtub'),
+   washingMachine: t('amenity.washingMachine'),
+   dryerheat: t('amenity.dryerheat'),
+   vacuum: t('amenity.vacuum'),
+   vault: t('amenity.vault'),
+   babybed: t('amenity.babybed'),
+   television: t('amenity.television'),
+   speaker: t('amenity.speaker'),
+   gameconsole: t('amenity.gameconsole'),
+   oven: t('amenity.oven'),
+   microwave: t('amenity.microwave'),
+   coffeemaker: t('amenity.coffeemaker'),
+   fridge: t('amenity.fridge'),
+   fireburner: t('amenity.fireburner'),
+   heating: t('amenity.heating'),
+   airConditioning: t('amenity.airConditioning'),
+   fireplace: t('amenity.fireplace'),
+   ceilingfan: t('amenity.ceilingfan'),
+   tablefan: t('amenity.tablefan'),
+   fingerprint: t('amenity.fingerprint'),
+   lockbox: t('amenity.lockbox'),
+   parkingaccess: t('amenity.parkingaccess'),
+   wifi: t('amenity.wifi'),
+   dedicatedworkspace: t('amenity.dedicatedworkspace'),
+   freeParking: t('amenity.freeParking'),
+   paidParking: t('amenity.paidParking'),
+   pool: t('amenity.pool'),
+   garbageCan: t('amenity.garbageCan'),
+  };
+
   return (
    <Card
     hoverable={false}
@@ -143,11 +111,11 @@ const AmenityCard = React.memo(
         <>
          <br />
          <Paragraph>
-          <Text strong>Nom Wi-Fi: </Text>
+          <Text strong>{t('amenity.wifiName')}: </Text>
           {wifiName}
          </Paragraph>
          <Paragraph>
-          <Text strong>Mot de passe Wi-Fi: </Text>
+          <Text strong>{t('amenity.wifiPassword')}: </Text>
           <Text copyable>{wifiPassword}</Text>
          </Paragraph>
         </>
@@ -156,7 +124,7 @@ const AmenityCard = React.memo(
         ellipsis={{
          rows: 4,
          expandable: true,
-         symbol: 'lire plus',
+         symbol: t('button.readMore'),
         }}
        >
         {description}
@@ -170,6 +138,49 @@ const AmenityCard = React.memo(
 );
 
 const HouseManual = React.memo(({ amenities }) => {
+ const { t } = useTranslation();
+ const amenityCategories = {
+  [t('amenity.categories.bathroom')]: ['shower', 'jacuzzi', 'bathtub'],
+  [t('amenity.categories.bedroomLinen')]: [
+   'washingMachine',
+   'dryerheat',
+   'vacuum',
+   'vault',
+   'babybed',
+  ],
+  [t('amenity.categories.entertainment')]: [
+   'television',
+   'speaker',
+   'gameconsole',
+  ],
+  [t('amenity.categories.kitchenDiningRoom')]: [
+   'oven',
+   'microwave',
+   'coffeemaker',
+   'fridge',
+   'fireburner',
+  ],
+  [t('amenity.categories.heatingCooling')]: [
+   'heating',
+   'airConditioning',
+   'fireplace',
+   'ceilingfan',
+   'tablefan',
+  ],
+  [t('amenity.categories.homeSecurity')]: [
+   'fingerprint',
+   'lockbox',
+   'parkingaccess',
+  ],
+  [t('amenity.categories.internetOffice')]: ['wifi', 'dedicatedworkspace'],
+  [t('amenity.categories.parkingFacilities')]: [
+   'freeParking',
+   'paidParking',
+   'pool',
+   'garbageCan',
+  ],
+ };
+
  const availableAmenities = useMemo(() => {
   return Object.entries(amenityCategories).reduce(
    (acc, [category, categoryAmenities]) => {

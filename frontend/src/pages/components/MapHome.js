@@ -9,6 +9,7 @@ import {
  useMap,
 } from '@vis.gl/react-google-maps';
 import useGetPropertiesByLatLon from '../../hooks/useGetPropertiesByLatLon';
+import { useTranslation } from '../../context/TranslationContext';
 import useDebounce from '../../hooks/useDebounce';
 import { useNavigate } from 'react-router-dom';
 import pinIcon from '../../assets/position.gif';
@@ -29,6 +30,7 @@ const MapHome = React.memo(
   paxValue,
   checkedbasicAmenities,
  }) => {
+  const { t } = useTranslation();
   const [mapCenter, setMapCenter] = useState(FALLBACK_CENTER);
   const [currentPosition, setCurrentPosition] = useState();
   const [zoom, setZoom] = useState(13);
@@ -195,14 +197,18 @@ const MapHome = React.memo(
          <span style={{ color: '#aa7e42', fontWeight: 'bold' }}>
           {selectedPlace.price}
          </span>{' '}
-         Dh / Nuit
+         {t('property.basic.priceNight')}
         </Text>
         <Flex justify="space-between">
          <Tag>
-          <Text size={16}>{selectedPlace.rooms} Chambres</Text>
+          <Text size={16}>
+           {selectedPlace.rooms} {t('property.basic.rooms')}
+          </Text>
          </Tag>
          <Tag>
-          <Text size={16}>{selectedPlace.capacity} Capacité Personne</Text>
+          <Text size={16}>
+           {selectedPlace.capacity} {t('property.basic.Capacity')}
+          </Text>
          </Tag>
         </Flex>
        </Space>

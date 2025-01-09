@@ -18,11 +18,13 @@ import Foot from '../../../components/common/footer';
 import { useNavigate } from 'react-router-dom';
 import useUpdatePropertyCapacity from '../../../hooks/useUpdateProperty';
 import useUpdatePropertyRules from '../../../hooks/useUpdateProperty';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 const Step5HouseManual = ({ prev, values }) => {
+ const { t } = useTranslation();
  const {
   updatePropertyCapacity,
   isLoading: capacityLoading,
@@ -84,7 +86,7 @@ const Step5HouseManual = ({ prev, values }) => {
    await updatePropertyRules(rulesData);
   } catch (error) {
    hasErrors = true;
-   message.error('Une erreur est survenue');
+   message.error(t('alert.genericError'));
   }
 
   if (!hasErrors) {
@@ -123,10 +125,10 @@ const Step5HouseManual = ({ prev, values }) => {
        additionalRules: AdditionalRules,
       }}
      >
-      <Title level={2}>Manuel de la maison</Title>
+      <Title level={2}>{t('manual.title')}</Title>
       <Row gutter={[24, 0]}>
        <Col xs={24} md={9}>
-        <Form.Item label="À présent, fixez votre prix" name="price">
+        <Form.Item label={t('manual.setPrice')} name="price">
          <InputNumber
           min={0}
           addonAfter="Dh"
@@ -136,7 +138,7 @@ const Step5HouseManual = ({ prev, values }) => {
         </Form.Item>
        </Col>
        <Col xs={9} md={5}>
-        <Form.Item label="Max Personnes" name="capacity">
+        <Form.Item label={t('manual.maxPeople')} name="capacity">
          <InputNumber
           min={0}
           value={Capacity}
@@ -145,7 +147,7 @@ const Step5HouseManual = ({ prev, values }) => {
         </Form.Item>
        </Col>
        <Col xs={8} md={5}>
-        <Form.Item label="Chambres" name="rooms">
+        <Form.Item label={t('manual.rooms')} name="rooms">
          <InputNumber
           min={0}
           value={Rooms}
@@ -154,7 +156,7 @@ const Step5HouseManual = ({ prev, values }) => {
         </Form.Item>
        </Col>
        <Col xs={7} md={5}>
-        <Form.Item label="Lits" name="beds">
+        <Form.Item label={t('manual.beds')} name="beds">
          <InputNumber
           min={0}
           value={Beds}
@@ -164,41 +166,42 @@ const Step5HouseManual = ({ prev, values }) => {
        </Col>
 
        <Col xs={24} md={24}>
-        <Form.Item label="Règles de la maison:" name="houseRules">
+        <Form.Item label={t('manual.houseRules')} name="houseRules">
          <Checkbox.Group value={HouseRules} onChange={onChangehouseRules}>
           <Row gutter={[24, 0]}>
            <Col xs={24}>
             <Checkbox value="noNoise">
-             <i className="fa-light fa-volume-slash fa-xl" /> Pas de bruit après
-             23h
+             <i className="fa-light fa-volume-slash fa-xl" />{' '}
+             {t('rules.noNoise')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="noFoodDrinks">
-             <i className="fa-light fa-utensils-slash fa-xl" /> Pas de
-             nourriture ni de boissons dans les chambres à coucher
+             <i className="fa-light fa-utensils-slash fa-xl" />{' '}
+             {t('rules.noFood')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="noParties">
-             <i className="fa-light fa-champagne-glasses fa-xl" /> Pas de fêtes
-             ni d'événements
+             <i className="fa-light fa-champagne-glasses fa-xl" />{' '}
+             {t('rules.noParties')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="noSmoking">
-             <i className="fa-light fa-ban-smoking fa-xl" /> Défense de fumer
+             <i className="fa-light fa-ban-smoking fa-xl" />{' '}
+             {t('rules.noSmoking')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="noPets">
-             <i className="fa-light fa-paw-simple fa-xl" /> Pas d'animaux de
-             compagnie
+             <i className="fa-light fa-paw-simple fa-xl" /> {t('rules.noPets')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="noUnmarriedCouple">
-             <i className="fa-light fa-ban fa-xl" /> Pas de couple non marié
+             <i className="fa-light fa-ban fa-xl" />{' '}
+             {t('rules.noUnmarriedCouple')}
             </Checkbox>
            </Col>
            <Col xs={24}>
@@ -207,8 +210,8 @@ const Step5HouseManual = ({ prev, values }) => {
              checked={showAdditionalRules}
              onChange={(e) => setShowAdditionalRules(e.target.checked)}
             >
-             <i className="fa-light fa-circle-info fa-xl" /> Règles
-             supplémentaires
+             <i className="fa-light fa-circle-info fa-xl" />{' '}
+             {t('rules.additionalRules')}
             </Checkbox>
            </Col>
           </Row>
@@ -217,7 +220,7 @@ const Step5HouseManual = ({ prev, values }) => {
        </Col>
        {showAdditionalRules && (
         <Col xs={24} md={24}>
-         <Form.Item label="Règles supplémentaires" value="AdditionalRules">
+         <Form.Item label={t('rules.additionalRules')} value="AdditionalRules">
           <Input.TextArea
            rows={4}
            value={AdditionalRules} // Use value instead of onChange
@@ -233,7 +236,11 @@ const Step5HouseManual = ({ prev, values }) => {
 
       {capacitySuccess && !capacityError && rulesSuccess && !rulesError && (
        <Col xs={24}>
-        <Alert message="Propriété créée avec succès" type="success" closable />
+        <Alert
+         message={t('alert.propertyCreateSuccess')}
+         type="success"
+         closable
+        />
         <br />
        </Col>
       )}
@@ -241,7 +248,7 @@ const Step5HouseManual = ({ prev, values }) => {
        (rulesError && (
         <Col xs={24}>
          <Alert
-          message="Échec de la création de la propriété"
+          message={t('alert.propertyCreateError')}
           type="error"
           closable
          />
@@ -269,7 +276,7 @@ const Step5HouseManual = ({ prev, values }) => {
           loading={capacityLoading || rulesLoading}
           disabled={capacitySuccess || rulesSuccess}
          >
-          Enregistrer
+          {t('button.save')}
          </Button>
         </Form.Item>
        </Col>

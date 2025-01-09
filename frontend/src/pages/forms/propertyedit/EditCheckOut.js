@@ -20,6 +20,7 @@ import useUpdateProperty from '../../../hooks/useUpdateProperty';
 import useProperty from '../../../hooks/useProperty';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -30,6 +31,7 @@ const format = 'HH:mm';
 const DEFAULT_CHECK_OUT_TIME = dayjs().hour(12).minute(0); // 12:00 AM
 
 const TimePickerWithDefault = ({ value, onChange, name, label }) => {
+ const { t } = useTranslation();
  // Internal state to track if user has made a selection
  const [hasUserSelected, setHasUserSelected] = useState(
   value && value.format('HH:mm') !== '00:00'
@@ -56,13 +58,14 @@ const TimePickerWithDefault = ({ value, onChange, name, label }) => {
     onClear={handleClear}
     allowClear={false}
     value={value}
-    placeholder="Sélectionnez l'heure de départ"
+    placeholder={t('timePicker.selectCheckOut')}
    />
   </Form.Item>
  );
 };
 
 const EditCheckOut = () => {
+ const { t } = useTranslation();
  const location = useLocation();
  const { id } = queryString.parse(location.search);
  const navigate = useNavigate();
@@ -97,18 +100,13 @@ const EditCheckOut = () => {
 
  useEffect(() => {
   if (success) {
-   message.success(
-    "Les informations d'arrivée ont été mises à jour avec succès"
-   );
+   message.success(t('messages.updateSuccess'));
    navigate(-1);
   }
   if (error) {
-   message.error(
-    error ||
-     "Une erreur s'est produite lors de la mise à jour des informations d'arrivée"
-   );
+   message.error(error || t('messages.updateError'));
   }
- }, [success, error, navigate]);
+ }, [success, error, navigate, t]);
 
  if (loading || property.length === 0) {
   return (
@@ -129,9 +127,11 @@ const EditCheckOut = () => {
       icon={<ArrowLeftOutlined />}
       onClick={() => navigate(-1)}
      >
-      Retour
+      {t('button.back')}
      </Button>
-     <Title level={3}>Modifier les informations de départ</Title>
+     <Title level={3}>
+      {t('checkOut.editTitle', 'Modifier les informations de départ')}
+     </Title>
      <Form
       name="editCheckOut"
       form={form}
@@ -144,39 +144,36 @@ const EditCheckOut = () => {
          value={checkOutTime}
          onChange={setCheckOutTime}
          name="checkOutTime"
-         label="À quelle heure voulez-vous demander aux invités de quitter les lieux ?"
+         label={t('checkOut.departureTime')}
          isCheckIn={true}
         />
        </Col>
 
        <Col xs={24}>
         <Form.Item
-         label="Sélectionnez les déclarations qui décrivent le mieux votre politique de départ tardif :"
+         label={t('property.checkOut.policyTitle')}
          name="lateCheckOutPolicy"
         >
          <Checkbox.Group>
           <Row>
            <Col xs={24}>
             <Checkbox value="heureNonFlexible">
-             Malheureusement l'heure de départ n'est pas flexible.
+             {t('checkOut.policyNotFlexible')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="heureDepartAlternative">
-             Lorsque l'horaire le permet, il nous fait plaisir d'accommoder une
-             heure de départ alternative. Contactez-nous à l'avance si vous
-             souhaitez prendre un arrangement à cet effet.
+             {t('checkOut.policyAlternateTime')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="contactezNous">
-             Communiquez avec nous si vous aimeriez quitter plus tard.
+             {t('checkOut.policyContactUs')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="optionDepartTardif">
-             Montrer l’option du départ tardif (si ce n’est pas coché on ne va
-             pas le mentionner)
+             {t('checkOut.policyLateOption')}
             </Checkbox>
            </Col>
           </Row>
@@ -185,83 +182,77 @@ const EditCheckOut = () => {
        </Col>
 
        <Col xs={24}>
-        <Form.Item
-         label="Que doivent faire les invités avant de partir ?"
-         name="beforeCheckOut"
-        >
+        <Form.Item label={t('checkOut.tasksTitle')} name="beforeCheckOut">
          <Checkbox.Group>
           <Row>
            <Col xs={24}>
             <Checkbox value="laissezBagages">
-             Vous pouvez laissez vos bagages dans la propriété après l’heure du
-             départ.
+             {t('checkOut.tasksStoreBags')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="signezLivreOr">
-             S’il vous plait, signez notre livre d’or avant de partir.
+             {t('checkOut.tasksGuestBook')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="litsNonFaits">
-             Laissez les lits que vous avez utilisés défaits.
+             {t('checkOut.tasksUnmadeBeds')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="laverVaisselle">
-             Merci de laver et ranger vaisselle et plats utilisés.
+             {t('checkOut.tasksCleanDishes')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="vaisselleLaveVaisselle">
-             Mettez la vaisselle de dernière minute dans le lave-vaisselle.
+             {t('checkOut.tasksFinalDishes')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="eteindreAppareilsElectriques">
-             Merci de vous assurer que vous avez bien éteint la cuisinière,
-             lumières et autres appareils électriques.
+             {t('checkOut.tasksTurnOffAppliances')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="replacezMeubles">
-             Replacez les meubles à leur endroit original.
+             {t('checkOut.tasksReplaceFurniture')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="deposePoubelles">
-             Merci de déposer poubelles et déchets dans les containers
-             appropriés.
+             {t('checkOut.tasksGarbage')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="serviettesDansBaignoire">
-             Mettez vos serviettes utilisées dans la baignoire.
+             {t('checkOut.tasksTowelsInBath')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="serviettesParTerre">
-             Laissez les serviettes utilisées par terre.
+             {t('checkOut.tasksTowelsOnFloor')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="portesVerrouillees">
-             Laissez la porte déverrouillée.
+             {t('checkOut.tasksDoorUnlocked')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="porteNonVerrouillee">
-             Assurez-vous que les portes sont verrouillées.
+             {t('checkOut.tasksDoorLocked')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="laissezCleMaison">
-             Laissez la clé dans la maison.
+             {t('checkOut.tasksKeyInHouse')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="laissezCleBoiteCle">
-             Laissez la clé dans la boîte à clef.
+             {t('checkOut.tasksKeyInBox')}
             </Checkbox>
            </Col>
           </Row>
@@ -271,7 +262,7 @@ const EditCheckOut = () => {
 
        <Col xs={24}>
         <Form.Item
-         label="Informations supplémentaires sur le départ :"
+         label={t('checkOut.additionalInfo')}
          name="additionalCheckOutInfo"
         >
          <TextArea showCount maxLength={500} />
@@ -280,7 +271,7 @@ const EditCheckOut = () => {
       </Row>
 
       <Button type="primary" htmlType="submit" loading={isLoading}>
-       {success ? 'Mis à jour!' : 'Enregistrer les informations de départ'}
+       {success ? t('messages.updateSuccess') : t('button.save')}
       </Button>
      </Form>
     </Content>

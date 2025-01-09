@@ -17,12 +17,14 @@ import useProperty from '../../../hooks/useProperty';
 import useUpdateProperty from '../../../hooks/useUpdateProperty';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 const EditHouseRules = () => {
+ const { t } = useTranslation();
  const location = useLocation();
  const { id } = queryString.parse(location.search);
  const { property, loading, fetchProperty } = useProperty();
@@ -62,9 +64,9 @@ const EditHouseRules = () => {
       icon={<ArrowLeftOutlined />}
       onClick={() => navigate(-1)}
      >
-      Retour
+      {t('button.back')}
      </Button>
-     <Title level={3}>Modifier les règles de la maison:</Title>
+     <Title level={3}>{t('rules.editTitle')}</Title>
      <Form
       name="editHouseRules"
       form={form}
@@ -77,36 +79,36 @@ const EditHouseRules = () => {
         <Row gutter={[24, 0]}>
          <Col xs={24}>
           <Checkbox value="noNoise">
-           <i className="fa-light fa-volume-slash fa-xl" /> Pas de bruit après
-           23h
+           <i className="fa-light fa-volume-slash fa-xl" /> {t('rules.noNoise')}
           </Checkbox>
          </Col>
          <Col xs={24}>
           <Checkbox value="noFoodDrinks">
-           <i className="fa-light fa-utensils-slash fa-xl" /> Pas de nourriture
-           ni de boissons dans les chambres à coucher
+           <i className="fa-light fa-utensils-slash fa-xl" />{' '}
+           {t('rules.noFood')}
           </Checkbox>
          </Col>
          <Col xs={24}>
           <Checkbox value="noParties">
-           <i className="fa-light fa-champagne-glasses fa-xl" /> Pas de fêtes ni
-           d'événements
+           <i className="fa-light fa-champagne-glasses fa-xl" />{' '}
+           {t('rules.noParties')}
           </Checkbox>
          </Col>
          <Col xs={24}>
           <Checkbox value="noSmoking">
-           <i className="fa-light fa-ban-smoking fa-xl" /> Défense de fumer
+           <i className="fa-light fa-ban-smoking fa-xl" />{' '}
+           {t('rules.noSmoking')}
           </Checkbox>
          </Col>
          <Col xs={24}>
           <Checkbox value="noPets">
-           <i className="fa-light fa-paw-simple fa-xl" /> Pas d'animaux de
-           compagnie
+           <i className="fa-light fa-paw-simple fa-xl" /> {t('rules.noPets')}
           </Checkbox>
          </Col>
          <Col xs={24}>
           <Checkbox value="noUnmarriedCouple">
-           <i className="fa-light fa-ban fa-xl" /> Pas de couple non marié
+           <i className="fa-light fa-ban fa-xl" />{' '}
+           {t('rules.noUnmarriedCouple')}
           </Checkbox>
          </Col>
          <Col xs={24}>
@@ -115,8 +117,8 @@ const EditHouseRules = () => {
            checked={showAdditionalRules}
            onChange={(e) => setShowAdditionalRules(e.target.checked)}
           >
-           <i className="fa-light fa-circle-info fa-xl" /> Règles
-           supplémentaires
+           <i className="fa-light fa-circle-info fa-xl" />{' '}
+           {t('rules.additionalRules')}
           </Checkbox>
          </Col>
         </Row>
@@ -124,7 +126,7 @@ const EditHouseRules = () => {
       </Form.Item>
       {showAdditionalRules && (
        <Col xs={24} md={24}>
-        <Form.Item label="Règles supplémentaires" value="AdditionalRules">
+        <Form.Item label={t('rules.additionalRules')} value="AdditionalRules">
          <TextArea
           rows={4}
           value={additionalRules}
@@ -136,7 +138,7 @@ const EditHouseRules = () => {
        </Col>
       )}
       <Button type="primary" htmlType="submit" loading={isLoading}>
-       {success ? 'Mis à jour!' : 'Enregistrer les règles de la maison'}
+       {success ? t('messages.updateSuccess') : t('button.save')}
       </Button>
      </Form>
     </Content>

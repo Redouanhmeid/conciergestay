@@ -31,50 +31,6 @@ const Login = () => {
  const [email, setEmail] = useState('');
  const [password, setPassword] = useState('');
 
- const [translations, setTranslations] = useState({
-  login: '',
-  needAccount: '',
-  signupHere: '',
-  loginWithGoogle: '',
-  orUseEmail: '',
-  emailPlaceholder: '',
-  emailRequired: '',
-  passwordPlaceholder: '',
-  passwordRequired: '',
-  rememberMe: '',
-  forgotPassword: '',
-  loginButton: '',
- });
-
- useEffect(() => {
-  async function loadTranslations() {
-   setTranslations({
-    login: await t('auth.login', 'Se connecter'),
-    needAccount: await t('auth.needAccount', "Besoin d'un compte?"),
-    signupHere: await t('auth.signupHere', 'Inscrivez-vous ici'),
-    loginWithGoogle: await t(
-     'auth.loginWithGoogle',
-     'Connectez-vous avec Google'
-    ),
-    orUseEmail: await t('auth.orUseEmail', 'Ou utilisez E-mail'),
-    emailPlaceholder: await t('auth.emailPlaceholder', 'Email'),
-    emailRequired: await t(
-     'auth.emailRequired',
-     'Veuillez saisir votre email!'
-    ),
-    passwordPlaceholder: await t('auth.passwordPlaceholder', 'Mot de passe'),
-    passwordRequired: await t(
-     'auth.passwordRequired',
-     'Veuillez saisir votre Mot de passe!'
-    ),
-    rememberMe: await t('auth.rememberMe', 'Rappelez-vous de moi'),
-    forgotPassword: await t('auth.forgotPassword', 'Mot de passe oublié?'),
-    loginButton: await t('auth.loginButton', 'Se connecter'),
-   });
-  }
-  loadTranslations();
- }, [t]);
-
  const handleSubmit = async (e) => {
   await login(email, password);
  };
@@ -91,11 +47,10 @@ const Login = () => {
      <div className="sign-container">
       <img src={Logo} alt="Logo" className="sign-logo" />
       <Title level={2} className="sign-title">
-       {translations.login}
+       {t('auth.login')}
       </Title>
       <Text className="sign-subtitle">
-       {translations.needAccount}{' '}
-       <Link to="/signup">{translations.signupHere}</Link>
+       {t('auth.needAccount')} <Link to="/signup">{t('auth.signupHere')}</Link>
       </Text>
       <Divider />
       <Button
@@ -105,9 +60,9 @@ const Login = () => {
        disabled={isLoading}
        className="sign-google-button"
       >
-       {translations.loginWithGoogle}
+       {t('auth.loginWithGoogle')}
       </Button>
-      <Divider>{translations.orUseEmail}</Divider>
+      <Divider>{t('auth.orUseEmail')}</Divider>
       <Form
        name="signin"
        initialValues={{ remember: true }}
@@ -125,13 +80,13 @@ const Login = () => {
          {
           type: 'email',
           required: true,
-          message: translations.emailRequired,
+          message: t('auth.emailRequired'),
          },
         ]}
        >
         <Input
          prefix={<UserOutlined />}
-         placeholder={translations.emailPlaceholder}
+         placeholder={t('auth.emailPlaceholder')}
         />
        </Form.Item>
        <Form.Item
@@ -141,21 +96,21 @@ const Login = () => {
         rules={[
          {
           required: true,
-          message: translations.passwordRequired,
+          message: t('auth.passwordRequired'),
          },
         ]}
        >
         <Input.Password
          prefix={<LockOutlined />}
-         placeholder={translations.passwordPlaceholder}
+         placeholder={t('auth.passwordPlaceholder')}
         />
        </Form.Item>
        <div className="sign-options">
         <Form.Item name="remember" valuePropName="checked" noStyle>
-         <Checkbox>{translations.rememberMe}</Checkbox>
+         <Checkbox>{t('auth.rememberMe')}</Checkbox>
         </Form.Item>
         <Link to="/reset-password-request" className="forgot-password-link">
-         {translations.forgotPassword}
+         {t('auth.forgotPassword')}
         </Link>
        </div>
        {error && (
@@ -170,7 +125,7 @@ const Login = () => {
          htmlType="submit"
          className="sign-submit-button"
         >
-         {translations.loginButton}
+         {t('auth.loginButton')}
         </Button>
        </Form.Item>
       </Form>

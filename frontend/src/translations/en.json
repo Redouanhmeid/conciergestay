@@ -1,0 +1,694 @@
+{
+    "header": {
+        "adminPanel": "Administrator Panel",
+        "dashboard": "Dashboard",
+        "Revandtasks": "Revenues and Tasks",
+        "account": "My Account",
+        "referral": "Refer a Friend",
+        "logout": "Log Out",
+        "createAccount": "Create Account",
+        "profile": "Profile",
+        "greeting": "Hello"
+    },
+    "property": {
+        "title": "Properties",
+        "pending": "Pending Properties",
+        "basic": {
+            "title": "Register your property information",
+            "name": "Name",
+            "description": "Description",
+            "type": "Property Type",
+            "location": "Location",
+            "capacity": "Max People",
+            "rooms": "Rooms",
+            "beds": "Beds",
+            "people": "People",
+            "price": "Price",
+            "setPrice": "Set your price",
+            "airbnbUrl": "Airbnb URL",
+            "bookingUrl": "Booking URL",
+            "selectLocation": "Select a location on the map",
+            "Capacity": "Capacity Person",
+            "priceNight": "Dh / Night"
+        },
+        "checkOutTitle": "Check-out",
+        "checkOutDepartureTime": "What time would you like guests to leave?",
+        "checkOut": {
+            "policyTitle": "Select the statements that best describe your late check-out policy:"
+        },
+        "amenities": {
+            "title": "Tell guests what amenities your property has:"
+        },
+        "edit": {
+            "title": "Edit your property's basic information"
+        },
+        "updateError": "Unable to update property information",
+        "toggleSuccess": "Property activated successfully.",
+        "toggleError": "Error activating property: {error}",
+        "disable": "Disable property",
+        "enable": "Enable property",
+        "confirmToggle": "Are you sure you want to enable this property?",
+        "addButton": "Add your property",
+        "sections": {
+            "info": "Information",
+            "manual": "House Manual",
+            "nearby": "Nearby Places",
+            "rules": "House Rules"
+        },
+        "accessWifi": "Access Wi-Fi",
+        "networkName": "Network Name ",
+        "password": "Password ",
+        "accommodationLocated": "Where is the accommodation located",
+        "actions": {
+            "actions": "Actions",
+            "guidebook": "Access Digital Guidebook",
+            "guestForm": "Guest Reservation Form",
+            "contracts": "Manage Reservation Contracts",
+            "enable": "Enable Property",
+            "disable": "Disable Property",
+            "delete": "Delete Property",
+            "viewCard": "View the card",
+            "addCard": "Add a card",
+            "editCard": "Edit the card",
+            "modifyEquipement": "Modify equipment"
+        },
+        "messages": {
+            "success": "Property deleted successfully.",
+            "error": "Error deleting property: "
+        },
+        "verify": "Verify",
+        "verifySuccess": "The property has been verified!",
+        "noPropertiesSelected": "No properties selected for verification.",
+        "bulkVerifySuccess": " properties verified!",
+        "verifySelected": "Verify selected properties",
+        "view": "View"
+    },
+    "type": {
+        "house": "House",
+        "apartment": "Apartment",
+        "guesthouse": "Guest House",
+        "select": "Please select a property type!"
+    },
+    "validation": {
+        "required": "This field is required",
+        "selectType": "Please select a property type!",
+        "createProperty": "Failed to create property",
+        "enterName": "Please enter your name!",
+        "enterDescription": "Please enter a description!",
+        "selectLocation": "Please select a location on the map",
+        "enterPrice": "Please enter a price!",
+        "enterCapacity": "Please enter capacity!",
+        "enterRooms": "Please enter the number of rooms!",
+        "enterBeds": "Please enter the number of beds!",
+        "validUrl": "Please enter a valid URL!",
+        "addPhotos": "Add Photos",
+        "lastName": "Please provide your Last Name.",
+        "firstName": "Please provide your First Name.",
+        "email": "Please provide a valid email address.",
+        "createPassword": "Please create a password.",
+        "passwordLength": "Password must be at least 8 characters long.",
+        "passwordRequirements": "Password must contain at least one lowercase letter, one uppercase letter, and one number.",
+        "passwordMismatch": "The passwords you entered do not match!"
+    },
+    "photo": {
+        "title": "Add Photos of your Property",
+        "dragDrop": "You can rearrange your photos by drag and drop",
+        "maxReached": "You have reached the maximum number of photos.",
+        "upload": "Upload",
+        "uploading": "Uploading...",
+        "uploadSuccess": "Photos uploaded successfully",
+        "uploadError": "Error uploading photos",
+        "editTitle": "Edit your home photos",
+        "noFiles": "No files to upload"
+    },
+    "button": {
+        "back": "Back",
+        "continue": "Continue",
+        "save": "Save",
+        "update": "Update",
+        "delete": "Delete",
+        "confirm": "Confirm",
+        "modify": "Modify",
+        "readMore": "Read more",
+        "showAllEquipement": "Show all equipment",
+        "loadmore": "Load more"
+    },
+    "checkIn": {
+        "title": "Check-in",
+        "earliestTime": "What is the earliest time guests can check in?",
+        "policyTitle": "Select the statements that best describe your early check-in policy.",
+        "policyNotFlexible": "Unfortunately, check-in time is not flexible.",
+        "policyAdjustTime": "Occasionally, it's possible to adjust your check-in time if you contact us.",
+        "policyAlternateTime": "When possible, we can arrange...",
+        "policyStoreBags": "You can store your bags during the day.",
+        "accessTitle": "Select the statements that best describe how your guests will access the property.",
+        "accessKeyInBox": "The house key is in the key box",
+        "accessWelcomeContact": "We'll be there to welcome you, if not, contact me when you arrive.",
+        "accessCodesByEmail": "We will send you your access codes by email before your arrival.",
+        "accessCheckEmail": "Check your email for arrival instructions.",
+        "accessNumberLock": "We have a number lock.",
+        "guestInfo": "What information do your guests need to know to access the property?",
+        "frontPhoto": "Photo of the front of the residence or house.",
+        "videoInstructions": "Video link for check-in instructions",
+        "hostVideo": "Host your videos on Vimeo or Youtube before",
+        "editTitle": "Edit arrival information"
+    },
+    "checkOut": {
+        "title": "Departure",
+        "departureTime": "What time do you want to ask guests to leave?",
+        "policyDescription": "When scheduling permits, we are happy to accommodate an alternate departure time. Please contact us in advance if you would like to make arrangements for this.",
+        "policyLateOption": "Show late check-out option (if it is not checked we will not mention it)",
+        "policyNotFlexible": "Unfortunately, check-out time is not flexible.",
+        "policyAlternateTime": "When the schedule allows, we're happy to accommodate an alternative check-out time.",
+        "policyContactUs": "Contact us if you would like to check out later.",
+        "tasksTitle": "What should guests do before leaving?",
+        "tasksStoreBags": "You can leave your bags in the property after check-out time.",
+        "tasksGuestBook": "Please sign our guest book before leaving.",
+        "tasksUnmadeBeds": "Leave used beds unmade.",
+        "tasksCleanDishes": "Please wash and put away used dishes and plates.",
+        "tasksFinalDishes": "Put last-minute dishes in the dishwasher.",
+        "tasksTurnOffAppliances": "Please make sure you have turned off the stove, lights, and other electrical appliances.",
+        "tasksReplaceFurniture": "Return furniture to its original location.",
+        "tasksGarbage": "Please put garbage and waste in appropriate containers.",
+        "tasksTowelsInBath": "Put used towels in the bathtub.",
+        "tasksTowelsOnFloor": "Leave used towels on the floor.",
+        "tasksDoorUnlocked": "Leave the door unlocked.",
+        "tasksDoorLocked": "Make sure the doors are locked.",
+        "tasksKeyInHouse": "Leave the key in the house.",
+        "tasksKeyInBox": "Leave the key in the key box.",
+        "additionalInfo": "Additional check-out information:",
+        "editTitle": "Edit Departure Information"
+    },
+    "rules": {
+        "title": "House Rules",
+        "noNoise": "No noise after 11pm",
+        "noFood": "No food or drinks in bedrooms",
+        "noParties": "No parties or events",
+        "noSmoking": "No smoking",
+        "noPets": "No pets",
+        "noUnmarriedCouple": "No unmarried couples",
+        "additionalRules": "Additional Rules",
+        "editTitle": "Edit House Rules:"
+    },
+    "messages": {
+        "deleteConfirm": "Are you sure you want to delete?",
+        "updateSuccess": "Updated successfully!",
+        "updateError": "Error updating",
+        "createSuccess": "Created successfully!",
+        "createError": "Error creating",
+        "photoRequired": "Please add at least one photo!",
+        "refereFriend": "Referral link copied! Share it with your friends.",
+        "deleteSuccess": "Deleted successfully",
+        "deleteError": "Error deleting: ",
+        "reviewAndApprove": "Review and Approve"
+    },
+    "amenity": {
+        "editTitle": "Edit House Manual",
+        "addCard": "Add a card for",
+        "mediaUrl": "Media URL",
+        "videoUrlLabel": "Video URL:",
+        "videoUrlHint": "Host your videos on Vimeo or Youtube before",
+        "guestMessage": "What would you like to tell your guests about this?",
+        "wifiName": "WiFi Name",
+        "wifiPassword": "WiFi Password",
+        "confirmDelete": "Are you sure you want to delete?",
+        "confirmYes": "Yes",
+        "confirmNo": "No",
+        "deleteSuccess": "Amenity deleted successfully.",
+        "deleteError": "Error deleting amenity:",
+        "createSuccess": "Amenity created successfully",
+        "createError": "Failed to create amenity",
+        "categories": {
+            "bathroom": "Bathroom",
+            "bedroomLinen": "Bedroom & Linen",
+            "entertainment": "Entertainment",
+            "kitchen": "Kitchen",
+            "kitchenDiningRoom": "Kitchen and dining room",
+            "heatingCooling": "Heating & Cooling",
+            "homeSecurity": "Home Security",
+            "internetOffice": "Internet & Office",
+            "parkingFacilities": "Parking & Facilities"
+        },
+        "shower": "Shower",
+        "jacuzzi": "Jacuzzi",
+        "bathtub": "Bathtub",
+        "washingMachine": "Washing Machine",
+        "dryerheat": "Dryer",
+        "vacuum": "Vacuum Cleaner",
+        "vault": "Safe",
+        "babybed": "Baby Crib",
+        "television": "Television",
+        "speaker": "Sound System",
+        "gameconsole": "Game Console",
+        "oven": "Oven",
+        "microwave": "Microwave",
+        "coffeemaker": "Coffee Maker",
+        "fridge": "Refrigerator",
+        "fireburner": "Stove",
+        "heating": "Heating",
+        "airConditioning": "Air Conditioning",
+        "fireplace": "Fireplace",
+        "ceilingfan": "Ceiling Fan",
+        "tablefan": "Table Fan",
+        "fingerprint": "Biometric Fingerprint Lock",
+        "lockbox": "Lock Box",
+        "parkingaccess": "Parking Access",
+        "wifi": "Wifi",
+        "dedicatedworkspace": "Dedicated Workspace",
+        "freeParking": "Free Parking",
+        "paidParking": "Paid Parking",
+        "pool": "Swimming Pool",
+        "garbageCan": "Garbage Container"
+    },
+    "account": {
+        "manage": "Manage my account",
+        "privacy": "This information is for your account only, guests will not see it.",
+        "hostCard": "Create a host card to share your contact information with guests.",
+        "lastName": "Last Name",
+        "firstName": "First Name",
+        "phone": "Phone",
+        "updateProfile": "Update Profile",
+        "changeAvatar": "Change Avatar",
+        "quickLinks": "Quick Links",
+        "changePassword": "Change Password",
+        "passwordUpdateSuccess": "Details updated successfully!",
+        "updateError": "Error updating details!"
+    },
+    "common": {
+        "back": "Back",
+        "upload": "Upload",
+        "save": "Save",
+        "phone": "Phone",
+        "photo": "Photo",
+        "video": "Video",
+        "download": "Download",
+        "email": "Email",
+        "home": "Home",
+        "loading": "Loading...",
+        "yes": "Yes",
+        "no": "No",
+        "search": "Search",
+        "reset": "Reset",
+        "avatar": "Avatar"
+    },
+    "timePicker": {
+        "defaultCheckIn": "Default time: 11:00",
+        "defaultCheckOut": "Default time: 12:00",
+        "selectCheckIn": "Select check-in time",
+        "selectCheckOut": "Select check-out time"
+    },
+    "loading": {
+        "submission": "Submission in progress..."
+    },
+    "error": {
+        "submit": "An error has occurred",
+        "update": "Unable to put",
+        "pageNotFound": "Sorry, the page you visited does not exist.",
+        "tasksFetch": "Failed to fetch tasks",
+        "revenueFetch": "Failed to fetch revenue for property ",
+        "revenueDataFetch": "Failed to fetch revenue data",
+        "tasksLoad": "Erreur de chargement des tâches"
+    },
+    "dashboard": {
+        "totalTasks": "Total Tasks",
+        "totalProperties": "Total Properties",
+        "totalRevenue": "Total Revenue",
+        "statistics": "Statistics",
+        "totalManagers": "Total Managers",
+        "averagePrice": "Average Price",
+        "managers": "Managers"
+    },
+    "tasks": {
+        "title": "To Do",
+        "priority": {
+            "high": "URGENT",
+            "medium": "MEDIUM",
+            "low": "LOW"
+        }
+    },
+    "revenue": {
+        "title": "Revenue",
+        "total": "Total Revenue",
+        "viewChart": "View Revenue",
+        "chartTitle": "Revenue"
+    },
+    "manual": {
+        "title": "House Manual",
+        "setPrice": "Now set your price",
+        "maxPeople": "Max People",
+        "rooms": "Rooms",
+        "room": "Room",
+        "beds": "Beds",
+        "bed": "Bed",
+        "houseRules": "House Rules:",
+        "additionalRules": "Additional Rules"
+    },
+    "alert": {
+        "propertyCreateSuccess": "Property created successfully",
+        "propertyCreateError": "Failed to create property",
+        "genericError": "An error has occurred"
+    },
+    "password": {
+        "current": "Current Password",
+        "new": "New Password",
+        "confirm": "Confirm Password",
+        "success": "Password updated successfully",
+        "reset": "Reset Password",
+        "enterNew": "Please enter a new password!",
+        "enterNewPlaceholder": "New password",
+        "confirmNew": "Please confirm your new password!",
+        "confirmNewPlaceholder": "Confirm new password",
+        "mismatch": "The passwords don't match",
+        "resetButton": "Reset Password",
+        "resetSuccess": "Password reset successfully!",
+        "requestReset": "Password Reset Request",
+        "requestInstructions": "Enter your email address and we'll send you a code to reset your password.",
+        "sendCode": "Send Reset Code",
+        "codeSent": "Reset code has been sent!",
+        "verifyCode": "Verify Reset Code",
+        "verifyInstructions": "Please enter the verification code sent to your email.",
+        "enterCode": "Please enter the reset code!",
+        "codePlaceholder": "Reset Code",
+        "verifyButton": "Verify Code",
+        "verifySuccess": "Code verified successfully!",
+        "codeLength": "The verification code must be 6 digits",
+        "codeNumbers": "The code can only contain numbers"
+    },
+    "nearbyPlace": {
+        "title": "Nearby Places",
+        "restaurantcafe": "Restaurant and Cafe",
+        "activite": "Activity",
+        "attraction": "Attraction",
+        "mall": "Shopping Mall",
+        "add": "Add a nearby place",
+        "name": "Name",
+        "address": "Address",
+        "googleUrl": "Place URL in Google",
+        "rating": "Rating",
+        "types": "Types",
+        "photo": "Photo",
+        "tip": "Tip:",
+        "tipText": "Upload one of the photos to your device and upload it again to customize your nearby place!",
+        "customize": "Save it to your device and then use the Upload feature to add your own touch!",
+        "exists": "Place already exists",
+        "createSuccess": "Nearby Place created successfully",
+        "createError": "Failed to create nearby place",
+        "selectType": "Please select at minus one type!",
+        "addButton": "Add a nearby place",
+        "verify": "Verify",
+        "verifySuccess": "Nearby place has been verified!",
+        "noPlacesSelected": "No nearby places selected for verification.",
+        "bulkVerifySuccess": "{count} Nearby places verified!",
+        "verifySelected": "Verify selected nearby places",
+        "pending": "Nearby places to check"
+    },
+    "guestForm": {
+        "title": "Enter your personal data",
+        "backHome": "Back to Home",
+        "personalData": {
+            "title": "Enter your personal data",
+            "firstName": "First name",
+            "lastName": "Last name",
+            "middleName": "Middle last name (optional)",
+            "birthDate": "Date of birth",
+            "sex": {
+                "label": "Sex",
+                "male": "Male",
+                "female": "Female"
+            },
+            "nationality": "Nationality",
+            "residenceCountry": "Country of residence",
+            "residenceCity": "City of residence",
+            "residenceAddress": "Address of residence",
+            "postalCode": "Postal code"
+        },
+        "identity": {
+            "title": "Identity document information",
+            "documentType": {
+                "label": "Document type",
+                "placeholder": "Select document type",
+                "nationalityFirst": "Please fill in the nationality field first",
+                "types": {
+                    "cin": "National Identity Card",
+                    "drivingLicense": "DRIVING_LICENSE",
+                    "passport": "PASSPORT",
+                    "moroccanResidence": "Moroccan Residence Permit",
+                    "foreignerResidence": "Foreigner Residence Permit"
+                }
+            },
+            "documentNumber": "Document Number",
+            "issueDate": {
+                "label": "Please enter the issue date",
+                "tooltip": "Date the document was created. (this is not the expiration date)"
+            },
+            "upload": {
+                "label": "Identity",
+                "button": "Upload"
+            }
+        },
+        "contact": {
+            "title": "Contact details",
+            "email": "Email address",
+            "phone": "Phone number"
+        },
+        "signature": {
+            "title": "Electronic signature",
+            "policy": "By clicking on (Signature form) you agree to sign the form with your name and the name of the company.",
+            "privacyLink": "Privacy policy",
+            "button": "Signature form"
+        },
+        "infoModal": {
+            "title": "Why is all this data necessary?",
+            "content1": "According to local legislation, authorities require owners/hosts of tourist accommodation to keep a record of all guests who visit their properties. The authorities expect a minimum of mandatory personal data from you which you must provide them.",
+            "content2": "Completing the online check-in before your arrival saves you time, as the host will have to enter your details upon arrival, which could take longer.",
+            "content3": "All data is processed in accordance with the General Data Protection Regulation. More information about our privacy policy."
+        },
+        "success": {
+            "title": "Contract sent successfully",
+            "subtitle1": "Your booking contract has been created and sent successfully.",
+            "subtitle2": "We will contact you shortly to finalize your booking."
+        },
+        "validation": {
+            "firstName": "Please enter your First Name!",
+            "lastName": "Please enter your Last Name!",
+            "birthDate": "Please enter your date of birth",
+            "sex": "Please select your gender",
+            "nationality": "Please select your nationality",
+            "residenceCountry": "Please enter your country of residence",
+            "residenceCity": "Please enter your city of residence",
+            "residenceAddress": "Please enter your address",
+            "postalCode": "Please enter your postal code",
+            "documentType": "Please select the type of document",
+            "documentNumber": "Please enter the document number",
+            "issueDate": "Please enter the issue date",
+            "identity": "Please upload your ID",
+            "email": "Please provide an email address.",
+            "phone": "Please enter your phone number",
+            "signature": "Please sign the form"
+        },
+        "privacyPolicy": {
+            "title": "Privacy Policy",
+            "contract": {
+                "title": "1. Contract Purpose",
+                "content": "This contract concerns the rental of a property for a determined period. The guest agrees to respect the house rules throughout the duration of the stay."
+            },
+            "arrival": {
+                "title": "2. Arrival and Departure",
+                "guestNotify": "The guest commits to inform the host of their approximate arrival time at least 24 hours in advance.",
+                "departure": "Departure must be completed within the agreed timeframe."
+            },
+            "behavior": {
+                "title": "3. Behavior and Respect of Premises",
+                "noise": "The guest commits to respect the neighborhood's tranquility and avoid excessive noise, particularly during quiet hours.",
+                "care": "The guest agrees to take care of the accommodation and its equipment. Any damage or loss will be charged to the guest.",
+                "smoking": "Smoking is strictly forbidden inside the accommodation. Smoking areas may be available outside (if applicable).",
+                "pets": "Pets are only allowed upon prior request and with written agreement from the host."
+            },
+            "facilities": {
+                "title": "4. Use of Facilities",
+                "usage": "The guest commits to use the accommodation's equipment according to the instructions provided by the host. In case of malfunction, the guest must immediately inform the host.",
+                "responsibility": "The guest assumes responsibility for any misuse of equipment, which could result in additional charges."
+            },
+            "cleanliness": {
+                "title": "5. Cleanliness",
+                "maintain": "The guest commits to keeping the accommodation clean and tidy during their stay.",
+                "service": "Cleaning service is included in the rental. However, additional charges may apply if the accommodation is left in an excessively dirty state."
+            },
+            "security": {
+                "title": "6. Security",
+                "lock": "The guest commits to locking all doors and windows of the accommodation when leaving the premises.",
+                "emergency": "In case of emergency (fire, water leak, etc.), the guest must immediately contact the host and/or relevant emergency services."
+            },
+            "morocco": {
+                "title": "7. Respect of Moroccan Laws",
+                "laws": "The guest commits to respecting Moroccan laws, particularly those governing tourist accommodation and behavior in public spaces.",
+                "consequences": "In case of non-compliance with Moroccan laws or the rules stated in this contract, the host reserves the right to terminate the rental without refund and report the incident to competent authorities."
+            },
+            "internet": {
+                "title": "8. Internet Usage",
+                "content": "Internet access is provided free of charge. The guest commits to using it legally and respectfully. Any illegal online activity is strictly prohibited."
+            },
+            "disputes": {
+                "title": "9. Dispute Resolution",
+                "content": "In case of dispute, the host and guest commit to attempting an amicable resolution. If this is not possible, the dispute will be settled according to Moroccan law."
+            },
+            "cancellation": {
+                "title": "10. Cancellation and Modifications",
+                "content": "Cancellation and modification conditions of the reservation are specified at the time of booking and are governed by the terms of this contract."
+            },
+            "unauthorized": {
+                "title": "11. Prohibition of Unauthorized Guests",
+                "content": "The guest commits to not hosting or accommodating persons not mentioned in the initial reservation without prior written agreement from the host. Any undeclared additional person may result in additional charges, immediate cancellation of the reservation without refund, and/or legal measures in accordance with Moroccan law."
+            },
+            "signature": {
+                "title": "Electronic Signature",
+                "content": "By signing this contract, the guest acknowledges having read the terms of these house rules and commits to respecting all stated conditions."
+            }
+        }
+    },
+    "auth": {
+        "login": "Login",
+        "needAccount": "Need an account?",
+        "signupHere": "Sign up here",
+        "loginWithGoogle": "Login with Google",
+        "orUseEmail": "Or use Email",
+        "emailPlaceholder": "Email",
+        "emailRequired": "Please input your email!",
+        "passwordPlaceholder": "Password",
+        "passwordRequired": "Please input your password!",
+        "rememberMe": "Remember me",
+        "forgotPassword": "Forgot password?",
+        "loginButton": "Login"
+    },
+    "signup": {
+        "startFree": "Start with a free account",
+        "createAccountText": "Create a free Trevio account to share beautiful guides with your guests.",
+        "haveAccount": "Already have an account?",
+        "loginHere": "Login here",
+        "withGoogle": "Sign up with Google",
+        "orUseEmail": "Or use Email",
+        "lastName": "Last Name",
+        "firstName": "First Name",
+        "email": "Email",
+        "phone": "Phone Number",
+        "password": "Password",
+        "confirmPassword": "Confirm password",
+        "startButton": "Get Started",
+        "termsText": "By clicking Get Started, you agree to the",
+        "termsLink": "terms of use."
+    },
+    "home": {
+        "searchPlaceholder": "Specify a place",
+        "showMap": "Show Map",
+        "showList": "Show List",
+        "filters": {
+            "title": "Filters",
+            "clearAll": "Clear All",
+            "show": "Show",
+            "propertyType": "Property Type",
+            "priceRange": "Price Range (Dh)",
+            "min": "Min",
+            "max": "Max",
+            "roomsAndCapacity": "Rooms, Beds and Capacity",
+            "rooms": "Rooms",
+            "all": "All",
+            "maxPeople": "Max People",
+            "basicAmenities": "Basic Amenities",
+            "showLess": "Show Less",
+            "showMore": "Show More"
+        }
+    },
+    "map": {
+        "headerContent": "InfoWindow Header Content",
+        "markerLocation": "This is the location of the marker.",
+        "SeeOnMaps": "See on Google Maps",
+        "messageError": "Failed to load location details."
+    },
+    "contracts": {
+        "title": "Contract Reservations",
+        "guest": "Guest",
+        "identity": "Identity",
+        "signature": "Signature",
+        "status": "Status",
+        "statuses": {
+            "draft": "DRAFT",
+            "sent": "SENT",
+            "signed": "SIGNED",
+            "rejected": "REJECTED",
+            "completed": "COMPLETED"
+        },
+        "actions": {
+            "send": "Send",
+            "markSigned": "Mark as signed",
+            "reject": "Reject",
+            "complete": "Complete"
+        },
+        "details": {
+            "nationality": "Nationality",
+            "address": "Address",
+            "postalCode": "Postal Code",
+            "country": "Country",
+            "birthDate": "Birth Date"
+        },
+        "error": {
+            "fetch": "Unable to fetch contracts",
+            "statusUpdate": "Failed to update contract status"
+        },
+        "success": {
+            "statusUpdate": "The contract status has been updated successfully"
+        }
+    },
+    "guidebook": {
+        "share": "Share",
+        "loading": "Loading...",
+        "invalidCoordinates": "Invalid coordinates provided.",
+        "noAmenities": "No amenities available",
+        "note": "Note:",
+        "tabs": {
+            "arrival": {
+                "title": "Check-In",
+                "checkInTime": "Check-in time is anytime after ",
+                "video": "Check-in video",
+                "access": {
+                    "title": "Get access"
+                },
+                "location": "Get here",
+                "parking": {
+                    "free": "Free parking",
+                    "paid": "paid parking"
+                }
+            },
+            "manual": {
+                "title": "House manual"
+            },
+            "departure": {
+                "title": "Check-Out",
+                "checkOutTime": "Check-out time is anytime before {time}",
+                "beforeLeaving": "Before Leaving"
+            },
+            "places": {
+                "restaurants": "Restaurants & Cafes",
+                "activities": "Activities",
+                "attractions": "Attractions",
+                "malls": "Malls"
+            }
+        }
+    },
+    "manager": {
+        "verifySuccess": "Manager has been verified",
+        "verifyError": "Failed to verify manager",
+        "role": "Role",
+        "verified": "Verified",
+        "verifyButton": "Verify Manager",
+        "createdAt": "Created on",
+        "managedProperties": "Managed Properties",
+        "deleteSuccess": "Manager deleted successfully",
+        "deleteError": "Error deleting manager: ",
+        "unknown": "Unknown Manager",
+        "loadError": "Error loading manager",
+        "verifiedStatus": {
+            "verified": "Verified",
+            "unverified": "Unverified"
+        }
+    }
+}

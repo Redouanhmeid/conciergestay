@@ -1,7 +1,7 @@
 import { Space } from 'antd';
 import {
  FR,
- GB,
+ US,
  ES,
  DE,
  IT,
@@ -31,15 +31,15 @@ const createOption = (value, label, FlagComponent) => ({
 
 const languages = [
  createOption('fr', 'Français', FR),
- createOption('en', 'English', GB),
- createOption('es', 'Español', ES),
+ createOption('en', 'English', US),
+ /* createOption('es', 'Español', ES),
  createOption('de', 'Deutsch', DE),
  createOption('it', 'Italiano', IT),
  createOption('pt', 'Português', PT),
  createOption('ru', 'Русский', RU),
  createOption('zh', '中文', CN),
  createOption('ja', '日本語', JP),
- createOption('ko', '한국어', KR),
+ createOption('ko', '한국어', KR), */
 ];
 
 export default languages;

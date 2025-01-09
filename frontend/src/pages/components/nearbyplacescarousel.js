@@ -13,11 +13,13 @@ import {
 } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
+import { useTranslation } from '../../context/TranslationContext';
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
 
 const NearbyPlacesCarousel = ({ latitude, longitude }) => {
+ const { t } = useTranslation();
  const slider1 = useRef(null);
  const slider2 = useRef(null);
  const slider3 = useRef(null);
@@ -34,7 +36,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
      setData(data);
     })
     .catch((err) => {
-     message.error('Échec du chargement des détails des lieux à proximité.');
+     message.error(t('map.messageError2'));
     });
   }
  }, [latitude]);
@@ -83,7 +85,8 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
    {PlacesToEat.length > 0 && (
     <>
      <Title level={3}>
-      <i className="fa-light fa-plate-utensils"></i> Restaurants & Cafés
+      <i className="fa-light fa-plate-utensils"></i>{' '}
+      {t('guidebook.tabs.places.restaurants')}
      </Title>
      <div style={{ position: 'relative' }}>
       <div className="nearbyplacescarouselarrow left">
@@ -112,7 +115,8 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
    {Activities.length > 0 && (
     <>
      <Title level={3}>
-      <i className="fa-light fa-sun-cloud"></i> Activités
+      <i className="fa-light fa-sun-cloud"></i>{' '}
+      {t('guidebook.tabs.places.activities')}
      </Title>
      <div style={{ position: 'relative' }}>
       <div className="nearbyplacescarouselarrow left">
@@ -139,7 +143,8 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
    {Attractions.length > 0 && (
     <>
      <Title level={3}>
-      <i className="fa-light fa-camera"></i> Attractions
+      <i className="fa-light fa-camera"></i>{' '}
+      {t('guidebook.tabs.places.attractions')}
      </Title>
      <div style={{ position: 'relative' }}>
       <div className="nearbyplacescarouselarrow left">
@@ -166,7 +171,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
    {Malls.length > 0 && (
     <>
      <Title level={3}>
-      <i className="fa-light fa-store"></i> Centres commerciaux
+      <i className="fa-light fa-store"></i> {t('guidebook.tabs.places.malls')}
      </Title>
      <div style={{ position: 'relative' }}>
       <div className="nearbyplacescarouselarrow left">

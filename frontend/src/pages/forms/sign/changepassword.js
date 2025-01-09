@@ -6,38 +6,11 @@ import { useTranslation } from '../../../context/TranslationContext';
 const Changepassword = ({ Id }) => {
  const { t } = useTranslation();
  const { isLoading, updatePassword, success, errorMsg } = useUserData();
- const [translations, setTranslations] = useState({
-  currentPassword: '',
-  newPassword: '',
-  confirmPassword: '',
-  mismatchError: '',
-  successMsg: '',
-  modify: '',
- });
 
  const onFinish = async (values) => {
   const { currentPassword, newPassword } = values;
-  const updated = await updatePassword(Id, currentPassword, newPassword);
+  await updatePassword(Id, currentPassword, newPassword);
  };
- useEffect(() => {
-  async function loadTranslations() {
-   setTranslations({
-    currentPassword: await t('password.current', 'Mot de passe actuel'),
-    newPassword: await t('password.new', 'Nouveau Mot de passe'),
-    confirmPassword: await t('password.confirm', 'Confirmez le mot de passe'),
-    mismatchError: await t(
-     'password.mismatch',
-     'Le nouveau mot de passe que vous avez saisi ne correspond pas!'
-    ),
-    successMsg: await t(
-     'password.success',
-     'Mot de passe mis à jour avec succès'
-    ),
-    modify: await t('common.modify', 'Modifier'),
-   });
-  }
-  loadTranslations();
- }, [t]);
 
  return (
   <Form
@@ -50,46 +23,49 @@ const Changepassword = ({ Id }) => {
    layout="vertical"
   >
    <Form.Item
-    label={translations.currentPassword}
+    label={t('password.current')}
     name="currentPassword"
     rules={[
      {
       required: true,
+      message: t('validation.required'),
      },
     ]}
    >
-    <Input />
+    <Input type="password" />
    </Form.Item>
    <Form.Item
-    label={translations.newPassword}
+    label={t('password.new')}
     name="newPassword"
     rules={[
      {
       required: true,
+      message: t('validation.required'),
      },
     ]}
    >
-    <Input />
+    <Input type="password" />
    </Form.Item>
    <Form.Item
-    label={translations.confirmPassword}
+    label={t('password.confirm')}
     name="newPassword2"
     dependencies={['newPassword']}
     rules={[
      {
       required: true,
+      message: t('validation.required'),
      },
      ({ getFieldValue }) => ({
       validator(_, value) {
        if (!value || getFieldValue('newPassword') === value) {
         return Promise.resolve();
        }
-       return Promise.reject(new Error(translations.mismatchError));
+       return Promise.reject(new Error(t('password.mismatch')));
       },
      }),
     ]}
    >
-    <Input />
+    <Input type="password" />
    </Form.Item>
    <Row justify="end">
     <Col xs={24} md={5}>
@@ -100,7 +76,7 @@ const Changepassword = ({ Id }) => {
        loading={!isLoading}
        disabled={success}
       >
-       {translations.modify}
+       {t('button.modify')}
       </Button>
      </Form.Item>
     </Col>
@@ -109,7 +85,7 @@ const Changepassword = ({ Id }) => {
     <Alert message={errorMsg} type="warning" showIcon closable />
    )}
    {success && (
-    <Alert message={translations.successMsg} type="success" showIcon closable />
+    <Alert message={t('password.success')} type="success" showIcon closable />
    )}
   </Form>
  );

@@ -1,0 +1,693 @@
+{
+    "header": {
+        "adminPanel": "Panneau d'administration",
+        "dashboard": "Tableau de bord",
+        "Revandtasks": "Revenus et tâches",
+        "account": "Mon compte",
+        "referral": "Référez un ami",
+        "logout": "Se déconnecter",
+        "createAccount": "Créer un compte",
+        "profile": "Profile",
+        "greeting": "Bonjour"
+    },
+    "property": {
+        "title": "Propriétés",
+        "pending": "Propriétés en attente",
+        "basic": {
+            "title": "Enregistrez les informations de votre propriété",
+            "name": "Nom",
+            "description": "Description",
+            "type": "Type de propriété",
+            "location": "Emplacement",
+            "capacity": "Max Personnes",
+            "rooms": "Chambres",
+            "beds": "Lits",
+            "people": "Personnes",
+            "price": "Fixez votre prix",
+            "airbnbUrl": "Airbnb URL",
+            "bookingUrl": "Booking URL",
+            "selectLocation": "Sélectionnez un emplacement sur la carte",
+            "Capacity": "Capacité Personne",
+            "priceNight": "Dh / Nuit"
+        },
+        "checkOutTitle": "Départ",
+        "checkOutDepartureTime": "À quelle heure voulez-vous demander aux invités de quitter les lieux ?",
+        "checkOut": {
+            "policyTitle": "Sélectionnez les déclarations qui décrivent le mieux votre politique de départ tardif :"
+        },
+        "amenities": {
+            "title": "Indiquez aux voyageurs quels sont les équipements de votre logement:"
+        },
+        "edit": {
+            "title": "Modifier les informations de base de votre propriété"
+        },
+        "updateError": "Impossible de mettre à jour les informations sur la propriété",
+        "toggleSuccess": "Propriété activer avec succès.",
+        "toggleError": "Erreur lors de la activation de la propriété: {error}",
+        "disable": "Désactiver la propriété",
+        "enable": "Activer la propriété",
+        "confirmToggle": "Etes-vous sûr de vouloir activer cette propriété ?",
+        "addButton": "Ajoutez votre propriété",
+        "sections": {
+            "info": "Information",
+            "manual": "Manuelle de la maison",
+            "nearby": "Lieux à proximité",
+            "rules": "Reglement intérieur"
+        },
+        "accessWifi": "Accéder au Wi-Fi",
+        "networkName": "Nom de réseau ",
+        "password": "Mot de passe ",
+        "accommodationLocated": "Où se situe le logement",
+        "actions": {
+            "actions": "Actions",
+            "guidebook": "Accéder au guidebook digital",
+            "guestForm": "Formulaire de réservation pour les invités",
+            "contracts": "Gérer les contrats de réservation",
+            "enable": "Activer la propriété",
+            "disable": "Désactiver la propriété",
+            "delete": "Supprimer la propriété",
+            "viewCard": "Voir la carte",
+            "addCard": "Ajouter une carte",
+            "editCard": "Modifier la carte",
+            "modifyEquipement": "Modifier les équipements"
+        },
+        "messages": {
+            "success": "Propriété supprimée avec succès.",
+            "error": "Erreur lors de la suppression de la propriété: "
+        },
+        "verify": "Vérifier",
+        "verifySuccess": "La propriété a été vérifiée!",
+        "noPropertiesSelected": "Aucune propriété sélectionnée pour vérification.",
+        "bulkVerifySuccess": " propriétés vérifiées!",
+        "verifySelected": "Vérifier les propriétés sélectionnées",
+        "view": "Voir"
+    },
+    "type": {
+        "house": "Maison",
+        "apartment": "Appartement",
+        "guesthouse": "Maison d'hôtes",
+        "select": "Veuillez sélectionner un type de propriété!"
+    },
+    "validation": {
+        "required": "Ce champ est requis",
+        "selectType": "Veuillez sélectionner un type de propriété!",
+        "createProperty": "Impossible de créer la propriété",
+        "enterName": "Veuillez saisir votre nom!",
+        "enterDescription": "Veuillez saisir une description!",
+        "selectLocation": "Veuillez sélectionner un emplacement sur la carte",
+        "enterPrice": "Veuillez saisir un prix!",
+        "enterCapacity": "Veuillez saisir une capacité!",
+        "enterRooms": "Veuillez saisir le nombre de chambres!",
+        "enterBeds": "Veuillez saisir le nombre de lits!",
+        "validUrl": "Veuillez saisir une URL valide!",
+        "addPhotos": "Ajouter des Photos",
+        "lastName": "Veuillez fournir votre Nom.",
+        "firstName": "Veuillez fournir votre Prénom.",
+        "email": "Veuillez fournir une adresse Email valide.",
+        "createPassword": "Veuillez créer un mot de passe.",
+        "passwordLength": "Le mot de passe doit contenir au moins 8 caractères.",
+        "passwordRequirements": "Le mot de passe doit contenir au moins une minuscule, une majuscule et un chiffre.",
+        "passwordMismatch": "Le nouveau mot de passe que vous avez saisi ne correspond pas!"
+    },
+    "photo": {
+        "title": "Ajouter des Photos de votre logement",
+        "dragDrop": "Vous pouvez réorganiser vos photos en les glissant-déposant",
+        "maxReached": "Vous avez atteint le nombre maximum de photos.",
+        "upload": "Charger",
+        "uploading": "Téléchargement en cours...",
+        "uploadSuccess": "Photos téléchargées avec succès",
+        "uploadError": "Erreur lors du téléchargement des photos",
+        "editTitle": "Modifier les photos de votre logement",
+        "noFiles": "Aucun fichier à télécharger"
+    },
+    "button": {
+        "back": "Retour",
+        "continue": "Continue",
+        "save": "Enregistrer",
+        "update": "Mettre à jour",
+        "delete": "Supprimer",
+        "confirm": "Confirmer",
+        "modify": "Modifier",
+        "readMore": "Lire plus",
+        "showAllEquipement": "Afficher tous les équipements",
+        "loadmore": "Charger plus"
+    },
+    "checkIn": {
+        "title": "Arrivée",
+        "earliestTime": "Quand est l'heure la plus tôt à laquelle les invités peuvent s'enregistrer ?",
+        "policyTitle": "Sélectionnez les déclarations qui décrivent le mieux votre politique en matière de check-in anticipé.",
+        "policyNotFlexible": "Malheureusement l'heure d'arrivée n'est pas flexible.",
+        "policyAdjustTime": "À l'occasion il est possible d'ajuster votre heure d'arrivée si vous nous contactez.",
+        "policyAlternateTime": "Lorsque que cela est possible, nous pouvons vous arranger...",
+        "policyStoreBags": "Vous pouvez laissez vos bagages pendant la journée.",
+        "accessTitle": "Sélectionnez les déclarations qui décrivent le mieux la manière dont vos invités accéderont à la propriété.",
+        "accessKeyInBox": "La clé de la maison se trouve dans la boîte à clé",
+        "accessWelcomeContact": "On sera là pour vous accueillir, sinon, contactez moi quand vous arrivez.",
+        "accessCodesByEmail": "Nous vous enverrons vos codes d'accès par courriel avant votre arrivée.",
+        "accessCheckEmail": "Vérifiez votre courriel pour les instructions relatives à votre arrivée.",
+        "accessNumberLock": "Nous avons une serrure à numéro.",
+        "guestInfo": "Quelles informations vos invités doivent-ils connaître pour accéder à la propriété ?",
+        "frontPhoto": "Photo de la façade de la résidence ou de la maison.",
+        "videoInstructions": "Lien vidéo pour les instructions d'enregistrement",
+        "hostVideo": "Hébergez vos vidéos sur Vimeo ou Youtube avant",
+        "editTitle": "Modifier les informations d'arrivée"
+    },
+    "checkOut": {
+        "title": "Départ",
+        "departureTime": "À quelle heure voulez-vous demander aux invités de quitter les lieux ?",
+        "policyDescription": "Lorsque l'horaire le permet, il nous fait plaisir d'accommoder une heure de départ alternative. Contactez-nous à l'avance si vous souhaitez prendre un arrangement à cet effet.",
+        "policyLateOption": "Montrer l'option du départ tardif (si ce n'est pas coché on ne va pas le mentionner)",
+        "policyNotFlexible": "Malheureusement l'heure de départ n'est pas flexible.",
+        "policyAlternateTime": "Lorsque l'horaire le permet, il nous fait plaisir d'accommoder une heure de départ alternative.",
+        "policyContactUs": "Communiquez avec nous si vous aimeriez quitter plus tard.",
+        "tasksTitle": "Que doivent faire les invités avant de partir ?",
+        "tasksStoreBags": "Vous pouvez laissez vos bagages dans la propriété après l'heure du départ.",
+        "tasksGuestBook": "S'il vous plait, signez notre livre d'or avant de partir.",
+        "tasksUnmadeBeds": "Laissez les lits que vous avez utilisés défaits.",
+        "tasksCleanDishes": "Merci de laver et ranger vaisselle et plats utilisés.",
+        "tasksFinalDishes": "Mettez la vaisselle de dernière minute dans le lave-vaisselle.",
+        "tasksTurnOffAppliances": "Merci de vous assurer que vous avez bien éteint la cuisinière, lumières et autres appareils électriques.",
+        "tasksReplaceFurniture": "Replacez les meubles à leur endroit original.",
+        "tasksGarbage": "Merci de déposer poubelles et déchets dans les containers appropriés.",
+        "tasksTowelsInBath": "Mettez vos serviettes utilisées dans la baignoire.",
+        "tasksTowelsOnFloor": "Laissez les serviettes utilisées par terre.",
+        "tasksDoorUnlocked": "Laissez la porte déverrouillée.",
+        "tasksDoorLocked": "Assurez-vous que les portes sont verrouillées.",
+        "tasksKeyInHouse": "Laissez la clé dans la maison.",
+        "tasksKeyInBox": "Laissez la clé dans la boîte à clef.",
+        "additionalInfo": "Informations supplémentaires sur le départ :",
+        "editTitle": "Modifier les informations de départ"
+    },
+    "rules": {
+        "title": "Règles de la maison",
+        "noNoise": "Pas de bruit après 23h",
+        "noFood": "Pas de nourriture ni de boissons dans les chambres à coucher",
+        "noParties": "Pas de fêtes ni d'événements",
+        "noSmoking": "Défense de fumer",
+        "noPets": "Pas d'animaux de compagnie",
+        "noUnmarriedCouple": "Pas de couple non marié",
+        "additionalRules": "Règles supplémentaires",
+        "editTitle": "Modifier les règles de la maison:"
+    },
+    "messages": {
+        "deleteConfirm": "Etes-vous sûr de supprimer ?",
+        "updateSuccess": "Mis à jour avec succès!",
+        "updateError": "Erreur lors de la mise à jour",
+        "createSuccess": "Créé avec succès!",
+        "createError": "Erreur lors de la création",
+        "photoRequired": "Veuillez ajouter au moins une photo!",
+        "refereFriend": "Lien de parrainage copié ! Partagez-le avec vos amis.",
+        "deleteSuccess": "Supprimé avec succès",
+        "deleteError": "Erreur lors de la suppression: ",
+        "reviewAndApprove": "Examiner et approuver"
+    },
+    "amenity": {
+        "editTitle": "Modifier le manuel de la maison",
+        "addCard": "Ajouter une carte pour",
+        "mediaUrl": "Media URL",
+        "videoUrlLabel": "Video URL:",
+        "videoUrlHint": "Hébergez vos vidéos sur Vimeo ou Youtube avant",
+        "guestMessage": "Que souhaitez-vous dire à vos invités sur ce sujet ?",
+        "wifiName": "Nom du Wi-Fi",
+        "wifiPassword": "Mot de passe Wi-Fi",
+        "confirmDelete": "Etes-vous sûr de supprimer ?",
+        "confirmYes": "Oui",
+        "confirmNo": "Non",
+        "deleteSuccess": "Equipement supprimé avec succès.",
+        "deleteError": "Erreur lors de la suppression de l'équipement:",
+        "createSuccess": "Equipement créé avec succès",
+        "createError": "Échec de la création de l'équipement",
+        "categories": {
+            "bathroom": "Salle de bain",
+            "bedroomLinen": "Chambre et linge",
+            "entertainment": "Divertissement",
+            "kitchen": "Cuisine",
+            "kitchenDiningRoom": "Cuisine et salle à manger",
+            "heatingCooling": "Chauffage et climatisation",
+            "homeSecurity": "Sécurité à la maison",
+            "internetOffice": "Internet et bureau",
+            "parkingFacilities": "Parking et installations"
+        },
+        "shower": "Douche",
+        "jacuzzi": "Jacuzzi",
+        "bathtub": "Baignoire",
+        "washingMachine": "Machine à laver",
+        "dryerheat": "Sèche-linge",
+        "vacuum": "Aspirateur",
+        "vault": "Coffre-fort",
+        "babybed": "Lit bébé",
+        "television": "Télévision",
+        "speaker": "Système audio",
+        "gameconsole": "Console de jeux",
+        "oven": "Four",
+        "microwave": "Micro-ondes",
+        "coffeemaker": "Cafétière",
+        "fridge": "Réfrigérateur",
+        "fireburner": "Cuisinière",
+        "heating": "Chauffage",
+        "airConditioning": "Climatisation",
+        "fireplace": "Cheminée",
+        "ceilingfan": "Ventilateur de plafond",
+        "tablefan": "Ventilateur de table",
+        "fingerprint": "Serrure biometrique à empreinte digitale",
+        "lockbox": "Boite à serrure",
+        "parkingaccess": "Accès parking",
+        "wifi": "Wifi",
+        "dedicatedworkspace": "Espace dédié de travail",
+        "freeParking": "Parking gratuit",
+        "paidParking": "Stationnement payant",
+        "pool": "Piscine",
+        "garbageCan": "Benne à ordures"
+    },
+    "account": {
+        "manage": "Gérer mon compte",
+        "privacy": "Ces informations sont uniquement destinées à votre compte, les invités ne les verront pas.",
+        "hostCard": "Créez une carte d'hôte pour partager vos coordonnées avec les invités.",
+        "lastName": "Nom",
+        "firstName": "Prénom",
+        "phone": "Téléphone",
+        "updateProfile": "Mettre à jour du profil",
+        "changeAvatar": "Changer l'avatar",
+        "quickLinks": "Liens rapides",
+        "changePassword": "Modifier le mot de passe",
+        "passwordUpdateSuccess": "Détails mis à jour avec succès!",
+        "updateError": "Erreur lors de la mise à jour des détails!"
+    },
+    "common": {
+        "upload": "Charger",
+        "save": "Save",
+        "phone": "Téléphone",
+        "photo": "Photo",
+        "video": "Video",
+        "download": "Télécharger",
+        "email": "Email",
+        "home": "Accueil",
+        "loading": "Chargement...",
+        "yes": "Oui",
+        "no": "Non",
+        "search": "Chercher",
+        "reset": "Réinitialiser",
+        "avatar": "Avatar"
+    },
+    "timePicker": {
+        "defaultCheckIn": "Heure par défaut: 11:00",
+        "defaultCheckOut": "Heure par défaut: 12:00",
+        "selectCheckIn": "Sélectionnez l'heure d'arrivée",
+        "selectCheckOut": "Sélectionnez l'heure de départ"
+    },
+    "loading": {
+        "submission": "Soumission en cours..."
+    },
+    "error": {
+        "submit": "Une erreur est survenue",
+        "update": "Impossible de mettre",
+        "pageNotFound": "Désolé, la page que vous avez visitée n'existe pas.",
+        "tasksFetch": "Échec de la récupération des tâches",
+        "revenueFetch": "Échec de la récupération des revenus pour la propriété ",
+        "revenueDataFetch": "Échec de la récupération des données de revenus",
+        "tasksLoad": "Erreur de chargement des tâches"
+    },
+    "dashboard": {
+        "totalTasks": "Tâches totales",
+        "totalProperties": "Propriétés totales",
+        "totalRevenue": "Total Revenue",
+        "statistics": "Statistiques",
+        "totalManagers": "Total Managers",
+        "averagePrice": "Prix moyen",
+        "managers": "Managers"
+    },
+    "tasks": {
+        "title": "Tâches à faire",
+        "priority": {
+            "high": "URGENT",
+            "medium": "MOYENNE",
+            "low": "FAIBLE"
+        }
+    },
+    "revenue": {
+        "title": "Revenus",
+        "total": "Revenu total",
+        "viewChart": "Voir les revenus",
+        "chartTitle": "Revenus "
+    },
+    "manual": {
+        "title": "Manuel de la maison",
+        "setPrice": "À présent, fixez votre prix",
+        "maxPeople": "Max Personnes",
+        "rooms": "Chambres",
+        "room": "Chambre",
+        "beds": "Lits",
+        "bed": "Lit",
+        "houseRules": "Règles de la maison:",
+        "additionalRules": "Règles supplémentaires"
+    },
+    "alert": {
+        "propertyCreateSuccess": "Propriété créée avec succès",
+        "propertyCreateError": "Échec de la création de la propriété",
+        "genericError": "Une erreur est survenue"
+    },
+    "password": {
+        "current": "Mot de passe actuel",
+        "new": "Nouveau Mot de passe",
+        "confirm": "Confirmez le mot de passe",
+        "success": "Mot de passe mis à jour avec succès",
+        "reset": "Réinitialiser le mot de passe",
+        "enterNew": "Veuillez saisir un nouveau mot de passe!",
+        "enterNewPlaceholder": "Nouveau mot de passe",
+        "confirmNew": "Veuillez confirmer votre nouveau mot de passe!",
+        "confirmNewPlaceholder": "Confirmez le nouveau mot de passe",
+        "mismatch": "Les mots de passe ne correspondent pas",
+        "resetButton": "Réinitialiser le mot de passe",
+        "resetSuccess": "Mot de passe réinitialisé avec succès!",
+        "requestReset": "Demande de réinitialisation de mot de passe",
+        "requestInstructions": "Entrez votre adresse email et nous vous enverrons un code pour réinitialiser votre mot de passe.",
+        "sendCode": "Envoyer le code de réinitialisation",
+        "codeSent": "Code de réinitialisation envoyé!",
+        "verifyCode": "Vérifier le code de réinitialisation",
+        "verifyInstructions": "Veuillez saisir le code de vérification envoyé à votre email.",
+        "enterCode": "Veuillez saisir le code de réinitialisation!",
+        "codePlaceholder": "Code de réinitialisation",
+        "verifyButton": "Vérifier le code",
+        "verifySuccess": "Code vérifié avec succès!",
+        "codeLength": "Le code de vérification doit contenir 6 chiffres",
+        "codeNumbers": "Le code ne peut contenir que des chiffres"
+    },
+    "nearbyPlace": {
+        "title": "Lieux à proximité",
+        "restaurantcafe": "Restaurant et Café",
+        "activite": "Activité",
+        "attraction": "Attraction",
+        "mall": "Centre commercial",
+        "add": "Ajouter un lieu à proximité",
+        "name": "Nom",
+        "address": "Adresse",
+        "googleUrl": "URL de la place dans Google",
+        "rating": "Note",
+        "types": "Types",
+        "photo": "Photo",
+        "tip": "Astuce:",
+        "tipText": "Téléchargez l'une des photo sur votre appareil et téléchargez-la à nouveau pour personnaliser votre de lieu à proximité!",
+        "customize": "Enregistrez-la sur votre appareil, puis utilisez la fonction Charger pour ajouter votre propre touche !",
+        "exists": "Le lieu existe déjà",
+        "createSuccess": "Lieu à proximité créé avec succès",
+        "createError": "Échec de la création du lieu à proximité",
+        "selectType": "Veuillez sélectionner au moins un type !",
+        "addButton": "Ajouter un lieu à proximité",
+        "verify": "Vérifier",
+        "verifySuccess": "Le lieu à proximité a été vérifié!",
+        "noPlacesSelected": "Aucun lieu à proximité sélectionné pour vérification.",
+        "bulkVerifySuccess": " Lieux à proximité vérifiés!",
+        "verifySelected": "Vérifier les lieux à proximité sélectionnés",
+        "pending": "Lieux à proximité à vérifier"
+    },
+    "guestForm": {
+        "title": "Saisissez vos données personnelles",
+        "backHome": "Retour à l'accueil",
+        "personalData": {
+            "title": "Saisissez vos données personnelles",
+            "firstName": "Prénom",
+            "lastName": "Nom",
+            "middleName": "Deuxième nom de famille (facultatif)",
+            "birthDate": "Date de naissance",
+            "sex": {
+                "label": "Sexe",
+                "male": "Homme",
+                "female": "Femme"
+            },
+            "nationality": "Nationalité",
+            "residenceCountry": "Pays de résidence",
+            "residenceCity": "Ville de résidence",
+            "residenceAddress": "Adresse de résidence",
+            "postalCode": "Code postal"
+        },
+        "identity": {
+            "title": "Information du document d'identité",
+            "documentType": {
+                "label": "Type de document",
+                "placeholder": "Sélectionnez le type de document",
+                "nationalityFirst": "Veuillez d'abord remplir le champ nationalité",
+                "types": {
+                    "cin": "Carte d'identité nationale",
+                    "drivingLicense": "DRIVING_LICENSE",
+                    "passport": "PASSPORT",
+                    "moroccanResidence": "Permis de séjour marocain",
+                    "foreignerResidence": "Permis de séjour pour étranger"
+                }
+            },
+            "documentNumber": "Numéro du document",
+            "issueDate": {
+                "label": "Veuillez saisir la date de délivrance",
+                "tooltip": "Date de création du document. (il ne s'agit pas de la date d'expiration)"
+            },
+            "upload": {
+                "label": "Identité",
+                "button": "Charger"
+            }
+        },
+        "contact": {
+            "title": "Coordonnées",
+            "email": "Adresse de messagerie",
+            "phone": "N° Téléphone"
+        },
+        "signature": {
+            "title": "Signature électronique",
+            "policy": "En cliquant sur (Formulaire de signature) vous acceptez de signer le formulaire avec votre nom et le nom de l'entreprise.",
+            "privacyLink": "Politique de confidentialité",
+            "button": "Formulaire de signature"
+        },
+        "infoModal": {
+            "title": "Pourquoi toutes ces données sont-elles nécessaires ?",
+            "content1": "Conformément à la législation locale, les autorités exigent des propriétaires/hôtes d'hébergement touristique qu'ils tiennent un registre de tous les hôtes qui visitent leurs propriétés. Les autorités attendent de vous un minimum de données personnelles obligatoires que vous devez leur fournir.",
+            "content2": "Compléter le check-in en ligne avant votre arrivée vous permet de gagner du temps, car l'hôte devra saisir vos coordonnées à votre arrivée, ce qui pourrait prendre plus de temps.",
+            "content3": "Toutes les données sont traitées conformément au règlement général sur la protection des données. Plus d'informations sur notre politique de confidentialité."
+        },
+        "success": {
+            "title": "Contrat envoyé avec succès",
+            "subtitle1": "Votre contrat de réservation a été créé et envoyé avec succès.",
+            "subtitle2": "Nous vous contacterons sous peu pour finaliser votre réservation."
+        },
+        "validation": {
+            "firstName": "Veuillez saisir votre Prénom!",
+            "lastName": "Veuillez saisir votre Nom!",
+            "birthDate": "Veuillez saisir votre date de naissance",
+            "sex": "Veuillez sélectionner votre sexe",
+            "nationality": "Veuillez sélectionner votre nationalité",
+            "residenceCountry": "Veuillez entrer votre pays de résidence",
+            "residenceCity": "Veuillez entrer votre ville de résidence",
+            "residenceAddress": "Veuillez entrer votre adresse",
+            "postalCode": "Veuillez entrer votre code postal",
+            "documentType": "Veuillez sélectionner le type de document",
+            "documentNumber": "Veuillez saisir le numéro du document",
+            "issueDate": "Veuillez saisir la date de délivrance",
+            "identity": "Veuillez télécharger votre pièce d'identité",
+            "email": "Veuillez fournir une adresse e-mail.",
+            "phone": "Veuillez saisir votre numéro de téléphone",
+            "signature": "Veuillez signer le formulaire"
+        },
+        "privacyPolicy": {
+            "title": "Politique de confidentialité",
+            "contract": {
+                "title": "1. Objet du Contrat",
+                "content": "Ce contrat a pour objet la location d'un bien immobilier pour une durée déterminée. L'invité accepte de respecter le règlement intérieur du logement pendant toute la durée du séjour."
+            },
+            "arrival": {
+                "title": "2. Arrivée et Départ",
+                "guestNotify": "L'invité s'engage à informer l'hôte de son heure d'arrivée approximative au moins 24 heures à l'avance.",
+                "departure": "Le départ doit être effectué dans les délais convenus."
+            },
+            "behavior": {
+                "title": "3. Comportement et Respect des Lieux",
+                "noise": "L'invité s'engage à respecter la tranquillité du voisinage et à éviter tout bruit excessif, en particulier pendant les heures de calme.",
+                "care": "L'invité accepte de prendre soin du logement et de ses équipements. Toute dégradation ou perte sera facturée à l'invité.",
+                "smoking": "Il est formellement interdit de fumer à l'intérieur du logement. Des zones fumeurs peuvent être disponibles à l'extérieur (si applicable).",
+                "pets": "Les animaux ne sont autorisés que sur demande préalable et avec l'accord écrit de l'hôte."
+            },
+            "facilities": {
+                "title": "4. Utilisation des Installations",
+                "usage": "L'invité s'engage à utiliser les équipements du logement conformément aux instructions fournies par l'hôte. En cas de dysfonctionnement, l'invité doit informer l'hôte immédiatement.",
+                "responsibility": "L'invité assume la responsabilité de toute mauvaise utilisation des équipements, qui pourrait entraîner des frais supplémentaires."
+            },
+            "cleanliness": {
+                "title": "5. Propreté",
+                "maintain": "L'invité s'engage à maintenir le logement propre et rangé pendant son séjour.",
+                "service": "Un service de ménage est inclus dans la location. Toutefois, des frais supplémentaires pourront être facturés si le logement est laissé dans un état excessivement sale."
+            },
+            "security": {
+                "title": "6. Sécurité",
+                "lock": "L'invité s'engage à verrouiller toutes les portes et fenêtres du logement lorsqu'il quitte les lieux.",
+                "emergency": "En cas d'urgence (incendie, fuite d'eau, etc.), l'invité doit contacter immédiatement l'hôte et/ou les services d'urgence compétents."
+            },
+            "morocco": {
+                "title": "7. Respect des Lois du Maroc",
+                "laws": "L'invité s'engage à respecter les lois du Maroc, notamment celles régissant la location touristique et le comportement dans les espaces publics.",
+                "consequences": "En cas de non-respect des lois du Maroc ou des règles énoncées dans ce contrat, l'hôte se réserve le droit de mettre fin à la location sans remboursement et de signaler l'incident aux autorités compétentes."
+            },
+            "internet": {
+                "title": "8. Utilisation de l'Internet",
+                "content": "L'accès à Internet est fourni gratuitement. L'invité s'engage à l'utiliser de manière légale et respectueuse. Toute activité illégale en ligne est strictement interdite."
+            },
+            "disputes": {
+                "title": "9. Règlement des Litiges",
+                "content": "En cas de litige, l'hôte et l'invité s'engagent à tenter de résoudre la situation à l'amiable. Si cela n'est pas possible, le litige sera réglé conformément aux lois en vigueur au Maroc."
+            },
+            "cancellation": {
+                "title": "10. Annulation et Modifications",
+                "content": "Les conditions d'annulation et de modification de la réservation sont précisées lors de la réservation et sont régies par les termes de ce contrat."
+            },
+            "unauthorized": {
+                "title": "11. Interdiction des Invités Non Autorisés",
+                "content": "L'invité s'engage à ne pas accueillir ou héberger des personnes non mentionnées dans la réservation initiale sans l'accord préalable et écrit de l'hôte. Toute personne supplémentaire non déclarée pourra entraîner des frais additionnels, l'annulation immédiate de la réservation sans remboursement, et/ou des mesures légales conformément aux lois en vigueur au Maroc."
+            },
+            "signature": {
+                "title": "Signature électronique",
+                "content": "En signant ce contrat, l'invité reconnaît avoir pris connaissance des termes du présent règlement intérieur et s'engage à respecter toutes les conditions énoncées."
+            }
+        }
+    },
+    "auth": {
+        "login": "Se connecter",
+        "needAccount": "Besoin d'un compte?",
+        "signupHere": "Inscrivez-vous ici",
+        "loginWithGoogle": "Connectez-vous avec Google",
+        "orUseEmail": "Ou utilisez E-mail",
+        "emailPlaceholder": "Email",
+        "emailRequired": "Veuillez saisir votre email!",
+        "passwordPlaceholder": "Mot de passe",
+        "passwordRequired": "Veuillez saisir votre Mot de passe!",
+        "rememberMe": "Rappelez-vous de moi",
+        "forgotPassword": "Mot de passe oublié?",
+        "loginButton": "Se connecter"
+    },
+    "signup": {
+        "startFree": "Commencez avec un compte gratuit",
+        "createAccountText": "Créez un compte Trevio gratuit pour partager de magnifiques guides avec vos invités.",
+        "haveAccount": "Vous avez déjà un compte?",
+        "loginHere": "Connectez-vous ici.",
+        "withGoogle": "Inscrivez-vous avec Google",
+        "orUseEmail": "Ou utilisez E-mail",
+        "lastName": "Nom",
+        "firstName": "Prénom",
+        "email": "Email",
+        "phone": "N° Téléphone",
+        "password": "Mot de passe",
+        "confirmPassword": "Confirmez le mot de passe",
+        "startButton": "Commencez",
+        "termsText": "En cliquant sur Commencez, vous acceptez",
+        "termsLink": "les conditions d'utilisation."
+    },
+    "home": {
+        "searchPlaceholder": "Indiquer une place",
+        "showMap": "Afficher la Map",
+        "showList": "Afficher la Liste",
+        "filters": {
+            "title": "Filtres",
+            "clearAll": "Tout effacer",
+            "show": "Afficher",
+            "propertyType": "Type de propriété",
+            "priceRange": "Fourchette de prix (Dh)",
+            "min": "Min",
+            "max": "Max",
+            "roomsAndCapacity": "Chambres, lits et capacité",
+            "rooms": "Chambres",
+            "all": "Tous",
+            "maxPeople": "Max Personnes",
+            "basicAmenities": "Commodités de base",
+            "showLess": "Afficher moins",
+            "showMore": "Afficher plus"
+        }
+    },
+    "map": {
+        "headerContent": "Contenu de l'en-tête d'InfoWindow",
+        "markerLocation": "C'est l'emplacement du marqueur.",
+        "SeeOnMaps": "Voir sur Google Maps",
+        "messageError": "Échec du chargement des détails du lieu.",
+        "messageError2": "Échec du chargement des détails des lieux à proximité."
+    },
+    "contracts": {
+        "title": "Réservations de contrat",
+        "guest": "Invité",
+        "identity": "Identité",
+        "signature": "Signature",
+        "status": "Status",
+        "statuses": {
+            "draft": "BROUILLON",
+            "sent": "ENVOYÉ",
+            "signed": "SIGNÉ",
+            "rejected": "REJECTÉ",
+            "completed": "COMPLÉTÉ"
+        },
+        "actions": {
+            "send": "Envoyer",
+            "markSigned": "Marquer comme signé",
+            "reject": "Rejeter",
+            "complete": "Complète"
+        },
+        "details": {
+            "nationality": "Nationality",
+            "address": "Address",
+            "postalCode": "Postal Code",
+            "country": "Country",
+            "birthDate": "Birth Date"
+        },
+        "error": {
+            "fetch": "Impossible de récupérer les contrats",
+            "statusUpdate": "Échec de la mise à jour du statut du contrat"
+        },
+        "success": {
+            "statusUpdate": "Le statut du contrat a été mis à jour avec succès"
+        }
+    },
+    "guidebook": {
+        "share": "Partager",
+        "loading": "Chargement...",
+        "invalidCoordinates": "Coordonnées fournies non valides.",
+        "noAmenities": "Aucun équipement disponible",
+        "note": "N.b :",
+        "tabs": {
+            "arrival": {
+                "title": "Arrivée",
+                "checkInTime": "L'heure d'enregistrement s'effectue à tout moment après {time}",
+                "video": "Vidéo d'enregistrement",
+                "access": {
+                    "title": "Obtenir l'accès"
+                },
+                "location": "Arriver ici",
+                "parking": {
+                    "free": "Parking gratuit",
+                    "paid": "stationnement payant"
+                }
+            },
+            "manual": {
+                "title": "Manuel de la maison"
+            },
+            "departure": {
+                "title": "Départ",
+                "checkOutTime": "L'heure de départ s'effectue à tout moment avant ",
+                "beforeLeaving": "Avant de quitter"
+            },
+            "places": {
+                "restaurants": "Restaurants & Cafés",
+                "activities": "Activités",
+                "attractions": "Attractions",
+                "malls": "Centres commerciaux"
+            }
+        }
+    },
+    "manager": {
+        "verifySuccess": "Le manager a été vérifié",
+        "verifyError": "Échec de la vérification du manager",
+        "role": "Rôle",
+        "verified": "Vérifié",
+        "verifyButton": "Vérifier le Manager",
+        "createdAt": "Créé le",
+        "managedProperties": "Propriétés gérées",
+        "deleteSuccess": "Manager supprimé avec succès",
+        "deleteError": "Erreur lors de la suppression du manager: ",
+        "unknown": "Gestionnaire Inconnu",
+        "loadError": "Erreur lors du chargement du gestionnaire",
+        "verifiedStatus": {
+            "verified": "Vérifié",
+            "unverified": "Non vérifié"
+        }
+    }
+}

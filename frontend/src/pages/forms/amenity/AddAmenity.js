@@ -20,7 +20,7 @@ import ImgCrop from 'antd-img-crop';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import ReactPlayer from 'react-player';
 import useAmenity from '../../../hooks/useAmenity';
-import useAmenityTranslations from '../../../hooks/translations/useAmenityTranslation';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -33,47 +33,14 @@ const getBase64 = (file) =>
   reader.onerror = (error) => reject(error);
  });
 
-const amenityTitles = {
- shower: 'Douche',
- jacuzzi: 'Jacuzzi',
- bathtub: 'Baignoire',
- washingMachine: 'Machine à laver',
- dryerheat: 'Sèche-linge',
- vacuum: 'Aspirateur',
- vault: 'Coffre-fort',
- babybed: 'Lit bébé',
- television: 'Télévision',
- speaker: 'Système audio',
- gameconsole: 'Console de jeux',
- oven: 'Four',
- microwave: 'Micro-ondes',
- coffeemaker: 'Cafétière',
- fridge: 'Réfrigérateur',
- fireburner: 'Cuisinière',
- heating: 'Chauffage',
- airConditioning: 'Climatisation',
- fireplace: 'Cheminée',
- ceilingfan: 'Ventilateur de plafond',
- tablefan: 'Ventilateur de table',
- fingerprint: 'Serrure biometrique à empreinte digitale',
- lockbox: 'Boite à serrure',
- parkingaccess: 'Accès parking',
- wifi: 'Wifi',
- dedicatedworkspace: 'Espace dédié de travail',
- freeParking: 'Parking gratuit',
- paidParking: 'Stationnement payant',
- pool: 'Piscine',
- garbageCan: 'Benne à ordures',
-};
-
 const AddAmenity = () => {
  const location = useLocation();
  const { amenity, id } = location.state;
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const { uploadAmenity } = useUploadPhotos();
  const { loading, error, postAmenity } = useAmenity();
 
- const translations = useAmenityTranslations();
  const [form] = Form.useForm();
  const [name, setName] = useState('');
  const [mediaType, setMediaType] = useState('Photo');
@@ -81,6 +48,39 @@ const AddAmenity = () => {
  const [previewOpen, setPreviewOpen] = useState(false);
  const [previewImage, setPreviewImage] = useState('');
  const [fileList, setFileList] = useState([]);
+
+ const amenityTitles = {
+  shower: t('amenity.shower'),
+  jacuzzi: t('amenity.jacuzzi'),
+  bathtub: t('amenity.bathtub'),
+  washingMachine: t('amenity.washingMachine'),
+  dryerheat: t('amenity.dryerheat'),
+  vacuum: t('amenity.vacuum'),
+  vault: t('amenity.vault'),
+  babybed: t('amenity.babybed'),
+  television: t('amenity.television'),
+  speaker: t('amenity.speaker'),
+  gameconsole: t('amenity.gameconsole'),
+  oven: t('amenity.oven'),
+  microwave: t('amenity.microwave'),
+  coffeemaker: t('amenity.coffeemaker'),
+  fridge: t('amenity.fridge'),
+  fireburner: t('amenity.fireburner'),
+  heating: t('amenity.heating'),
+  airConditioning: t('amenity.airConditioning'),
+  fireplace: t('amenity.fireplace'),
+  ceilingfan: t('amenity.ceilingfan'),
+  tablefan: t('amenity.tablefan'),
+  fingerprint: t('amenity.fingerprint'),
+  lockbox: t('amenity.lockbox'),
+  parkingaccess: t('amenity.parkingaccess'),
+  wifi: t('amenity.wifi'),
+  dedicatedworkspace: t('amenity.dedicatedworkspace'),
+  freeParking: t('amenity.freeParking'),
+  paidParking: t('amenity.paidParking'),
+  pool: t('amenity.pool'),
+  garbageCan: t('amenity.garbageCan'),
+ };
 
  useEffect(() => {
   setName(amenityTitles[amenity] || '');
@@ -119,7 +119,7 @@ const AddAmenity = () => {
      marginTop: 8,
     }}
    >
-    {translations.upload}
+    {t('photo.upload')}
    </div>
   </button>
  );
@@ -127,7 +127,7 @@ const AddAmenity = () => {
   values.name = amenity;
   values.propertyId = id;
   values.media = videoUrl;
-  if (mediaType === translations.photo && fileList.length > 0) {
+  if (mediaType === t('common.photo') && fileList.length > 0) {
    const photoUrl = await uploadAmenity(fileList);
    values.media = photoUrl;
   }
@@ -153,12 +153,12 @@ const AddAmenity = () => {
      icon={<ArrowLeftOutlined />}
      onClick={goBack}
     >
-     {translations.back}
+     {t('button.back')}
     </Button>
     <Row gutter={[16, 16]}>
      <Col xs={24}>
       <Title level={2}>
-       {translations.addCard} {name}
+       {t('amenity.addCard')} {name}
       </Title>
       <Form
        name="amenity_form"
@@ -177,13 +177,13 @@ const AddAmenity = () => {
           onChange={onChangeMediaType}
          >
           <Radio.Group defaultValue="Photo" buttonStyle="solid" size="large">
-           <Radio.Button value="Photo">{translations.photo}</Radio.Button>
-           <Radio.Button value="Video">{translations.video}</Radio.Button>
+           <Radio.Button value="Photo">{t('common.photo')}</Radio.Button>
+           <Radio.Button value="Video">{t('common.video')}</Radio.Button>
           </Radio.Group>
          </Flex>
          <br />
          {mediaType === 'Photo' ? (
-          <Form.Item label={translations.mediaUrl} name="media">
+          <Form.Item label={t('amenity.mediaUrl')} name="media">
            <div>
             <ImgCrop rotationSlider>
              <Upload
@@ -220,9 +220,9 @@ const AddAmenity = () => {
            label={
             <>
              <Text>
-              {translations.videoUrlLabel}
+              {t('amenity.videoUrlLabel')}
               <br />
-              <Text type="secondary">{translations.videoUrlHint}</Text>
+              <Text type="secondary">{t('amenity.videoUrlHint')}</Text>
              </Text>
             </>
            }
@@ -248,7 +248,7 @@ const AddAmenity = () => {
           offset: 2,
          }}
         >
-         <Form.Item label={translations.guestMessage} name="description">
+         <Form.Item label={t('amenity.guestMessage')} name="description">
           <Input.TextArea rows={6} showCount maxLength={500} />
          </Form.Item>
         </Col>
@@ -256,12 +256,15 @@ const AddAmenity = () => {
          <Col xs={24} md={12}>
           <Row gutter={[16, 32]}>
            <Col xs={24} md={12}>
-            <Form.Item label={translations.wifiName} name="wifiName">
+            <Form.Item label={t('amenity.wifiName')} name="wifiName">
              <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
            <Col xs={24} md={12}>
-            <Form.Item label={translations.wifiPassword} name="wifiPassword">
+            <Form.Item
+             label={t('translations.wifiPassword')}
+             name="wifiPassword"
+            >
              <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
@@ -280,7 +283,7 @@ const AddAmenity = () => {
             htmlType="submit"
             loading={loading}
            >
-            {translations.save}
+            {t('common.save')}
            </Button>
           </Form.Item>
          </Col>

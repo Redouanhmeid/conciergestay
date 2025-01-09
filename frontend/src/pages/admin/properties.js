@@ -10,6 +10,7 @@ import {
  Space,
  Popconfirm,
  Image,
+ Checkbox,
  message,
 } from 'antd';
 import { SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
@@ -18,6 +19,7 @@ import Foot from '../../components/common/footer';
 import useProperty from '../../hooks/useProperty';
 import { useUserData } from '../../hooks/useUserData';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -33,6 +35,7 @@ const Properties = () => {
  } = useProperty();
  const { fetchManagerById } = useUserData();
  const navigate = useNavigate();
+ const { t } = useTranslation();
 
  const [managersMap, setManagersMap] = useState({});
  const [searchText, setSearchText] = useState('');
@@ -62,14 +65,14 @@ const Properties = () => {
        ] = `${manager.firstname} ${manager.lastname}`;
       } else {
        console.warn(`No manager found for ID: ${property.propertyManagerId}`);
-       newManagersMap[property.propertyManagerId] = 'Unknown Manager'; // Fallback
+       newManagersMap[property.propertyManagerId] = t('manager.unknown'); // Fallback
       }
      } catch (error) {
       console.error(
        `Failed to fetch manager with ID: ${property.propertyManagerId}`,
        error
       );
-      newManagersMap[property.propertyManagerId] = 'Error loading manager'; // Error fallback
+      newManagersMap[property.propertyManagerId] = t('manager.loadError'); // Error fallback
      }
     }
    }
@@ -104,7 +107,7 @@ const Properties = () => {
   }) => (
    <div style={{ padding: 8 }}>
     <Input
-     placeholder={`Chercher`}
+     placeholder={t('common.search')}
      value={selectedKeys[0]}
      onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
      onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
@@ -118,14 +121,14 @@ const Properties = () => {
       size="small"
       style={{ width: 90 }}
      >
-      Chercher
+      {t('common.search')}
      </Button>
      <Button
       onClick={() => handleReset(clearFilters)}
       size="small"
       style={{ width: 90 }}
      >
-      Réinitialiser
+      {t('common.reset')}
      </Button>
     </Space>
    </div>
@@ -147,7 +150,7 @@ const Properties = () => {
   render: (text, record) => {
    if (dataIndex === 'propertyManagerId') {
     const managerName = managersMap[record.propertyManagerId];
-    return managerName || 'Loading...';
+    return managerName || t('common.loading');
    }
    return searchedColumn === dataIndex ? <strong>{text}</strong> : text;
   },
@@ -159,7 +162,7 @@ const Properties = () => {
 
  const columns = [
   {
-   title: 'Photo',
+   title: t('common.photo'),
    dataIndex: 'photos',
    key: 'photos',
    render: (photos) =>
@@ -168,74 +171,184 @@ const Properties = () => {
     ) : null,
   },
   {
-   title: 'Nom',
+   title: t('property.basic.name'),
    dataIndex: 'name',
    key: 'name',
    sorter: (a, b) => a.name.localeCompare(b.name),
    ...getColumnSearchProps('name'),
   },
   {
-   title: 'Type',
+   title: t('property.basic.type'),
    dataIndex: 'type',
    key: 'type',
-   filters: [
-    { text: 'appartement', value: 'apartment' },
-    { text: 'maison', value: 'house' },
-    { text: "maison d'hôtes", value: 'guesthouse' },
-   ],
+   filterDropdown: ({
+    setSelectedKeys,
+    selectedKeys,
+    confirm,
+    clearFilters,
+   }) => (
+    <div style={{ padding: 8 }}>
+     <div style={{ marginBottom: 8 }}>
+      {[
+       { text: t('type.apartment'), value: 'apartment' },
+       { text: t('type.house'), value: 'house' },
+       { text: t('type.guesthouse'), value: 'guesthouse' },
+      ].map((option) => (
+       <div key={option.value} style={{ marginBottom: 4 }}>
+        <Checkbox
+         checked={selectedKeys.includes(option.value)}
+         onChange={(e) => {
+          const newSelectedKeys = e.target.checked
+           ? [...selectedKeys, option.value]
+           : selectedKeys.filter((key) => key !== option.value);
+          setSelectedKeys(newSelectedKeys);
+         }}
+        >
+         {option.text}
+        </Checkbox>
+       </div>
+      ))}
+     </div>
+     <Space>
+      <Button
+       onClick={() => {
+        clearFilters();
+        confirm();
+       }}
+       size="small"
+      >
+       {t('common.reset')}
+      </Button>
+      <Button type="primary" onClick={() => confirm()} size="small">
+       OK
+      </Button>
+     </Space>
+    </div>
+   ),
    onFilter: (value, record) => record.type === value,
-   render: (type) => {
-    const typeMap = {
-     apartment: 'appartement',
-     house: 'maison',
-     guesthouse: "maison d'hôtes",
-    };
-    return typeMap[type] || type; // Default to type if no mapping found
-   },
+   render: (type) => t(`type.${type}`),
   },
   {
-   title: 'Prix',
+   title: t('property.basic.price'),
    dataIndex: 'price',
    key: 'price',
    sorter: (a, b) => a.price - b.price,
-   render: (price) => `${price} MAD`,
+   render: (price) => `${price} ${t('property.basic.priceNight')}`,
   },
   {
-   title: 'Chambres',
+   title: t('property.basic.rooms'),
    dataIndex: 'rooms',
    key: 'rooms',
-   filters: getUniqueValues('rooms').map((value) => ({ text: value, value })),
+   filterDropdown: ({
+    setSelectedKeys,
+    selectedKeys,
+    confirm,
+    clearFilters,
+   }) => (
+    <div style={{ padding: 8 }}>
+     <div style={{ marginBottom: 8 }}>
+      {getUniqueValues('rooms').map((value) => (
+       <div key={value} style={{ marginBottom: 4 }}>
+        <Checkbox
+         checked={selectedKeys.includes(value)}
+         onChange={(e) => {
+          const newSelectedKeys = e.target.checked
+           ? [...selectedKeys, value]
+           : selectedKeys.filter((key) => key !== value);
+          setSelectedKeys(newSelectedKeys);
+         }}
+        >
+         {value}
+        </Checkbox>
+       </div>
+      ))}
+     </div>
+     <Space>
+      <Button
+       onClick={() => {
+        clearFilters();
+        confirm();
+       }}
+       size="small"
+      >
+       {t('common.reset')}
+      </Button>
+      <Button type="primary" onClick={() => confirm()} size="small">
+       OK
+      </Button>
+     </Space>
+    </div>
+   ),
    onFilter: (value, record) => record.rooms === value,
    sorter: (a, b) => a.rooms - b.rooms,
   },
   {
-   title: 'Lits',
+   title: t('property.basic.beds'),
    dataIndex: 'beds',
    key: 'beds',
-   filters: getUniqueValues('beds').map((value) => ({ text: value, value })),
+   filterDropdown: ({
+    setSelectedKeys,
+    selectedKeys,
+    confirm,
+    clearFilters,
+   }) => (
+    <div style={{ padding: 8 }}>
+     <div style={{ marginBottom: 8 }}>
+      {getUniqueValues('beds').map((value) => (
+       <div key={value} style={{ marginBottom: 4 }}>
+        <Checkbox
+         checked={selectedKeys.includes(value)}
+         onChange={(e) => {
+          const newSelectedKeys = e.target.checked
+           ? [...selectedKeys, value]
+           : selectedKeys.filter((key) => key !== value);
+          setSelectedKeys(newSelectedKeys);
+         }}
+        >
+         {value}
+        </Checkbox>
+       </div>
+      ))}
+     </div>
+     <Space>
+      <Button
+       onClick={() => {
+        clearFilters();
+        confirm();
+       }}
+       size="small"
+      >
+       {t('common.reset')}
+      </Button>
+      <Button type="primary" onClick={() => confirm()} size="small">
+       OK
+      </Button>
+     </Space>
+    </div>
+   ),
    onFilter: (value, record) => record.beds === value,
    sorter: (a, b) => a.beds - b.beds,
   },
   {
-   title: 'Location',
+   title: t('property.basic.location'),
    dataIndex: 'placeName',
    key: 'placeName',
    sorter: (a, b) => a.placeName.localeCompare(b.placeName),
    ...getColumnSearchProps('placeName'),
   },
   {
-   title: 'Créé le',
+   title: t('manager.createdAt'),
    dataIndex: 'createdAt',
    key: 'createdAt',
    sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
    render: (createdAt) => new Date(createdAt).toLocaleString(),
   },
   {
-   title: 'Manager',
+   title: t('property.manager'),
    key: 'propertyManagerId',
    render: (_, record) => {
     const managerName = managersMap[record.propertyManagerId]; // Get the manager's name from the map
-    return managerName || 'Loading...'; // Display the manager's name or 'Loading...'
+    return managerName || t('common.loading'); // Display the manager's name or 'Loading...'
    },
    // Add search filter based on manager's name
    filterDropdown: ({
@@ -246,7 +359,7 @@ const Properties = () => {
    }) => (
     <div style={{ padding: 8 }}>
      <Input
-      placeholder={`Chercher Manager`}
+      placeholder={t('property.searchManager')}
       value={selectedKeys[0]}
       onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
       onPressEnter={() => confirm()}
@@ -260,14 +373,14 @@ const Properties = () => {
        size="small"
        style={{ width: 90 }}
       >
-       Chercher
+       {t('common.search')}
       </Button>
       <Button
        onClick={() => clearFilters && clearFilters()}
        size="small"
        style={{ width: 90 }}
       >
-       Réinitialiser
+       {t('common.reset')}
       </Button>
      </Space>
     </div>
@@ -283,7 +396,7 @@ const Properties = () => {
    },
   },
   {
-   title: 'Actions',
+   title: t('property.actions.actions'),
    key: 'actions',
    render: (_, record) => (
     <Space>
@@ -335,7 +448,7 @@ const Properties = () => {
       shape="circle"
      />
      <Popconfirm
-      title="Etes-vous sûr de supprimer ?"
+      title={t('messages.deleteConfirm')}
       onConfirm={() => confirmDelete(record.id)}
      >
       <Button
@@ -360,11 +473,9 @@ const Properties = () => {
   await deleteProperty(id);
   if (!error) {
    await fetchAllProperties();
-   message.success('Propriété supprimée avec succès.');
+   message.success(t('messages.deleteSuccess'));
   } else {
-   message.error(
-    `Erreur lors de la suppression de la propriété: ${error.message}`
-   );
+   message.error(t('messages.deleteError', { error: error.message }));
   }
  };
 
@@ -378,9 +489,9 @@ const Properties = () => {
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
     >
-     Retour
+     {t('button.back')}
     </Button>
-    <Title level={2}>Propriétés</Title>
+    <Title level={2}>{t('property.title')}</Title>
     <Row gutter={[16, 16]}>
      <Col xs={24} md={24}>
       <Table

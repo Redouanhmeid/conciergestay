@@ -25,6 +25,7 @@ import useUpdateProperty from '../../../hooks/useUpdateProperty';
 import useProperty from '../../../hooks/useProperty';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -35,6 +36,7 @@ const { TextArea } = Input;
 const DEFAULT_CHECK_IN_TIME = dayjs().hour(11).minute(0); // 11:00 AM
 
 const TimePickerWithDefault = ({ value, onChange, name, label }) => {
+ const { t } = useTranslation();
  // Internal state to track if user has made a selection
  const [hasUserSelected, setHasUserSelected] = useState(
   value && value.format('HH:mm') !== '00:00'
@@ -61,7 +63,7 @@ const TimePickerWithDefault = ({ value, onChange, name, label }) => {
     onClear={handleClear}
     allowClear={false}
     value={value}
-    placeholder="Sélectionnez l'heure d'arrivée"
+    placeholder={t('timePicker.selectCheckIn')}
    />
   </Form.Item>
  );
@@ -76,6 +78,7 @@ const getBase64 = (file) =>
  });
 
 const EditCheckIn = () => {
+ const { t } = useTranslation();
  const location = useLocation();
  const { id } = queryString.parse(location.search);
  const navigate = useNavigate();
@@ -134,13 +137,7 @@ const EditCheckIn = () => {
    type="button"
   >
    <PlusOutlined />
-   <div
-    style={{
-     marginTop: 8,
-    }}
-   >
-    Charger
-   </div>
+   <div style={{ marginTop: 8 }}>{t('photo.upload')}</div>
   </button>
  );
 
@@ -165,18 +162,13 @@ const EditCheckIn = () => {
 
  useEffect(() => {
   if (success) {
-   message.success(
-    "Les informations d'arrivée ont été mises à jour avec succès"
-   );
+   message.success(t('messages.updateSuccess'));
    navigate(-1);
   }
   if (error) {
-   message.error(
-    error ||
-     "Une erreur s'est produite lors de la mise à jour des informations d'arrivée"
-   );
+   message.error(error || t('messages.updateError'));
   }
- }, [success, error, navigate]);
+ }, [success, error, navigate, t]);
 
  if (loading || property.length === 0) {
   return (
@@ -197,9 +189,9 @@ const EditCheckIn = () => {
       icon={<ArrowLeftOutlined />}
       onClick={() => navigate(-1)}
      >
-      Retour
+      {t('button.back')}
      </Button>
-     <Title level={3}>Modifier les informations d'arrivée</Title>
+     <Title level={3}>{t('checkIn.editTitle')}</Title>
      <Form
       name="editCheckIn"
       form={form}
@@ -212,40 +204,33 @@ const EditCheckIn = () => {
          value={checkInTime}
          onChange={setCheckInTime}
          name="checkInTime"
-         label="Quand est l'heure la plus tôt à laquelle les invités peuvent s'enregistrer ?"
+         label={t('checkIn.earliestTime')}
          isCheckIn={true}
         />
        </Col>
 
        <Col xs={24}>
-        <Form.Item
-         label="Sélectionnez les déclarations qui décrivent le mieux votre politique en matière de check-in anticipé."
-         name="earlyCheckIn"
-        >
+        <Form.Item label={t('checkIn.policyTitle')} name="earlyCheckIn">
          <Checkbox.Group>
           <Row>
            <Col xs={24}>
             <Checkbox value="heureNonFlexible">
-             Malheureusement l'heure d'arrivée n'est pas flexible.
+             {t('checkIn.policyNotFlexible')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="ajustementHeure">
-             À l'occasion il est possible d'ajuster votre heure d'arrivée si
-             vous nous contactez.
+             {t('checkIn.policyAdjustTime')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="autreHeureArrivee">
-             Lorsque que cela est possible, nous pouvons vous arranger en vous
-             proposant une autre heure d’arrivée qui vous conviendrait mieux.
-             Contactez nous à l’avance si vous souhaitez modifier votre heure
-             d’arrivée.
+             {t('checkIn.policyAlternateTime')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="laissezBagages">
-             Vous pouvez laissez vos bagages pendant la journée.
+             {t('checkIn.policyStoreBags')}
             </Checkbox>
            </Col>
           </Row>
@@ -254,38 +239,32 @@ const EditCheckIn = () => {
        </Col>
 
        <Col xs={24}>
-        <Form.Item
-         label="Sélectionnez les déclarations qui décrivent le mieux la manière dont vos invités accéderont à la propriété."
-         name="accessToProperty"
-        >
+        <Form.Item label={t('checkIn.accessTitle')} name="accessToProperty">
          <Checkbox.Group>
           <Row>
            <Col xs={24}>
             <Checkbox value="cleDansBoite">
-             La clé de la maison se trouve dans la boîte à clé
+             {t('checkIn.accessKeyInBox')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="acceuilContactezMoi">
-             On sera là pour vous accueillir, sinon, contactez moi quand vous
-             arrivez.
+             {t('checkIn.accessWelcomeContact')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="codesAccesCourriel">
-             Nous vous enverrons vos codes d’accès par courriel avant votre
-             arrivée.
+             {t('checkIn.accessCodesByEmail')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="verifiezCourriel">
-             Vérifiez votre courriel pour les instructions relatives à votre
-             arrivée.
+             {t('checkIn.accessCheckEmail')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="serrureNumero">
-             Nous avons une serrure à numéro.
+             {t('checkIn.accessNumberLock')}
             </Checkbox>
            </Col>
           </Row>
@@ -294,20 +273,14 @@ const EditCheckIn = () => {
        </Col>
 
        <Col xs={24}>
-        <Form.Item
-         label="Quelles informations vos invités doivent-ils connaître pour accéder à la propriété ?"
-         name="guestAccessInfo"
-        >
+        <Form.Item label={t('checkIn.guestInfo')} name="guestAccessInfo">
          <TextArea showCount maxLength={500} />
         </Form.Item>
        </Col>
 
        {/* Fron image Input */}
        <Col xs={24} md={24}>
-        <Form.Item
-         label="Photo de la façade de la résidence ou de la maison."
-         name="frontPhoto"
-        >
+        <Form.Item label={t('checkIn.frontPhoto')} name="frontPhoto">
          <div>
           <ImgCrop rotationSlider>
            <Upload
@@ -343,16 +316,9 @@ const EditCheckIn = () => {
 
        {/* Video URL Input */}
        <Col xs={24}>
-        <Form.Item
-         label="Lien vidéo pour les instructions d'enregistrement"
-         name="videoCheckIn"
-        >
+        <Form.Item label={t('checkIn.videoInstructions')} name="videoCheckIn">
          <Input
-          placeholder={
-           !property.videoCheckIn
-            ? "Entrez l'URL de la vidéo (Hébergez vos vidéos sur Vimeo ou Youtube avant)"
-            : ''
-          }
+          placeholder={!property.videoCheckIn ? t('checkIn.hostVideo') : ''}
           value={videoURL}
           onChange={(e) => setVideoURL(e.target.value)} // Handle change
          />
@@ -369,7 +335,7 @@ const EditCheckIn = () => {
       </Row>
 
       <Button type="primary" htmlType="submit" loading={isLoading}>
-       {success ? 'Mis à jour!' : "Enregistrer les informations d'arrivée"}
+       {success ? t('messages.updateSuccess') : t('button.save')}
       </Button>
      </Form>
     </Content>

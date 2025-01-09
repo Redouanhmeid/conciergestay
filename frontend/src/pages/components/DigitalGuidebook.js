@@ -15,6 +15,7 @@ import {
  Modal,
 } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
+import { useTranslation } from '../../context/TranslationContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import Head from '../../components/common/header';
@@ -80,18 +81,19 @@ const generateTabs = (
  parkingAmenity,
  paidparkingAmenity,
  lateCheckOutPolicyParagraphs,
- beforeCheckOutParagraphs
+ beforeCheckOutParagraphs,
+ t
 ) => [
  {
   key: '1',
   icon: <i className="fa-light fa-key"></i>,
-  tab: 'Arrivée',
+  tab: t('guidebook.tabs.arrival.title'),
   content: (
    <div>
     <Flex gap="middle" align="center" justify="space-between">
      <Divider>
       <Text strong>
-       <i className="fa-light fa-key"></i> Arrivée
+       <i className="fa-light fa-key"></i> {t('guidebook.tabs.arrival.title')}
       </Text>
       {isOwner && (
        <Button
@@ -109,7 +111,7 @@ const generateTabs = (
       <Row gutter={[16, 16]}>
        <Col xs={24} md={16}>
         <Paragraph>
-         L'heure d'enregistrement s'effectue à tout moment après{' '}
+         {t('guidebook.tabs.arrival.checkInTime')}
          {formatTimeFromDatetime(property.checkInTime)}
         </Paragraph>
         {earlyCheckInParagraphs.map((paragraph, index) => (
@@ -127,7 +129,7 @@ const generateTabs = (
      <div>
       <Divider>
        <i className="fa-light fa-video"></i>
-       <Text strong> Vidéo d'enregistrement</Text>
+       <Text strong> {t('guidebook.tabs.arrival.video')}</Text>
       </Divider>
       <ReactPlayer url={property.videoCheckIn} controls width="100%" />
      </div>
@@ -136,7 +138,7 @@ const generateTabs = (
      <div>
       <Divider>
        <i className="fa-light fa-lock-keyhole-open"></i>
-       <Text strong> Obtenir l'accès</Text>
+       <Text strong> {t('guidebook.tabs.arrival.access.title')}</Text>
       </Divider>
       {accessToPropertyParagraphs.map((paragraph, index) => (
        <Paragraph key={index}>{paragraph}</Paragraph>
@@ -145,7 +147,7 @@ const generateTabs = (
     )}
     {property.guestAccessInfo && (
      <Paragraph>
-      <Text strong>N.b : </Text>
+      <Text strong>{t('guidebook.note')} </Text>
       {property.guestAccessInfo}
      </Paragraph>
     )}
@@ -153,10 +155,10 @@ const generateTabs = (
     {validLatitude && validLongitude ? (
      <Divider>
       <i className="fa-light fa-map-location-dot"></i>
-      <Text strong> Arriver ici</Text>
+      <Text strong> {t('guidebook.tabs.arrival.location')}</Text>
      </Divider>
     ) : (
-     <div>Coordonnées fournies non valides.</div>
+     <div>{t('guidebook.invalidCoordinates')}</div>
     )}
     {validLatitude && validLongitude && (
      <Row gutter={[16, 16]}>
@@ -176,7 +178,8 @@ const generateTabs = (
       {parkingAmenity && (
        <Col xs={24} md={paidparkingAmenity ? 6 : 8}>
         <Text strong>
-         <i className="fa-light fa-circle-parking fa-lg" /> Parking gratuit
+         <i className="fa-light fa-circle-parking fa-lg" />{' '}
+         {t('guidebook.tabs.arrival.parking.free')}
         </Text>
         {ReactPlayer.canPlay(parkingAmenity.media) ? (
          <ReactPlayer url={parkingAmenity.media} controls width="100%" />
@@ -192,7 +195,8 @@ const generateTabs = (
       {paidparkingAmenity && (
        <Col xs={24} md={parkingAmenity ? 6 : 8}>
         <Text strong>
-         <i className="fa-light fa-square-parking fa-lg" /> stationnement payant
+         <i className="fa-light fa-square-parking fa-lg" />{' '}
+         {t('guidebook.tabs.arrival.parking.paid')}
         </Text>
         {ReactPlayer.canPlay(parkingAmenity.media) ? (
          <ReactPlayer url={paidparkingAmenity.media} controls width="100%" />
@@ -213,13 +217,14 @@ const generateTabs = (
  {
   key: '2',
   icon: <i className="fa-light fa-door-open"></i>,
-  tab: 'Manuel de la maison',
+  tab: t('guidebook.tabs.manual.title'),
   content: (
    <div>
     <Flex gap="middle" align="center" justify="space-between">
      <Divider>
       <Text strong>
-       <i className="fa-light fa-door-open"></i> Manuel de la maison
+       <i className="fa-light fa-door-open"></i>{' '}
+       {t('guidebook.tabs.manual.title')}
       </Text>
       {isOwner && (
        <Button
@@ -242,7 +247,7 @@ const generateTabs = (
        justifyContent: 'center',
       }}
      >
-      Aucun équipement disponible
+      {t('guidebook.noAmenities')}
      </div>
     )}
    </div>
@@ -251,13 +256,14 @@ const generateTabs = (
  {
   key: '3',
   icon: <i className="fa-light fa-lock-keyhole"></i>,
-  tab: 'Départ',
+  tab: t('guidebook.tabs.departure.title'),
   content: (
    <div>
     <Flex gap="middle" align="center" justify="space-between">
      <Divider>
       <Text strong>
-       <i className="fa-light fa-lock-keyhole"></i> Départ
+       <i className="fa-light fa-lock-keyhole"></i>{' '}
+       {t('guidebook.tabs.departure.title')}
       </Text>
       {isOwner && (
        <Button
@@ -273,7 +279,7 @@ const generateTabs = (
     {lateCheckOutPolicyParagraphs.length > 0 && (
      <div>
       <Paragraph>
-       L'heure de départ s'effectue à tout moment avant{' '}
+       {t('guidebook.tabs.departure.checkOutTime')}
        {formatTimeFromDatetime(property.checkOutTime)}
       </Paragraph>
       {lateCheckOutPolicyParagraphs.map((paragraph, index) => (
@@ -286,7 +292,7 @@ const generateTabs = (
      <div>
       <Divider>
        <i className="fa-light fa-house-person-leave"></i>
-       <Text strong> Avant de quitter</Text>
+       <Text strong> {t('guidebook.tabs.departure.beforeLeaving')}</Text>
       </Divider>
       {beforeCheckOutParagraphs.map((paragraph, index) => (
        <Paragraph key={index}>{paragraph}</Paragraph>
@@ -296,7 +302,7 @@ const generateTabs = (
 
     {property.additionalCheckOutInfo && (
      <Paragraph>
-      <Text strong>N.b : </Text>
+      <Text strong>{t('guidebook.note')} </Text>
       {property.additionalCheckOutInfo}
      </Paragraph>
     )}
@@ -306,7 +312,7 @@ const generateTabs = (
  {
   key: '4',
   icon: <i className="fa-light fa-plate-utensils"></i>,
-  tab: 'Restaurants & Cafés',
+  tab: t('guidebook.tabs.places.restaurants'),
   content: (
    <div>
     <MapNearbyPlaces
@@ -326,7 +332,7 @@ const generateTabs = (
  {
   key: '5',
   icon: <i className="fa-light fa-sun-cloud"></i>,
-  tab: 'Activités',
+  tab: t('guidebook.tabs.places.activities'),
   content: (
    <div>
     <MapNearbyPlaces
@@ -346,7 +352,7 @@ const generateTabs = (
  {
   key: '6',
   icon: <i className="fa-light fa-camera"></i>,
-  tab: 'Attractions',
+  tab: t('guidebook.tabs.places.attractions'),
   content: (
    <div>
     <MapNearbyPlaces
@@ -366,7 +372,7 @@ const generateTabs = (
  {
   key: '7',
   icon: <i className="fa-light fa-store"></i>,
-  tab: 'Centres commerciaux',
+  tab: t('guidebook.tabs.places.malls'),
   content: (
    <div>
     <MapNearbyPlaces
@@ -386,6 +392,7 @@ const generateTabs = (
 ];
 
 const DigitalGuidebook = () => {
+ const { t } = useTranslation();
  const screens = useBreakpoint();
  const location = useLocation();
  const { id } = queryString.parse(location.search);
@@ -402,7 +409,7 @@ const DigitalGuidebook = () => {
 
  useEffect(() => {
   fetchProperty(id);
- }, [loading]);
+ }, [loading, t]);
 
  useEffect(() => {
   if (property.propertyManagerId) {
@@ -420,7 +427,7 @@ const DigitalGuidebook = () => {
      setAmenities(response);
     }
    } catch (error) {
-    console.error('Failed to fetch amenities:', error);
+    console.error(t('error.amenitiesFetch'), error);
    }
   }
  };
@@ -506,7 +513,8 @@ const DigitalGuidebook = () => {
     parkingAmenity,
     paidparkingAmenity,
     lateCheckOutPolicyParagraphs,
-    beforeCheckOutParagraphs
+    beforeCheckOutParagraphs,
+    t
    ),
   [
    isOwner,
@@ -546,13 +554,13 @@ const DigitalGuidebook = () => {
        icon={<ArrowLeftOutlined />}
        onClick={() => navigate(-1)}
       >
-       Retour
+       {t('button.back')}
       </Button>
       <Button
        icon={<i className="fa-light fa-share-nodes" />}
        onClick={showShareModal}
       >
-       Partager
+       {t('guidebook.share')}
       </Button>
      </Flex>
      <Divider type="vertical" />
@@ -568,7 +576,7 @@ const DigitalGuidebook = () => {
          key: tab.key,
          children:
           tab.key === '1' && (!validLatitude || !validLongitude) ? (
-           <div>Coordonnées fournies non valides.</div>
+           <div>{t('guidbook.invalidCoordinates')}</div>
           ) : (
            tab.content
           ),

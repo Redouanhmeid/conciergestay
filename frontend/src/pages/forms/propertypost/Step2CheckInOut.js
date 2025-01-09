@@ -27,6 +27,7 @@ import ImgCrop from 'antd-img-crop';
 import useUpdatePropertyCheckIn from '../../../hooks/useUpdateProperty';
 import useUpdatePropertyCheckOut from '../../../hooks/useUpdateProperty';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Content } = Layout;
 const { TextArea } = Input;
@@ -38,6 +39,7 @@ const DEFAULT_CHECK_OUT_TIME = dayjs().hour(12).minute(0); // 12:00 AM
 
 const TimePickerWithDefault = ({
  value,
+ t,
  onChange,
  name,
  label,
@@ -65,7 +67,7 @@ const TimePickerWithDefault = ({
    name={name}
    help={
     !hasUserSelected
-     ? `Heure par défaut: ${isCheckIn ? '11:00' : '12:00'}`
+     ? t(`timePicker.default${isCheckIn ? 'CheckIn' : 'CheckOut'}`)
      : undefined
    }
   >
@@ -77,11 +79,7 @@ const TimePickerWithDefault = ({
     onClear={handleClear}
     allowClear={false}
     value={value}
-    placeholder={
-     isCheckIn
-      ? "Sélectionnez l'heure d'arrivée"
-      : "Sélectionnez l'heure de départ"
-    }
+    placeholder={t(`timePicker.select${isCheckIn ? 'CheckIn' : 'CheckOut'}`)}
    />
   </Form.Item>
  );
@@ -96,6 +94,7 @@ const getBase64 = (file) =>
  });
 
 const Step2CheckInOut = ({ next, values }) => {
+ const { t } = useTranslation();
  const {
   updatePropertyCheckIn,
   isLoading: checkInLoading,
@@ -176,7 +175,7 @@ const Step2CheckInOut = ({ next, values }) => {
     await updatePropertyCheckOut(checkOutData);
    } catch (error) {
     hasErrors = true;
-    message.error('Une erreur est survenue');
+    message.error(t('error.submit'));
    }
 
    if (!hasErrors) {
@@ -199,7 +198,7 @@ const Step2CheckInOut = ({ next, values }) => {
     <Content className="container">
      <Spin
       spinning={loading || checkInLoading || checkOutLoading}
-      tip="Soumission en cours..."
+      tip={t('loading.submission')}
      >
       <Form
        name="step2"
@@ -229,6 +228,7 @@ const Step2CheckInOut = ({ next, values }) => {
         setVideoCheckIn={setVideoCheckIn}
         setFrontPhoto={setFrontPhoto}
         values={values}
+        t={t}
        />
        <CheckOutForm
         form={form}
@@ -237,6 +237,7 @@ const Step2CheckInOut = ({ next, values }) => {
         setBeforeCheckOut={setBeforeCheckOut}
         setLateCheckOutPolicy={setLateCheckOutPolicy}
         setAdditionalCheckOutInfo={setAdditionalCheckOutInfo}
+        t={t}
        />
        <br />
        <Row justify="end">
@@ -248,7 +249,7 @@ const Step2CheckInOut = ({ next, values }) => {
            style={{ width: '100%' }}
            loading={checkInLoading || checkOutLoading}
           >
-           Continue {<ArrowRightOutlined />}
+           {t('button.continue')} {<ArrowRightOutlined />}
           </Button>
          </Form.Item>
         </Col>
@@ -274,6 +275,7 @@ const CheckInForm = ({
  setVideoCheckIn,
  setFrontPhoto,
  values,
+ t,
 }) => {
  const [videoURL, setVideoURL] = useState('');
  const [fileList, setFileList] = useState(() => {
@@ -319,7 +321,7 @@ const CheckInForm = ({
      marginTop: 8,
     }}
    >
-    Charger
+    {t('photo.upload')}
    </div>
   </button>
  );
@@ -339,45 +341,39 @@ const CheckInForm = ({
   <Row gutter={[24, 0]}>
    <Col xs={24} md={24}>
     <Divider orientation="left">
-     <h2 style={{ margin: 0 }}>Arrivée</h2>
+     <h2 style={{ margin: 0 }}>{t('checkIn.title')}</h2>
     </Divider>
     <TimePickerWithDefault
      value={CheckInTime}
+     t={t}
      onChange={setCheckInTime}
      name="checkInTime"
-     label="Quand est l'heure la plus tôt à laquelle les invités peuvent s'enregistrer ?"
+     label={t('checkIn.earliestTime')}
      isCheckIn={true}
     />
    </Col>
    <Col xs={24} md={24}>
-    <Form.Item
-     label="Sélectionnez les déclarations qui décrivent le mieux votre politique en matière de check-in anticipé."
-     name="earlyCheckIn"
-    >
+    <Form.Item label={t('checkIn.policyTitle')} name="earlyCheckIn">
      <Checkbox.Group onChange={onChangeEarlyCheckIn}>
       <Row>
        <Col span={24}>
         <Checkbox value="heureNonFlexible">
-         Malheureusement l'heure d'arrivée n'est pas flexible.
+         {t('checkIn.policyNotFlexible')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="ajustementHeure">
-         À l'occasion il est possible d'ajuster votre heure d'arrivée si vous
-         nous contactez.
+         {t('checkIn.policyAdjustTime')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="autreHeureArrivee">
-         Lorsque que cela est possible, nous pouvons vous arranger en vous
-         proposant une autre heure d’arrivée qui vous conviendrait mieux.
-         Contactez nous à l’avance si vous souhaitez modifier votre heure
-         d’arrivée.
+         {t('checkIn.policyAlternateTime')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="laissezBagages">
-         Vous pouvez laissez vos bagages pendant la journée.
+         {t('checkIn.policyStoreBags')}
         </Checkbox>
        </Col>
       </Row>
@@ -385,37 +381,30 @@ const CheckInForm = ({
     </Form.Item>
    </Col>
    <Col xs={24} md={24}>
-    <Form.Item
-     label="Sélectionnez les déclarations qui décrivent le mieux la manière dont vos invités accéderont à la propriété."
-     name="accessToProperty"
-    >
+    <Form.Item label={t('checkIn.title')} name="accessToProperty">
      <Checkbox.Group onChange={onChangeAccessToProperty}>
       <Row>
        <Col span={24}>
-        <Checkbox value="cleDansBoite">
-         La clé de la maison se trouve dans la boîte à clé
-        </Checkbox>
+        <Checkbox value="cleDansBoite">{t('checkIn.accessKeyInBox')}</Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="acceuilContactezMoi">
-         On sera là pour vous accueillir, sinon, contactez moi quand vous
-         arrivez.
+         {t('checkIn.accessWelcomeContact')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="codesAccesCourriel">
-         Nous vous enverrons vos codes d’accès par courriel avant votre arrivée.
+         {t('checkIn.accessCodesByEmail')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="verifiezCourriel">
-         Vérifiez votre courriel pour les instructions relatives à votre
-         arrivée.
+         {t('checkIn.accessCheckEmail')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="serrureNumero">
-         Nous avons une serrure à numéro.
+         {t('checkIn.accessNumberLock')}
         </Checkbox>
        </Col>
       </Row>
@@ -423,10 +412,7 @@ const CheckInForm = ({
     </Form.Item>
    </Col>
    <Col xs={24} md={24}>
-    <Form.Item
-     label="Quelles informations vos invités doivent-ils connaître pour accéder à la propriété ?"
-     name="guestAccessInfo"
-    >
+    <Form.Item label={t('checkIn.guestInfo')} name="guestAccessInfo">
      <TextArea
       onChange={(e) => setGuestAccessInfo(e.target.value)}
       showCount
@@ -502,6 +488,7 @@ const CheckOutForm = ({
  setLateCheckOutPolicy,
  setBeforeCheckOut,
  setAdditionalCheckOutInfo,
+ t,
 }) => {
  const onChangeLateCheckOutPolicy = (checkedvalues) => {
   setLateCheckOutPolicy(checkedvalues);
@@ -513,44 +500,42 @@ const CheckOutForm = ({
   <Row gutter={[24, 0]}>
    <Col xs={24} md={24}>
     <Divider orientation="left">
-     <h2 style={{ margin: 0 }}>Départ</h2>
+     <h2 style={{ margin: 0 }}>{t('checkOut.title')}</h2>
     </Divider>
     <TimePickerWithDefault
      value={CheckOutTime}
+     t={t}
      onChange={setCheckOutTime}
      name="checkOutTime"
-     label="À quelle heure voulez-vous demander aux invités de quitter les lieux ?"
+     label={t('checkOut.departureTime')}
      isCheckIn={false}
     />
    </Col>
    <Col xs={24} md={24}>
     <Form.Item
-     label="Sélectionnez les déclarations qui décrivent le mieux votre politique de départ tardif :"
+     label={t('property.checkOut.policyTitle')}
      name="lateCheckOutPolicy"
     >
      <Checkbox.Group onChange={onChangeLateCheckOutPolicy}>
       <Row>
        <Col span={24}>
         <Checkbox value="heureNonFlexible">
-         Malheureusement l'heure de départ n'est pas flexible.
+         {t('checkOut.policyNotFlexible')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="heureDepartAlternative">
-         Lorsque l'horaire le permet, il nous fait plaisir d'accommoder une
-         heure de départ alternative. Contactez-nous à l'avance si vous
-         souhaitez prendre un arrangement à cet effet.
+         {t('checkOut.policyAlternateTime')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="contactezNous">
-         Communiquez avec nous si vous aimeriez quitter plus tard.
+         {t('checkOut.policyContactUs')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="optionDepartTardif">
-         Montrer l’option du départ tardif (si ce n’est pas coché on ne va pas
-         le mentionner)
+         {t('checkOut.policyLateOption')}
         </Checkbox>
        </Col>
       </Row>
@@ -558,82 +543,77 @@ const CheckOutForm = ({
     </Form.Item>
    </Col>
    <Col xs={24} md={24}>
-    <Form.Item
-     label="Que doivent faire les invités avant de partir ?"
-     name="beforeCheckOut"
-    >
+    <Form.Item label={t('checkOut.tasksTitle')} name="beforeCheckOut">
      <Checkbox.Group onChange={onChangeBeforeCheckOut}>
       <Row>
        <Col span={24}>
         <Checkbox value="laissezBagages">
-         Vous pouvez laissez vos bagages dans la propriété après l’heure du
-         départ.
+         {t('checkOut.tasksStoreBags')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="signezLivreOr">
-         S’il vous plait, signez notre livre d’or avant de partir.
+         {t('checkOut.tasksGuestBook')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="litsNonFaits">
-         Laissez les lits que vous avez utilisés défaits.
+         {t('checkOut.tasksUnmadeBeds')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="laverVaisselle">
-         Merci de laver et ranger vaisselle et plats utilisés.
+         {t('checkOut.tasksCleanDishes')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="vaisselleLaveVaisselle">
-         Mettez la vaisselle de dernière minute dans le lave-vaisselle.
+         {t('checkOut.tasksFinalDishes')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="eteindreAppareilsElectriques">
-         Merci de vous assurer que vous avez bien éteint la cuisinière, lumières
-         et autres appareils électriques.
+         {t('checkOut.tasksTurnOffAppliances')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="replacezMeubles">
-         Replacez les meubles à leur endroit original.
+         {t('checkOut.tasksReplaceFurniture')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="deposePoubelles">
-         Merci de déposer poubelles et déchets dans les containers appropriés.
+         {t('checkOut.tasksGarbage')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="serviettesDansBaignoire">
-         Mettez vos serviettes utilisées dans la baignoire.
+         {t('checkOut.tasksTowelsInBath')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="serviettesParTerre">
-         Laissez les serviettes utilisées par terre.
+         {t('checkOut.tasksTowelsOnFloor')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="porteNonVerrouillee">
-         Laissez la porte déverrouillée.
+         {t('checkOut.tasksDoorUnlocked')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="portesVerrouillees">
-         Assurez-vous que les portes sont verrouillées.
+         {t('checkOut.tasksDoorLocked')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="laissezCleMaison">
-         Laissez la clé dans la maison.
+         {t('checkOut.tasksKeyInHouse')}
         </Checkbox>
        </Col>
        <Col span={24}>
         <Checkbox value="laissezCleBoiteCle">
-         Laissez la clé dans la boîte à clef.
+         {t('checkOut.tasksKeyInBox')}
         </Checkbox>
        </Col>
       </Row>
@@ -642,7 +622,7 @@ const CheckOutForm = ({
    </Col>
    <Col xs={24} md={24}>
     <Form.Item
-     label="Informations supplémentaires sur le départ :"
+     label={t('checkOut.additionalInfo')}
      name="additionalCheckOutInfo"
     >
      <TextArea

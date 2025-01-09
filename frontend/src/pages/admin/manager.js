@@ -18,6 +18,7 @@ import useProperty from '../../hooks/useProperty';
 import { useUserData } from '../../hooks/useUserData';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
+import { useTranslation } from '../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -26,6 +27,7 @@ const Manager = () => {
  const location = useLocation();
  const searchParams = new URLSearchParams(location.search);
  const managerId = searchParams.get('id'); // Extract the 'id' from the query params
+ const { t } = useTranslation();
 
  const navigate = useNavigate();
  const {
@@ -65,10 +67,10 @@ const Manager = () => {
  const handleVerify = async () => {
   try {
    await verifyManager(managerId);
-   message.success('Manager has been verified');
+   message.success(t('manager.verifySuccess'));
    fetchManagerData();
   } catch (err) {
-   message.error(errorMsg || 'Failed to verify manager');
+   message.error(errorMsg || t('manager.verifyError'));
   }
  };
 
@@ -86,7 +88,7 @@ const Manager = () => {
 
  const columns = [
   {
-   title: 'Photo',
+   title: t('common.photo'),
    dataIndex: 'photos',
    key: 'photos',
    render: (photos) =>
@@ -95,7 +97,7 @@ const Manager = () => {
     ) : null,
   },
   {
-   title: 'Nom',
+   title: t('property.basic.name'),
    dataIndex: 'name',
    key: 'name',
    render: (text, record) => (
@@ -103,7 +105,7 @@ const Manager = () => {
    ),
   },
   {
-   title: 'Type',
+   title: t('property.basic.type'),
    dataIndex: 'type',
    key: 'type',
    render: (type) => {
@@ -120,28 +122,28 @@ const Manager = () => {
    },
   },
   {
-   title: 'Prix',
+   title: t('property.basic.price'),
    dataIndex: 'price',
    key: 'price',
    render: (price) => `${price} MAD`,
   },
   {
-   title: 'Chambres',
+   title: t('property.basic.rooms'),
    dataIndex: 'rooms',
    key: 'rooms',
   },
   {
-   title: 'Lits',
+   title: t('property.basic.beds'),
    dataIndex: 'beds',
    key: 'beds',
   },
   {
-   title: 'Location',
+   title: t('property.basic.location'),
    dataIndex: 'placeName',
    key: 'placeName',
   },
   {
-   title: 'Créé le',
+   title: t('manager.createdAt'),
    dataIndex: 'createdAt',
    key: 'createdAt',
    render: (createdAt) => new Date(createdAt).toLocaleString(),
@@ -158,7 +160,7 @@ const Manager = () => {
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
     >
-     Retour
+     {t('button.back')}
     </Button>
     <Row gutter={[16, 16]}>
      <Col xs={24} md={8}>
@@ -166,20 +168,32 @@ const Manager = () => {
        <br />
        <Avatar size={164} src={manager?.avatar} />
        <Title level={3}>{`${manager?.firstname} ${manager?.lastname}`}</Title>
-       <Text>Email: {manager?.email}</Text>
-       <Text>Téléphone: {manager?.phone}</Text>
-       <Text>Rôle: {manager?.role}</Text>
-       <Text>Vérifié: {manager?.isVerified ? 'Oui' : 'Non'}</Text>
+       <Text>
+        {t('common.email')}: {manager?.email}
+       </Text>
+       <Text>
+        {t('common.phone')}: {manager?.phone}
+       </Text>
+       <Text>
+        {t('manager.role')}: {manager?.role}
+       </Text>
+       <Text>
+        {t('manager.verified')}:{' '}
+        {manager?.isVerified ? t('common.yes') : t('common.no')}
+       </Text>
        {!manager?.isVerified && (
         <Button type="primary" loading={!isLoading} onClick={handleVerify}>
-         Vérifier le Manager
+         {t('manager.verifyButton')}
         </Button>
        )}
-       <Text>Créé le: {new Date(manager?.createdAt).toLocaleDateString()}</Text>
+       <Text>
+        {t('manager.createdAt')}:{' '}
+        {new Date(manager?.createdAt).toLocaleDateString()}
+       </Text>
       </Space>
      </Col>
      <Col xs={24} md={16}>
-      <Title level={4}>Propriétés gérées</Title>
+      <Title level={4}>{t('manager.managedProperties')}</Title>
       <Table columns={columns} dataSource={managerProperties} rowKey="id" />
      </Col>
     </Row>

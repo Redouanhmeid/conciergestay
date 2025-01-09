@@ -38,31 +38,6 @@ const Signup = () => {
  const [countryCode, setCountryCode] = useState(
   countries.find((country) => country.name === 'Maroc').dialCode
  ); // Default to first country
- const [translations, setTranslations] = useState({
-  startFree: '',
-  createAccountText: '',
-  haveAccount: '',
-  loginHere: '',
-  signupWithGoogle: '',
-  orUseEmail: '',
-  lastName: '',
-  firstName: '',
-  email: '',
-  phone: '',
-  password: '',
-  confirmPassword: '',
-  startButton: '',
-  termsText: '',
-  termsLink: '',
-  // Validation messages
-  provideLastName: '',
-  provideFirstName: '',
-  provideEmail: '',
-  createPassword: '',
-  passwordLength: '',
-  passwordRequirements: '',
-  passwordMismatch: '',
- });
 
  const handleCountryChange = (value) => {
   setCountryCode(value);
@@ -77,70 +52,6 @@ const Signup = () => {
   await googleSignup();
  };
 
- useEffect(() => {
-  async function loadTranslations() {
-   setTranslations({
-    startFree: await t('signup.startFree', 'Commencez avec un compte gratuit'),
-    createAccountText: await t(
-     'signup.createAccountText',
-     'Créez un compte Trevio gratuit pour partager de magnifiques guides avec vos invités.'
-    ),
-    haveAccount: await t('signup.haveAccount', 'Vous avez déjà un compte?'),
-    loginHere: await t('signup.loginHere', 'Connectez-vous ici.'),
-    signupWithGoogle: await t(
-     'signup.withGoogle',
-     'Inscrivez-vous avec Google'
-    ),
-    orUseEmail: await t('signup.orUseEmail', 'Ou utilisez E-mail'),
-    lastName: await t('signup.lastName', 'Nom'),
-    firstName: await t('signup.firstName', 'Prénom'),
-    email: await t('signup.email', 'Email'),
-    phone: await t('signup.phone', 'N° Téléphone'),
-    password: await t('signup.password', 'Mot de passe'),
-    confirmPassword: await t(
-     'signup.confirmPassword',
-     'Confirmez le mot de passe'
-    ),
-    startButton: await t('signup.startButton', 'Commencez'),
-    termsText: await t(
-     'signup.termsText',
-     'En cliquant sur Commencez, vous acceptez'
-    ),
-    termsLink: await t('signup.termsLink', "les conditions d'utilisation."),
-    // Validation messages
-    provideLastName: await t(
-     'validation.lastName',
-     'Veuillez fournir votre Nom.'
-    ),
-    provideFirstName: await t(
-     'validation.firstName',
-     'Veuillez fournir votre Prénom.'
-    ),
-    provideEmail: await t(
-     'validation.email',
-     'Veuillez fournir une adresse Email valide.'
-    ),
-    createPassword: await t(
-     'validation.createPassword',
-     'Veuillez créer un mot de passe.'
-    ),
-    passwordLength: await t(
-     'validation.passwordLength',
-     'Le mot de passe doit contenir au moins 8 caractères.'
-    ),
-    passwordRequirements: await t(
-     'validation.passwordRequirements',
-     'Le mot de passe doit contenir au moins une minuscule, une majuscule et un chiffre.'
-    ),
-    passwordMismatch: await t(
-     'validation.passwordMismatch',
-     'Le nouveau mot de passe que vous avez saisi ne correspond pas!'
-    ),
-   });
-  }
-  loadTranslations();
- }, [t]);
-
  return (
   <Layout className="sign-layout">
    <Head />
@@ -148,11 +59,11 @@ const Signup = () => {
     <Col xs={24} sm={12} md={8}>
      <div className="sign-container">
       <Title level={3} className="sign-title">
-       {translations.startFree}
+       {t('signup.startFree')}
       </Title>
       <Text className="sign-subtitle">
-       {translations.createAccountText}{' '}
-       <Link to="/login">{translations.loginHere}</Link>
+       {t('signup.createAccountText')}{' '}
+       <Link to="/login">{t('signup.loginHere')}</Link>
       </Text>
       <Divider />
       <Button
@@ -162,9 +73,9 @@ const Signup = () => {
        disabled={isLoading}
        className="sign-google-button"
       >
-       {translations.loginHere}
+       {t('signup.withGoogle')}
       </Button>
-      <Divider>{translations.orUseEmail}</Divider>
+      <Divider>{t('signup.orUseEmail')}</Divider>
       <Form
        name="signup"
        initialValues={{ remember: true }}
@@ -178,18 +89,18 @@ const Signup = () => {
         name="lastname"
         onChange={(e) => setLastName(e.target.value)}
         value={lastname}
-        rules={[{ required: true, message: translations.lastName }]}
+        rules={[{ required: true, message: t('validation.lastName') }]}
        >
-        <Input placeholder={translations.lastName} />
+        <Input placeholder={t('signup.lastName')} />
        </Form.Item>
 
        <Form.Item
         name="firstname"
         onChange={(e) => setFirstName(e.target.value)}
         value={firstname}
-        rules={[{ required: true, message: translations.firstName }]}
+        rules={[{ required: true, message: t('validation.firstName') }]}
        >
-        <Input placeholder={translations.firstName} />
+        <Input placeholder={t('signup.firstName')} />
        </Form.Item>
 
        <Form.Item
@@ -200,11 +111,11 @@ const Signup = () => {
          {
           type: 'email',
           required: true,
-          message: translations.provideEmail,
+          message: t('validation.email'),
          },
         ]}
        >
-        <Input prefix={<MailOutlined />} placeholder={translations.email} />
+        <Input prefix={<MailOutlined />} placeholder={t('signup.email')} />
        </Form.Item>
 
        <Form.Item
@@ -228,7 +139,7 @@ const Signup = () => {
           </Select>
          }
          style={{ width: '100%' }}
-         placeholder={translations.phone}
+         placeholder={t('signup.phone')}
          controls={false}
         />
        </Form.Item>
@@ -238,20 +149,20 @@ const Signup = () => {
         onChange={(e) => setPassword(e.target.value)}
         value={password}
         rules={[
-         { required: true, message: translations.createPassword },
+         { required: true, message: t('validation.createPassword') },
          {
           min: 8,
-          message: translations.passwordLength,
+          message: t('validation.passwordLength'),
          },
          {
           pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/,
-          message: translations.passwordRequirements,
+          message: t('validation.passwordRequirements'),
          },
         ]}
        >
         <Input.Password
          prefix={<LockOutlined />}
-         placeholder={translations.password}
+         placeholder={t('signup.password')}
         />
        </Form.Item>
 
@@ -265,14 +176,14 @@ const Signup = () => {
            if (!value || getFieldValue('password') === value) {
             return Promise.resolve();
            }
-           return Promise.reject(new Error(translations.passwordMismatch));
+           return Promise.reject(new Error(t('validation.passwordMismatch')));
           },
          }),
         ]}
        >
         <Input.Password
          prefix={<LockOutlined />}
-         placeholder={translations.confirmPassword}
+         placeholder={t('signup.confirmPassword')}
         />
        </Form.Item>
 
@@ -294,13 +205,13 @@ const Signup = () => {
          htmlType="submit"
          className="sign-submit-button"
         >
-         {translations.startButton}
+         {t('signup.startButton')}
         </Button>
        </Form.Item>
 
        <Form.Item>
-        <Text>{translations.termsText}</Text>
-        <Link to="/">{translations.passwordMismatch}</Link>
+        <Text>{t('signup.termsText')}</Text>{' '}
+        <Link to="/">{t('signup.termsLink')}</Link>
        </Form.Item>
       </Form>
      </div>

@@ -14,6 +14,7 @@ import {
  message,
 } from 'antd';
 import { UploadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { useTranslation } from '../../context/TranslationContext';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
 import useUploadPhotos from '../../hooks/useUploadPhotos';
 import ImgCrop from 'antd-img-crop';
@@ -23,19 +24,13 @@ import Foot from '../../components/common/footer';
 const { Content } = Layout;
 const { Title } = Typography;
 
-const OPTIONS = [
- 'Restaurant & Café',
- 'Activité',
- 'Attraction',
- 'Centre commercial',
-];
-
 const NearbyPlace = () => {
  const [place, setPlace] = useState(null);
  const location = useLocation();
  const navigate = useNavigate();
  const { loading, getNearbyPlaceById, updateNearbyPlace } = useNearbyPlace();
  const { uploadPlace } = useUploadPhotos();
+ const { t } = useTranslation();
 
  const [filelist, setFileList] = useState([]);
 
@@ -48,7 +43,7 @@ const NearbyPlace = () => {
      setPlace(data);
     })
     .catch((err) => {
-     message.error('Échec du chargement des détails du lieu.');
+     message.error(t('map.messageError'));
     });
   }
  }, [loading]);
@@ -65,10 +60,10 @@ const NearbyPlace = () => {
     values.photo = photoUrls;
    }
    await updateNearbyPlace(placeId, { ...place, ...values });
-   message.success('Lieu mis à jour avec succès.');
+   message.success(t('messages.updateSuccess'));
    navigate(-1); // Redirect to nearby places list after update
   } catch (err) {
-   message.error('Échec de la mise à jour du lieu.');
+   message.error(t('messages.updateError'));
   }
  };
 
@@ -90,9 +85,9 @@ const NearbyPlace = () => {
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
     >
-     Retour
+     {t('button.back')}
     </Button>
-    <Title level={2}>Propriétés</Title>
+    <Title level={2}>{t('nearbyPlace.title')}</Title>
     <Form
      initialValues={place}
      onFinish={handleFormSubmit}
@@ -101,33 +96,35 @@ const NearbyPlace = () => {
      labelCol={{ xs: 24, sm: 4 }}
      wrapperCol={{ xs: 24, sm: 20 }}
     >
-     <Form.Item label="Nom" name="name">
+     <Form.Item label={t('nearbyPlace.name')} name="name">
       <Input />
      </Form.Item>
 
-     <Form.Item label="Adresse" name="address">
+     <Form.Item label={t('nearbyPlace.address')} name="address">
       <Input />
      </Form.Item>
 
-     <Form.Item label="Note" name="rating">
+     <Form.Item label={t('nearbyPlace.rating')} name="rating">
       <Rate allowHalf />
      </Form.Item>
 
-     <Form.Item label="Types" name="types">
+     <Form.Item label={t('nearbyPlace.types')} name="types">
       <Select
        mode="multiple"
        allowClear
        style={{ width: '100%' }}
-       placeholder="Sélectionner des types"
-       options={OPTIONS.map((type) => ({
-        label: type,
-        value: type,
-       }))}
+       placeholder={t('nearbyPlace.selectTypes')}
+       options={[
+        { label: t('nearbyPlace.restaurantcafe'), value: 'Restaurant & Café' },
+        { label: t('nearbyPlace.activite'), value: 'Activité' },
+        { label: t('nearbyPlace.attraction'), value: 'Attraction' },
+        { label: t('nearbyPlace.mall'), value: 'Centre commercial' },
+       ]}
        defaultValue={place.types} // Set default value as the current place types
       />
      </Form.Item>
 
-     <Form.Item label="Photo" name="photo">
+     <Form.Item label={t('nearbyPlace.photo')} name="photo">
       <ImgCrop rotationSlider>
        <Upload
         listType="picture"
@@ -142,18 +139,22 @@ const NearbyPlace = () => {
         onChange={handleChange}
         onPreview={null}
        >
-        <Button icon={<UploadOutlined />}>Charger</Button>
+        <Button icon={<UploadOutlined />}>{t('common.upload')}</Button>
        </Upload>
       </ImgCrop>
      </Form.Item>
 
-     <Form.Item label="Vérifié" name="isVerified" valuePropName="checked">
+     <Form.Item
+      label={t('manager.verified')}
+      name="isVerified"
+      valuePropName="checked"
+     >
       <Checkbox />
      </Form.Item>
 
      <Form.Item>
       <Button type="primary" htmlType="submit" loading={loading}>
-       Enregistrer les modifications
+       {t('button.save')}
       </Button>
      </Form.Item>
     </Form>

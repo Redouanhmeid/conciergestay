@@ -23,7 +23,7 @@ import ImgCrop from 'antd-img-crop';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import ReactPlayer from 'react-player';
 import useAmenity from '../../../hooks/useAmenity';
-import useAmenityTranslations from '../../../hooks/translations/useAmenityTranslation';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -39,11 +39,12 @@ const getBase64 = (file) =>
 const EditAmenity = () => {
  const location = useLocation();
  const { id } = location.state;
+ const { t } = useTranslation();
  const navigate = useNavigate();
  const { uploadAmenity } = useUploadPhotos();
  const { loading, error, deleteAmenity, updateAmenity, getOneAmenity } =
   useAmenity();
- const translations = useAmenityTranslations();
+
  const [form] = Form.useForm();
  const [amenity, setAmenity] = useState('');
  const [mediaType, setMediaType] = useState('Photo');
@@ -118,7 +119,7 @@ const EditAmenity = () => {
      marginTop: 8,
     }}
    >
-    {translations.upload}
+    {t('photo.upload')}
    </div>
   </button>
  );
@@ -163,10 +164,10 @@ const EditAmenity = () => {
  const confirmDelete = async (id) => {
   await deleteAmenity(id);
   if (!error) {
-   message.success(translations.deleteSuccess);
+   message.success(t('amenity.deleteSuccess'));
    navigate(-1);
   } else {
-   message.error(`${translations.deleteError}: ${error.message}`);
+   message.error(`${t('amenity.deleteError')}: ${error.message}`);
   }
  };
 
@@ -188,14 +189,14 @@ const EditAmenity = () => {
       icon={<ArrowLeftOutlined />}
       onClick={() => navigate(-1)}
      >
-      {translations.back}
+      {t('button.back')}
      </Button>
 
      <Popconfirm
-      title={translations.confirmDelete}
+      title={t('amenity.confirmDelete')}
       onConfirm={() => confirmDelete(amenity.id)}
-      okText={translations.confirmYes}
-      cancelText={translations.confirmNo}
+      okText={t('amenity.confirmYes')}
+      cancelText={t('amenity.confirmNo')}
      >
       <Button
        danger
@@ -213,7 +214,7 @@ const EditAmenity = () => {
     </Flex>
     <Row gutter={[16, 16]}>
      <Col xs={24}>
-      <Title level={2}>{`${translations.addCard} ${amenity.name}`}</Title>
+      <Title level={2}>{`${t('amenity.addCard')} ${t('amenity.name')}`}</Title>
       <Form
        name="amenity_form"
        initialValues={{ remember: true }}
@@ -235,14 +236,14 @@ const EditAmenity = () => {
          >
           <Form.Item name="mediaType">
            <Radio.Group buttonStyle="solid" size="large">
-            <Radio.Button value="Photo">{translations.photo}</Radio.Button>
-            <Radio.Button value="Video">{translations.video}</Radio.Button>
+            <Radio.Button value="Photo">{t('common.photo')}</Radio.Button>
+            <Radio.Button value="Video">{t('common.video')}</Radio.Button>
            </Radio.Group>
           </Form.Item>
          </Flex>
          <br />
          {mediaType === 'Photo' ? (
-          <Form.Item label={translations.mediaUrl} name="media">
+          <Form.Item label={t('amenity.mediaUrl')} name="media">
            <div>
             <ImgCrop rotationSlider>
              <Upload
@@ -279,9 +280,9 @@ const EditAmenity = () => {
            label={
             <>
              <Text>
-              {translations.videoUrlLabel}
+              {t('amenity.videoUrlLabel')}
               <br />
-              <Text type="secondary">{translations.videoUrlHint}</Text>
+              <Text type="secondary">{t('amenity.videoUrlHint')}</Text>
              </Text>
             </>
            }
@@ -306,7 +307,7 @@ const EditAmenity = () => {
           offset: 2,
          }}
         >
-         <Form.Item label={translations.guestMessage} name="description">
+         <Form.Item label={t('amenity.guestMessage')} name="description">
           <Input.TextArea rows={6} showCount maxLength={500} />
          </Form.Item>
         </Col>
@@ -314,12 +315,12 @@ const EditAmenity = () => {
          <Col xs={24} md={12}>
           <Row gutter={[16, 0]}>
            <Col xs={24} md={12}>
-            <Form.Item label={translations.wifiName} name="wifiName">
+            <Form.Item label={t('amenity.wifiName')} name="wifiName">
              <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
            <Col xs={24} md={12}>
-            <Form.Item label={translations.wifiPassword} name="wifiPassword">
+            <Form.Item label={t('amenity.wifiPassword')} name="wifiPassword">
              <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
@@ -339,7 +340,7 @@ const EditAmenity = () => {
             loading={isSubmitting || loading}
             disabled={isSubmitting}
            >
-            {translations.save}
+            {t('button.save')}
            </Button>
           </Form.Item>
          </Col>

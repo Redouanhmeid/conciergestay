@@ -9,11 +9,13 @@ import {
 } from '@vis.gl/react-google-maps';
 import pinIcon from '../../assets/pin.gif';
 import { useGoogleMapsLoader } from '../../services/GoogleMapService';
+import { useTranslation } from '../../context/TranslationContext';
 
 // Define libraries as a const variable outside of the component
 const libraries = ['places', 'geometry'];
 
 const MapMarker = React.memo(({ latitude, longitude }) => {
+ const { t } = useTranslation();
  const isLoaded = useGoogleMapsLoader();
  const [showInfoWindow, setShowInfoWindow] = useState(false);
 
@@ -68,12 +70,12 @@ const MapMarker = React.memo(({ latitude, longitude }) => {
        position={center}
        pixelOffset={new window.google.maps.Size(0, -50)}
        onCloseClick={handleCloseInfoWindow}
-       headerContent={<p>InfoWindow Header Content</p>}
+       headerContent={<p>{t('map.headerContent')}</p>}
       >
        <div>
-        <p>C'est l'emplacement du marqueur.</p>
+        <p>{t('map.markerLocation')}</p>
         <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer">
-         Voir sur Google Maps
+         {t('map.SeeOnMaps')}
         </a>
        </div>
       </InfoWindow>
