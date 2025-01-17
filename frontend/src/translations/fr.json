@@ -23,7 +23,8 @@
             "rooms": "Chambres",
             "beds": "Lits",
             "people": "Personnes",
-            "price": "Fixez votre prix",
+            "price": "Prix",
+            "setPrice": "Fixez votre prix",
             "airbnbUrl": "Airbnb URL",
             "bookingUrl": "Booking URL",
             "selectLocation": "Sélectionnez un emplacement sur la carte",
@@ -287,7 +288,8 @@
         "no": "Non",
         "search": "Chercher",
         "reset": "Réinitialiser",
-        "avatar": "Avatar"
+        "avatar": "Avatar",
+        "share": "Partager"
     },
     "timePicker": {
         "defaultCheckIn": "Heure par défaut: 11:00",
@@ -318,17 +320,67 @@
     },
     "tasks": {
         "title": "Tâches à faire",
+        "management": "Tâches pour ",
+        "createTask": "Créer une tâche",
+        "editTask": "Modifier la tâche",
+        "notes": "Notes",
+        "dueDate": "Date d'échéance",
+        "actions": "Action",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "confirmDelete": {
+            "title": "Confirmer la suppression",
+            "content": "Êtes-vous sûr de vouloir supprimer cette tâche ?",
+            "ok": "Supprimer",
+            "cancel": "Annuler"
+        },
+        "status": {
+            "title": "État",
+            "pending": "En attente",
+            "inProgress": "En progrès",
+            "completed": "Complété"
+        },
         "priority": {
+            "title": "Priorité",
             "high": "URGENT",
             "medium": "MOYENNE",
             "low": "FAIBLE"
+        },
+        "statistics": {
+            "totalTasks": "Tâches totales",
+            "completedTasks": "Tâches complétées",
+            "activeTasks": "Tâches actives",
+            "urgentTasks": "Priorités urgentes"
+        },
+        "validation": {
+            "titleRequired": "Veuillez saisir le titre de la tâche",
+            "priorityRequired": "Veuillez sélectionner une priorité",
+            "dueDateRequired": "Veuillez sélectionner une date d'échéance"
         }
     },
     "revenue": {
         "title": "Revenus",
         "total": "Revenu total",
         "viewChart": "Voir les revenus",
-        "chartTitle": "Revenus "
+        "chartTitle": "Revenus ",
+        "management": "Gestion des revenus pour ",
+        "filterByYear": "Filtrer par année",
+        "year": "Année",
+        "month": "Mois",
+        "amount": "Montant",
+        "notes": "Remarques",
+        "yearlyTotal": "Total annuel",
+        "monthlyAverage": "Moyenne mensuelle",
+        "monthOverMonth": "Mois après mois",
+        "entries": "Entrées de revenus",
+        "addRevenue": "Ajouter un revenu",
+        "editRevenue": "Modifier le revenu",
+        "currency": "DHs",
+        "deleteSuccess": "Revenu supprimé avec succès",
+        "validation": {
+            "selectMonth": "Veuillez sélectionner un mois",
+            "enterAmount": "Veuillez saisir le montant"
+        }
     },
     "manual": {
         "title": "Manuel de la maison",
@@ -401,10 +453,13 @@
         "pending": "Lieux à proximité à vérifier"
     },
     "guestForm": {
+        "pdfTitle": "Contrat de réservation",
+        "Generated": "Généré le",
         "title": "Saisissez vos données personnelles",
         "backHome": "Retour à l'accueil",
         "personalData": {
             "title": "Saisissez vos données personnelles",
+            "pdfTitle": "Données personnelles",
             "firstName": "Prénom",
             "lastName": "Nom",
             "middleName": "Deuxième nom de famille (facultatif)",
@@ -415,6 +470,7 @@
                 "female": "Femme"
             },
             "nationality": "Nationalité",
+            "residence": "Résidence",
             "residenceCountry": "Pays de résidence",
             "residenceCity": "Ville de résidence",
             "residenceAddress": "Adresse de résidence",
@@ -453,7 +509,9 @@
             "title": "Signature électronique",
             "policy": "En cliquant sur (Formulaire de signature) vous acceptez de signer le formulaire avec votre nom et le nom de l'entreprise.",
             "privacyLink": "Politique de confidentialité",
-            "button": "Formulaire de signature"
+            "button": "Formulaire de signature",
+            "date": "Date de signature",
+            "confirmation": "Je confirme qu'il s'agit de ma signature et j'accepte les termes et conditions"
         },
         "infoModal": {
             "title": "Pourquoi toutes ces données sont-elles nécessaires ?",
@@ -464,7 +522,10 @@
         "success": {
             "title": "Contrat envoyé avec succès",
             "subtitle1": "Votre contrat de réservation a été créé et envoyé avec succès.",
-            "subtitle2": "Nous vous contacterons sous peu pour finaliser votre réservation."
+            "subtitle2": "Nous vous contacterons sous peu pour finaliser votre réservation.",
+            "downloadPdf": "Télécharger PDF",
+            "downloadingPdf": "Téléchargement du PDF ...",
+            "pdfDownloaded": "PDF téléchargé avec succès"
         },
         "validation": {
             "firstName": "Veuillez saisir votre Prénom!",
@@ -542,6 +603,9 @@
                 "title": "Signature électronique",
                 "content": "En signant ce contrat, l'invité reconnaît avoir pris connaissance des termes du présent règlement intérieur et s'engage à respecter toutes les conditions énoncées."
             }
+        },
+        "error": {
+            "pdfGeneration": "Erreur lors de la génération du PDF. Veuillez réessayer."
         }
     },
     "auth": {
@@ -674,6 +738,7 @@
         }
     },
     "manager": {
+        "manager": "Manager",
         "verifySuccess": "Le manager a été vérifié",
         "verifyError": "Échec de la vérification du manager",
         "role": "Rôle",
@@ -688,6 +753,21 @@
         "verifiedStatus": {
             "verified": "Vérifié",
             "unverified": "Non vérifié"
+        }
+    },
+    "share": {
+        "modalTitle": "Partager cette page",
+        "orShareVia": "Ou partager via",
+        "noQrCode": "Aucun code QR disponible",
+        "email": {
+            "subject": "Découvrez ce guide digital",
+            "body": "Je pense que vous pourriez être intéressé par ce guide digital: {url}"
+        },
+        "x": {
+            "text": "Découvrez ce guide digital!"
+        },
+        "instagram": {
+            "copied": "Lien copié dans le presse-papiers. Vous pouvez désormais le coller sur Instagram."
         }
     }
 }

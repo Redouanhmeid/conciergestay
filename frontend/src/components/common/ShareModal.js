@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Grid, Flex, Divider, QRCode } from 'antd';
+import { Modal, Grid, Flex, Divider, QRCode, message } from 'antd';
+import { useTranslation } from '../../context/TranslationContext';
 
 const { useBreakpoint } = Grid;
 
 const ShareModal = ({ isVisible, onClose, pageUrl }) => {
+ const { t } = useTranslation();
  const [qrValue, setQrValue] = useState(pageUrl);
  const screens = useBreakpoint();
 
@@ -37,18 +39,14 @@ const ShareModal = ({ isVisible, onClose, pageUrl }) => {
    );
   } else {
    navigator.clipboard.writeText(pageUrl).then(() => {
-    alert(
-     'Lien copié dans le presse-papiers. Vous pouvez désormais le coller sur Instagram.'
-    );
+    message.success(t('share.instagram.copied'));
    });
   }
  };
 
  const shareOnGmail = () => {
   const subject = encodeURIComponent('Découvrez ce guide digital');
-  const body = encodeURIComponent(
-   `Je pense que vous pourriez être intéressé par ce guide digital: ${pageUrl}`
-  );
+  const body = encodeURIComponent(`${t('share.email.body')} ${pageUrl}`);
   const gmailUrl = screens.xs
    ? `googlegmail://compose?subject=${subject}&body=${body}`
    : `https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=&su=${subject}&body=${body}`;
@@ -56,7 +54,7 @@ const ShareModal = ({ isVisible, onClose, pageUrl }) => {
  };
 
  const shareOnX = () => {
-  const text = encodeURIComponent('Check out this Digital Guidebook!');
+  const text = encodeURIComponent(t('share.x.text'));
   const xUrl = screens.xs
    ? `twitter://post?text=${text}&url=${encodeURIComponent(pageUrl)}`
    : `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(
@@ -67,7 +65,7 @@ const ShareModal = ({ isVisible, onClose, pageUrl }) => {
 
  return (
   <Modal
-   title="Partager cette page"
+   title={t('share.modalTitle')}
    open={isVisible}
    onCancel={onClose}
    footer={null}
@@ -76,9 +74,9 @@ const ShareModal = ({ isVisible, onClose, pageUrl }) => {
     {qrValue ? (
      <QRCode value={qrValue} size={200} />
     ) : (
-     <p>Aucun code QR disponible</p>
+     <p>{t('share.noQrCode')}</p>
     )}
-    <Divider>Ou partager via</Divider>
+    <Divider>{t('share.orShareVia')}</Divider>
     <br />
     <Flex gap="middle">
      <i

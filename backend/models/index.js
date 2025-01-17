@@ -10,6 +10,7 @@ const PasswordResetModel = require('./PasswordResetModel');
 const ReservationContractModel = require('./ReservationContractModel');
 const PropertyRevenueModel = require('./PropertyRevenueModel');
 const PropertyTaskModel = require('./PropertyTaskModel');
+const NotificationModel = require('./NotificationModel');
 
 // create models
 const PropertyManager = PropertyManagerModel(db, Sequelize);
@@ -24,6 +25,7 @@ const PasswordReset = PasswordResetModel(db, Sequelize);
 const ReservationContract = ReservationContractModel(db, Sequelize);
 const PropertyRevenue = PropertyRevenueModel(db, Sequelize);
 const PropertyTask = PropertyTaskModel(db, Sequelize);
+const Notification = NotificationModel(db, Sequelize);
 
 // define relationships
 // Property & PropertyManager (one -> many)
@@ -74,6 +76,28 @@ PropertyTask.belongsTo(Property, {
  as: 'property',
 });
 
+PropertyManager.hasMany(Notification, {
+ foreignKey: 'propertyManagerId',
+ as: 'notifications',
+ onDelete: 'CASCADE',
+});
+
+Notification.belongsTo(PropertyManager, {
+ foreignKey: 'propertyManagerId',
+ as: 'propertyManager',
+});
+
+Property.hasMany(Notification, {
+ foreignKey: 'propertyId',
+ as: 'notifications',
+ onDelete: 'CASCADE',
+});
+
+Notification.belongsTo(Property, {
+ foreignKey: 'propertyId',
+ as: 'property',
+});
+
 // generate tables in DB
 db.sync({ alter: false }).then(() => {
  console.log('Tables Altered and Synced!');
@@ -89,4 +113,5 @@ module.exports = {
  ReservationContract,
  PropertyRevenue,
  PropertyTask,
+ Notification,
 };

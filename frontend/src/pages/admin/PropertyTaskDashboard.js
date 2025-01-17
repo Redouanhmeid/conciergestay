@@ -16,6 +16,7 @@ import {
  Statistic,
 } from 'antd';
 import {
+ ArrowLeftOutlined,
  PlusOutlined,
  CheckCircleOutlined,
  ClockCircleOutlined,
@@ -26,6 +27,7 @@ import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import useTask from '../../hooks/useTask';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from '../../context/TranslationContext';
 import dayjs from 'dayjs';
 
 const { Content } = Layout;
@@ -50,6 +52,8 @@ const priorityColors = {
 const PropertyTaskDashboard = () => {
  const location = useLocation();
  const searchParams = new URLSearchParams(location.search);
+ const { t } = useTranslation();
+ const navigate = useNavigate();
  const propertyId = searchParams.get('id');
  const propertyName = searchParams.get('name');
 
@@ -104,12 +108,12 @@ const PropertyTaskDashboard = () => {
 
  const handleDelete = (id) => {
   Modal.confirm({
-   title: 'Confirm Delete',
+   title: t('tasks.confirmDelete.title'),
    icon: <ExclamationCircleOutlined />,
-   content: 'Are you sure you want to delete this task?',
-   okText: 'Delete',
+   content: t('tasks.confirmDelete.content'),
+   okText: t('tasks.confirmDelete.ok'),
    okType: 'danger',
-   cancelText: 'Cancel',
+   cancelText: t('tasks.confirmDelete.cancel'),
    onOk: async () => {
     await deleteTask(id);
     fetchTasks();
@@ -157,17 +161,17 @@ const PropertyTaskDashboard = () => {
 
  const columns = [
   {
-   title: 'Titre',
+   title: t('tasks.title'),
    dataIndex: 'title',
    key: 'title',
   },
   {
-   title: 'Notes',
+   title: t('tasks.notes'),
    dataIndex: 'notes',
    key: 'notes',
   },
   {
-   title: 'Priorité',
+   title: t('tasks.priority.title'),
    dataIndex: 'priority',
    key: 'priority',
    render: (priority) => {
@@ -192,13 +196,13 @@ const PropertyTaskDashboard = () => {
    },
   },
   {
-   title: "Date d'échéance",
+   title: t('tasks.dueDate'),
    dataIndex: 'dueDate',
    key: 'dueDate',
    render: (date) => dayjs(date).format('YYYY-MM-DD'),
   },
   {
-   title: 'État',
+   title: t('tasks.status.title'),
    dataIndex: 'status',
    key: 'status',
    render: (status, record) => (
@@ -207,27 +211,27 @@ const PropertyTaskDashboard = () => {
      onChange={(value) => handleStatusChange(record.id, value)}
     >
      <Option value="pending">
-      <ClockCircleOutlined /> En attente
+      <ClockCircleOutlined /> {t('tasks.status.pending')}
      </Option>
      <Option value="in_progress">
-      <SyncOutlined spin /> En progress
+      <SyncOutlined spin /> {t('tasks.status.inProgress')}
      </Option>
      <Option value="completed">
-      <CheckCircleOutlined /> Complété
+      <CheckCircleOutlined /> {t('tasks.status.completed')}
      </Option>
     </Select>
    ),
   },
   {
-   title: 'Action',
+   title: t('tasks.actions'),
    key: 'action',
    render: (_, record) => (
     <Space size="middle">
      <Button type="link" onClick={() => handleEdit(record)}>
-      Modifier
+      {t('tasks.edit')}
      </Button>
      <Button type="link" danger onClick={() => handleDelete(record.id)}>
-      Supprimer
+      {t('tasks.delete')}
      </Button>
     </Space>
    ),
@@ -238,27 +242,40 @@ const PropertyTaskDashboard = () => {
   <Layout>
    <Head onUserData={handleUserData} />
    <Content className="container">
-    <Title level={2}>Tâches pour {propertyName}</Title>
+    <Button
+     type="default"
+     shape="round"
+     icon={<ArrowLeftOutlined />}
+     onClick={() => navigate(-1)}
+    >
+     {t('button.back')}
+    </Button>
+    <Title level={2}>
+     {t('tasks.management')} {propertyName}
+    </Title>
 
     <Row gutter={16}>
      <Col span={6}>
-      <Statistic title="Tâches totales" value={tasks.length} />
+      <Statistic
+       title={t('tasks.statistics.totalTasks')}
+       value={tasks.length}
+      />
      </Col>
      <Col span={6}>
       <Statistic
-       title="Tâches complétées"
+       title={t('tasks.statistics.completedTasks')}
        value={tasks.filter((t) => t.status === 'Completed').length}
       />
      </Col>
      <Col span={6}>
       <Statistic
-       title="Tâches actives"
+       title={t('tasks.statistics.activeTasks')}
        value={tasks.filter((t) => t.status !== 'Completed').length}
       />
      </Col>
      <Col span={6}>
       <Statistic
-       title="Priorités urgentes"
+       title={t('tasks.statistics.urgentTasks')}
        value={tasks.filter((t) => t.priority === 'high').length}
       />
      </Col>
@@ -271,60 +288,59 @@ const PropertyTaskDashboard = () => {
      onClick={handleCreate}
      style={{ marginBottom: 16 }}
     >
-     Créer une tâche
+     {t('tasks.createTask')}
     </Button>
 
     <Table columns={columns} dataSource={tasks} rowKey="id" loading={loading} />
 
     <Modal
-     title={modalType === 'create' ? 'Créer une tâche' : 'Modifier la tâche'}
+     title={
+      modalType === 'create' ? t('tasks.createTask') : t('tasks.editTask')
+     }
      open={modalVisible}
      onCancel={() => setModalVisible(false)}
      footer={[
       <Button key="cancel" onClick={() => setModalVisible(false)}>
-       Cancel
+       {t('tasks.confirmDelete.cancel')}
       </Button>,
       <Button key="submit" type="primary" onClick={() => form.submit()}>
-       {modalType === 'create' ? 'Créer' : 'Modifier'}
+       {modalType === 'create' ? t('tasks.createTask') : t('tasks.edit')}
       </Button>,
      ]}
     >
      <Form form={form} layout="vertical" onFinish={handleSubmit}>
       <Form.Item
        name="title"
-       label="Titre"
+       label={t('tasks.title')}
        rules={[
-        { required: true, message: 'Veuillez saisir le titre de la tâche' },
+        { required: true, message: t('tasks.validation.titleRequired') },
        ]}
       >
        <Input />
       </Form.Item>
       <Form.Item
        name="priority"
-       label="Priorité"
+       label={t('tasks.priority.title')}
        rules={[
-        { required: true, message: 'Veuillez sélectionner une priorité' },
+        { required: true, message: t('tasks.validation.priorityRequired') },
        ]}
       >
        <Select>
-        <Option value="High">Urgent</Option>
-        <Option value="Medium">Moyenne</Option>
-        <Option value="Low">Faible</Option>
+        <Option value="High">{t('tasks.priority.high')}</Option>
+        <Option value="Medium">{t('tasks.priority.medium')}</Option>
+        <Option value="Low">{t('tasks.priority.low')}</Option>
        </Select>
       </Form.Item>
       <Form.Item
        name="dueDate"
-       label="Date d'échéance"
+       label={t('tasks.dueDate')}
        rules={[
-        {
-         required: true,
-         message: "Veuillez sélectionner une date d'échéance",
-        },
+        { required: true, message: t('tasks.validation.dueDateRequired') },
        ]}
       >
        <DatePicker format="YYYY-MM-DD" />
       </Form.Item>
-      <Form.Item name="notes" label="Notes">
+      <Form.Item name="notes" label={t('tasks.notes')}>
        <TextArea rows={4} />
       </Form.Item>
       {error && <p>{error.message}</p>}

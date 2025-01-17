@@ -344,7 +344,7 @@ const Properties = () => {
    render: (createdAt) => new Date(createdAt).toLocaleString(),
   },
   {
-   title: t('property.manager'),
+   title: t('manager.manager'),
    key: 'propertyManagerId',
    render: (_, record) => {
     const managerName = managersMap[record.propertyManagerId]; // Get the manager's name from the map

@@ -19,8 +19,8 @@ import {
  Space,
 } from 'antd';
 import {
+ ArrowLeftOutlined,
  PlusOutlined,
- DollarOutlined,
  ArrowUpOutlined,
  ArrowDownOutlined,
 } from '@ant-design/icons';
@@ -38,6 +38,7 @@ import {
 } from 'recharts';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useRevenue from '../../hooks/useRevenue';
+import { useTranslation } from '../../context/TranslationContext';
 import dayjs from 'dayjs';
 
 const { Content } = Layout;
@@ -46,8 +47,10 @@ const { TextArea } = Input;
 const { Option } = Select;
 
 const PropertyRevenueDashboard = () => {
+ const { t } = useTranslation();
  const location = useLocation();
  const searchParams = new URLSearchParams(location.search);
+ const navigate = useNavigate();
  const propertyId = searchParams.get('id');
  const propertyName = searchParams.get('name');
  const currentYear = new Date().getFullYear();
@@ -140,30 +143,30 @@ const PropertyRevenueDashboard = () => {
 
  const columns = [
   {
-   title: 'Année',
+   title: t('revenue.year'),
    dataIndex: 'year',
    key: 'year',
    render: (year) => String(year),
   },
   {
-   title: 'Mois',
+   title: t('revenue.month'),
    dataIndex: 'month',
    key: 'month',
    render: (month) => String(month),
   },
   {
-   title: 'Montant',
+   title: t('revenue.amount'),
    dataIndex: 'amount',
    key: 'amount',
    render: (amount) => `${Number(amount || 0).toLocaleString()} DHs`,
   },
   {
-   title: 'Remarques',
+   title: t('revenue.notes'),
    dataIndex: 'notes',
    key: 'notes',
   },
   {
-   title: 'Actions',
+   title: t('property.actions.actions'),
    key: 'actions',
    render: (_, record) => (
     <Space>
@@ -174,7 +177,7 @@ const PropertyRevenueDashboard = () => {
       shape="circle"
      />
      <Popconfirm
-      title="Etes-vous sûr de supprimer?"
+      title={t('messages.deleteConfirm')}
       onConfirm={() => handleDelete(record.id)}
      >
       <Button
@@ -207,7 +210,7 @@ const PropertyRevenueDashboard = () => {
  const handleDelete = async (id) => {
   const result = await deleteRevenue(id);
   if (result) {
-   message.success('Revenue entry deleted successfully');
+   message.success(t('revenue.deleteSuccess'));
    fetchRevenueData();
   }
  };
@@ -267,13 +270,23 @@ const PropertyRevenueDashboard = () => {
   <Layout className="contentStyle">
    <Head onUserData={handleUserData} />
    <Content className="container">
-    <Title level={2}>Gestion des revenus pour {propertyName}</Title>
+    <Button
+     type="default"
+     shape="round"
+     icon={<ArrowLeftOutlined />}
+     onClick={() => navigate(-1)}
+    >
+     {t('button.back')}
+    </Button>
+    <Title level={2}>
+     {t('revenue.management')} {propertyName}
+    </Title>
     {/* Year Filter */}
     <Row gutter={16} style={{ marginBottom: 16 }}>
      <Col>
       <Select
        style={{ width: 200 }}
-       placeholder="Filtrer par année"
+       placeholder={t('revenue.filterByYear')}
        value={yearFilter}
        onChange={(value) => setYearFilter(value)}
       >
@@ -290,9 +303,9 @@ const PropertyRevenueDashboard = () => {
      <Col span={8}>
       <Card>
        <Statistic
-        title="Total annuel"
+        title={t('revenue.yearlyTotal')}
         value={yearlyTotal}
-        suffix="DHs"
+        suffix={t('revenue.currency')}
         precision={0}
        />
       </Card>
@@ -300,9 +313,9 @@ const PropertyRevenueDashboard = () => {
      <Col span={8}>
       <Card>
        <Statistic
-        title="Moyenne mensuelle"
+        title={t('revenue.monthlyAverage')}
         value={monthlyAverage}
-        suffix="DHs"
+        suffix={t('revenue.currency')}
         precision={0}
        />
       </Card>
@@ -310,7 +323,7 @@ const PropertyRevenueDashboard = () => {
      <Col span={8}>
       <Card>
        <Statistic
-        title="Mois après mois"
+        title={t('revenue.monthOverMonth')}
         value={percentageChange}
         precision={2}
         prefix={
@@ -347,10 +360,10 @@ const PropertyRevenueDashboard = () => {
      <Col xs={24} md={12}>
       {/* Revenue Table */}
       <Card
-       title="Entrées de revenus"
+       title={t('revenue.entries')}
        extra={
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-         Ajouter un revenu
+         {t('revenue.addRevenue')}
         </Button>
        }
       >
@@ -365,7 +378,11 @@ const PropertyRevenueDashboard = () => {
     </Row>
     {/* Add/Edit Modal */}
     <Modal
-     title={form.getFieldValue('id') ? 'Modifier le revenu' : 'Ajout de revenu'}
+     title={
+      form.getFieldValue('id')
+       ? t('revenue.editRevenue')
+       : t('revenue.addRevenue')
+     }
      open={isModalVisible}
      onOk={handleModalOk}
      onCancel={() => {
@@ -387,21 +404,25 @@ const PropertyRevenueDashboard = () => {
 
       <Form.Item
        name="date"
-       label="Mois"
-       rules={[{ required: true, message: 'Veuillez sélectionner un mois' }]}
+       label={t('revenue.month')}
+       rules={[
+        { required: true, message: t('revenue.validation.selectMonth') },
+       ]}
       >
        <DatePicker picker="month" />
       </Form.Item>
 
       <Form.Item
        name="amount"
-       label="Montant"
-       rules={[{ required: true, message: 'Veuillez saisir le montant' }]}
+       label={t('revenue.amount')}
+       rules={[
+        { required: true, message: t('revenue.validation.enterAmount') },
+       ]}
       >
-       <Input suffix="DHs" type="number" step="1" />
+       <Input suffix={t('revenue.currency')} type="number" step="1" />
       </Form.Item>
 
-      <Form.Item name="notes" label="Remarques">
+      <Form.Item name="notes" label={t('revenue.notes')}>
        <TextArea rows={4} />
       </Form.Item>
 

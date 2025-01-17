@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
  Button,
  DatePicker,
@@ -16,6 +16,7 @@ import {
  Modal,
  Tooltip,
  Result,
+ Space,
  message,
 } from 'antd';
 import {
@@ -38,6 +39,9 @@ import useProperty from '../../hooks/useProperty';
 import useUploadPhotos from '../../hooks/useUploadPhotos';
 import ShareModal from '../../components/common/ShareModal';
 import { useTranslation } from '../../context/TranslationContext';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+import PDFContractGenerator from '../../utils/PDFContractGenerator';
 
 const { Title, Text, Paragraph, Link } = Typography;
 const { Option } = Select;
@@ -72,6 +76,9 @@ const Guestform = () => {
  const [isOwner, setIsOwner] = useState(false);
  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+ const [formValues, setFormValues] = useState({});
+
+ const formRef = useRef(null);
 
  const showShareModal = (id) => {
   setPageUrl();
@@ -190,10 +197,9 @@ const Guestform = () => {
     propertyId,
    };
    await createContract(contractData);
+   setFormValues(contractData);
+
    setIsSuccessModalOpen(true);
-   form.resetFields();
-   setFileList([]);
-   sign?.clear();
   } catch (err) {
    message.error(t('error.submit'));
    console.error('Error submitting form:', err);
@@ -309,7 +315,7 @@ const Guestform = () => {
        <Button
         icon={<i className="fa-light fa-share-nodes" />}
         onClick={() => showShareModal(propertyId)}
-        type="text"
+        type="default"
        >
         {t('common.share')}
        </Button>
@@ -685,14 +691,22 @@ const Guestform = () => {
       </div>
      }
      extra={[
-      <Button
-       type="primary"
-       key="home"
-       onClick={() => navigate('/')}
-       size="large"
-      >
-       {t('guestForm.backHome')}
-      </Button>,
+      <Space align="center">
+       <PDFContractGenerator
+        formData={formValues}
+        signature={sign}
+        filelist={filelist}
+        t={t}
+       />
+       <Button
+        type="primary"
+        key="home"
+        onClick={() => navigate('/')}
+        size="large"
+       >
+        {t('guestForm.backHome')}
+       </Button>
+      </Space>,
      ]}
     />
    </Modal>
