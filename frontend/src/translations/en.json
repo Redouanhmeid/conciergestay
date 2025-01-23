@@ -769,5 +769,20 @@
         "instagram": {
             "copied": "Link copied to clipboard. You can now paste it on Instagram."
         }
+    },
+    "notification": {
+        "noNotification": "Aucune notification",
+        "messages": {
+            "createTitle": "Verified Property",
+            "createMessage1": "Your property : \"",
+            "createMessage2": " \" has been verified and is now active.",
+            "revenueTitle": "Income update",
+            "revenueMessage1": "A new income of ",
+            "revenueMessage2": " DHs was recorded for ",
+            "taskTitle": "A new task",
+            "taskMessage1": "A new task \"",
+            "taskMessage2": "\" (Priority: ",
+            "taskMessage3": ") has been created."
+        }
     }
 }

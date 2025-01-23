@@ -1,38 +1,64 @@
 // controllers/NotificationController.js
 const { Notification, PropertyManager, Property } = require('../models');
 const nodemailer = require('nodemailer');
+const sendNotificationMail = require('../helpers/notificationMail');
 
-// Create transporter for email notifications
-const transporter = nodemailer.createTransport({
- host: process.env.SMTP_HOST,
- port: process.env.SMTP_PORT,
- secure: true,
- auth: {
-  user: process.env.SMTP_USER,
-  pass: process.env.SMTP_PASS,
- },
-});
+// Initialize email transporter only if SMTP config is available
+let transporter = null;
+if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+ transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT || 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+   user: process.env.SMTP_USER,
+   pass: process.env.SMTP_PASS,
+  },
+ });
+}
 
 // Create a new notification
 const createNotification = async (req, res) => {
  try {
   const notificationData = req.body;
+
+  // Create notification in database
   const notification = await Notification.createNotification(notificationData);
 
   // Send email if channel is email
   if (notification.channel === 'email') {
-   const propertyManager = await PropertyManager.findByPk(
-    notification.propertyManagerId
-   );
+   try {
+    const propertyManager = await PropertyManager.findByPk(
+     notification.propertyManagerId
+    );
 
-   if (propertyManager && propertyManager.email) {
-    await transporter.sendMail({
-     from: process.env.SMTP_FROM,
-     to: propertyManager.email,
-     subject: notification.title,
-     html: notification.message,
-    });
+    if (propertyManager && propertyManager.email) {
+     await sendNotificationMail({
+      email: propertyManager.email,
+      subject: notification.title,
+      html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                  <h2 style="color: #333;">${notification.title}</h2>
+                  <div style="padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+                    ${notification.message}
+                  </div>
+                  <p style="color: #666; font-size: 12px; margin-top: 20px;">
+                    Cette notification a été envoyée automatiquement par Trevio.ma
+                  </p>
+                </div>
+              `,
+     });
+
+     // Update notification status to sent
+     await notification.update({ status: 'sent', sentAt: new Date() });
+    }
+   } catch (emailError) {
+    console.log('Email sending failed:', emailError);
+    await notification.update({ status: 'failed' });
    }
+  } else {
+   // If not email, mark as sent
+   await notification.update({ status: 'sent', sentAt: new Date() });
   }
 
   res.status(201).json(notification);

@@ -769,5 +769,20 @@
         "instagram": {
             "copied": "Lien copié dans le presse-papiers. Vous pouvez désormais le coller sur Instagram."
         }
+    },
+    "notification": {
+        "noNotification": "Aucune notification",
+        "messages": {
+            "createTitle": "Propriété vérifiée",
+            "createMessage1": "Votre propriété : \"",
+            "createMessage2": " \" a été vérifiée et est maintenant active.",
+            "revenueTitle": "Mise à jour des revenus",
+            "revenueMessage1": "Un nouveau revenu de ",
+            "revenueMessage2": " DHs a été enregistré pour ",
+            "taskTitle": "Nouvelle tâche",
+            "taskMessage1": "Une nouvelle tâche ",
+            "taskMessage2": " (Priorité: ",
+            "taskMessage3": ") a été créée."
+        }
     }
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
  Button,
  DatePicker,
@@ -33,17 +33,14 @@ import SignatureCanvas from 'react-signature-canvas';
 import { Nationalities } from '../../utils/nationalities';
 import { countries } from '../../utils/countries';
 import useReservationContract from '../../hooks/useReservationContract';
-import { useUserData } from '../../hooks/useUserData';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import useProperty from '../../hooks/useProperty';
 import useUploadPhotos from '../../hooks/useUploadPhotos';
 import ShareModal from '../../components/common/ShareModal';
 import { useTranslation } from '../../context/TranslationContext';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 import PDFContractGenerator from '../../utils/PDFContractGenerator';
 
-const { Title, Text, Paragraph, Link } = Typography;
+const { Title, Paragraph, Link } = Typography;
 const { Option } = Select;
 const { Content } = Layout;
 
@@ -56,11 +53,9 @@ const Guestform = () => {
  const { id: propertyId } = queryString.parse(location.search);
  const { user } = useAuthContext();
  const storedUser = user || JSON.parse(localStorage.getItem('user'));
- const { userData, getUserDataById, isLoading } = useUserData();
  const { property, fetchProperty } = useProperty();
  const [form] = Form.useForm();
- const { loading, error, createContract, checkAvailability } =
-  useReservationContract();
+ const { loading, createContract } = useReservationContract();
  const { uploadSignature, uploadIdentity } = useUploadPhotos();
  const [countryCode, setCountryCode] = useState(
   countries.find((country) => country.name === 'Maroc').dialCode
@@ -77,8 +72,6 @@ const Guestform = () => {
  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
  const [formValues, setFormValues] = useState({});
-
- const formRef = useRef(null);
 
  const showShareModal = (id) => {
   setPageUrl();

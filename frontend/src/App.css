@@ -201,7 +201,8 @@ body {
 }
 @media only screen and (max-width: 576px) {
   .logoStyle {
-    height: 44px !important;
+    height: 38px !important;
+    width: auto !important;
   }
   .custom-card .ant-card-body {
     padding: 8px;
@@ -610,4 +611,65 @@ body {
 
 .hide-required-mark .ant-form-item-required::before {
   display: none !important;
+}
+
+.notification-dropdown {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05);
+}
+
+.notification-item {
+  border-bottom: 1px solid #f0f0f0;
+  position: relative;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item:hover {
+  background-color: #f6f6f6 !important;
+}
+
+.notification-item::after {
+  content: '';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-top: 2px solid #999;
+  border-right: 2px solid #999;
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.notification-item:hover::after {
+  opacity: 1;
+}
+
+.notification-dropdown .ant-empty {
+  margin: 32px 0;
+}
+
+/* Custom scrollbar */
+.notification-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-dropdown::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.notification-dropdown::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.notification-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

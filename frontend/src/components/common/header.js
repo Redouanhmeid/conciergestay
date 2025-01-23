@@ -20,6 +20,7 @@ import Logo from '../../assets/logo.png';
 import { Helmet } from 'react-helmet';
 import { useUserData } from '../../hooks/useUserData';
 import { LanguageSelector } from '../../utils/LanguageSelector';
+import NotificationBell from './NotificationBell';
 
 /* const { Search } = Input; */
 const { Header } = Layout;
@@ -73,7 +74,7 @@ const Head = ({ onUserData = () => {} }) => {
    <i className="fa-light fa-grid-2-plus"></i>
   ),
   getItem(
-   <Link to="/revtasskdashboard">{t('header.Revandtasks')}</Link>,
+   <Link to="/revtaskdashboard">{t('header.Revandtasks')}</Link>,
    '2',
    <i className="fa-light fa-chart-line"></i>
   ),
@@ -139,7 +140,7 @@ const Head = ({ onUserData = () => {} }) => {
    </Helmet>
    <Header className="headerStyle">
     <Row>
-     <Col xs={8} sm={6} md={4}>
+     <Col xs={6} sm={5} md={3}>
       <Link to={'/'}>
        <Image className="logoStyle" src={Logo} preview={false} />
       </Link>
@@ -148,13 +149,17 @@ const Head = ({ onUserData = () => {} }) => {
      {Object.keys(userData).length > 0 && (
       <>
        <Col
-        xs={{ span: 9, offset: 3 }}
-        sm={{ span: 7, offset: 10 }}
-        md={{ span: 4, offset: 15 }}
+        xs={{ span: 8, offset: 3 }}
+        sm={{ span: 7, offset: 8 }}
+        md={{ span: 3, offset: 16 }}
        >
         <LanguageSelector />
        </Col>
-       <Col xs={4} sm={1} md={1}>
+       <Col xs={3} sm={2} md={1}>
+        <NotificationBell userId={userData.id} />
+       </Col>
+
+       <Col xs={4} sm={2} md={1}>
         <Avatar
          onClick={showDrawer}
          size={{ xs: 46, sm: 50, md: 50, lg: 50, xl: 56, xxl: 56 }}

@@ -287,6 +287,7 @@ const AmenityRouter = require('./routes/amenity');
 const ReservationContractRouter = require('./routes/reservationcontract');
 const PropertyRevenueRouter = require('./routes/propertyrevenue');
 const PropertyTaskRouter = require('./routes/propertytask');
+const NotificationRouter = require('./routes/notification');
 
 // Routes
 // All of our routes will be prefixed with /api/v1/
@@ -297,6 +298,7 @@ app.use('/api/v1/amenities', AmenityRouter);
 app.use('/api/v1/reservationcontract', ReservationContractRouter);
 app.use('/api/v1/propertyrevenue', PropertyRevenueRouter);
 app.use('/api/v1/propertytask', PropertyTaskRouter);
+app.use('/api/v1/notifications', NotificationRouter);
 
 // Serve static files from the React app
 const REACT_APP_PATH =

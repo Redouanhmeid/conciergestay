@@ -18,6 +18,7 @@ import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import { useNavigate } from 'react-router-dom';
 import useProperty from '../../hooks/useProperty';
+import useNotification from '../../hooks/useNotification';
 import { useTranslation } from '../../context/TranslationContext';
 
 const { Content } = Layout;
@@ -35,6 +36,8 @@ const PendingProperties = () => {
   fetchPendingProperties,
  } = useProperty();
 
+ const { createPropertyVerificationNotification } = useNotification();
+
  const [managersMap, setManagersMap] = useState({});
  const [searchText, setSearchText] = useState('');
  const [searchedColumn, setSearchedColumn] = useState('');
@@ -42,11 +45,18 @@ const PendingProperties = () => {
  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
  // Handle single property verification
- const handleVerifyProperty = async (propertyId) => {
-  const result = await verifyProperty(propertyId);
+ const handleVerifyProperty = async (
+  propertyManagerId,
+  propertyId,
+  propertyName
+ ) => {
+  const result = await verifyProperty(
+   propertyManagerId,
+   propertyId,
+   propertyName
+  );
   if (result) {
    message.success(t('property.verifySuccess'));
-   fetchPendingProperties();
   }
  };
  // Handle bulk verification
@@ -355,7 +365,12 @@ const PendingProperties = () => {
    title: t('property.actions.actions'),
    key: 'action',
    render: (_, record) => (
-    <Button type="primary" onClick={() => handleVerifyProperty(record.id)}>
+    <Button
+     type="primary"
+     onClick={() =>
+      handleVerifyProperty(record.propertyManagerId, record.id, record.name)
+     }
+    >
      {t('property.verify')}
     </Button>
    ),

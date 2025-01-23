@@ -26,6 +26,7 @@ import {
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import useTask from '../../hooks/useTask';
+import useNotification from '../../hooks/useNotification';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../context/TranslationContext';
 import dayjs from 'dayjs';
@@ -75,6 +76,8 @@ const PropertyTaskDashboard = () => {
   deleteTask,
   updateTaskStatus,
  } = useTask();
+
+ const { createTaskUpdateNotification } = useNotification();
 
  const handleUserData = (userData) => {
   setUserId(userData);
@@ -149,10 +152,21 @@ const PropertyTaskDashboard = () => {
    createdBy: userId,
   };
 
+  let result;
+
   if (modalType === 'create') {
-   await createTask(taskData);
+   result = await createTask(taskData);
   } else {
-   await updateTask(selectedTask.id, taskData);
+   result = await updateTask(selectedTask.id, taskData);
+  }
+
+  if (result) {
+   const notification = await createTaskUpdateNotification(
+    Number(userId),
+    Number(propertyId, 10),
+    values.title,
+    values.priority
+   );
   }
 
   setModalVisible(false);

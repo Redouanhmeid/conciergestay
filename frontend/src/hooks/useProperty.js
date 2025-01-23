@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import useNotification from './useNotification';
 
 const useProperty = () => {
  const [properties, setProperties] = useState([]);
@@ -8,6 +9,8 @@ const useProperty = () => {
  const [loading, setLoading] = useState(false);
  const [success, setSuccess] = useState(false);
  const [error, setError] = useState(null);
+
+ const { createPropertyVerificationNotification } = useNotification();
 
  const apiBase = '/api/v1/properties';
 
@@ -66,13 +69,23 @@ const useProperty = () => {
  }, [apiBase]);
 
  // Verify a property
- const verifyProperty = async (id) => {
+ const verifyProperty = async (propertyManagerId, id, propertyName) => {
   setLoading(true);
   setError(null);
   try {
-   await axios.put(`${apiBase}/${id}/verify`);
+   const response = await axios.put(`${apiBase}/${id}/verify`);
    // Optimistically update the local state
    setPendingProperties((prev) => prev.filter((prop) => prop.id !== id));
+   // Send notification
+   if (response.data) {
+    await createPropertyVerificationNotification(
+     propertyManagerId,
+     id,
+     propertyName
+    );
+   }
+
+   return response.data;
   } catch (err) {
    setError(err.message || `Failed to verify property with ID: ${id}`);
   } finally {
@@ -101,6 +114,12 @@ const useProperty = () => {
   setLoading(true);
   setError(null);
   try {
+   // First, get all properties details
+   const propertiesResponse = await Promise.all(
+    ids.map((id) => axios.get(`/api/v1/properties/${id}`))
+   );
+   const properties = propertiesResponse.map((response) => response.data);
+
    const response = await axios.post(`${apiBase}/bulkVerify`, { ids });
    const { successful, failed } = response.data;
 
@@ -108,6 +127,18 @@ const useProperty = () => {
    setPendingProperties((prev) =>
     prev.filter((prop) => !successful.some((success) => success.id === prop.id))
    );
+
+   if (response.data) {
+    await Promise.all(
+     properties.map((property) =>
+      createPropertyVerificationNotification(
+       property.propertyManagerId,
+       property.id,
+       property.name
+      )
+     )
+    );
+   }
 
    return { successful, failed }; // Return the results for further handling if needed
   } catch (err) {

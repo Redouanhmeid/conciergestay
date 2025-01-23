@@ -5,6 +5,11 @@ module.exports = (db, type) => {
    primaryKey: true,
    autoIncrement: true,
   },
+  hashId: {
+   type: type.STRING(32),
+   unique: true,
+   allowNull: false,
+  },
   name: {
    type: type.STRING(50),
    allowNull: false,
@@ -110,6 +115,11 @@ module.exports = (db, type) => {
    enum: ['pending', 'enable', 'disable'],
    default: 'pending',
   },
+ });
+
+ property.beforeCreate(async (property) => {
+  const { nanoid } = require('nanoid');
+  property.hashId = nanoid();
  });
 
  property.createProperty = async (propertyData) => {

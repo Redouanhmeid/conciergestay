@@ -328,13 +328,11 @@ const verifyProperty = async (req, res) => {
   }
 
   // Set the property status to `verified`
-  await property.update({ status: 'published' });
-  res
-   .status(200)
-   .json({ message: 'Property published successfully', property });
+  await property.update({ status: 'enable' });
+  res.status(200).json({ message: 'Property enabled successfully', property });
  } catch (error) {
   console.error(error);
-  res.status(500).json({ error: 'Failed to published property' });
+  res.status(500).json({ error: 'Failed to enabled property' });
  }
 };
 

@@ -49,7 +49,7 @@ import PropertyTaskDashboard from './pages/admin/PropertyTaskDashboard';
 const router = createBrowserRouter([
  { path: '/', element: <App />, errorElement: <NotFoundPage /> },
  { path: '/dashboard', element: <PropertyManagerHome /> },
- { path: '/revtasskdashboard', element: <RevTasksDashboard /> },
+ { path: '/revtaskdashboard', element: <RevTasksDashboard /> },
  { path: '/propertyrevenuedashboard', element: <PropertyRevenueDashboard /> },
  { path: '/propertytaskdashboard', element: <PropertyTaskDashboard /> },
  { path: '/adminpanel', element: <AdminPanel /> },

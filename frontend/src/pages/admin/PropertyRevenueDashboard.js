@@ -38,6 +38,7 @@ import {
 } from 'recharts';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useRevenue from '../../hooks/useRevenue';
+import useNotification from '../../hooks/useNotification';
 import { useTranslation } from '../../context/TranslationContext';
 import dayjs from 'dayjs';
 
@@ -77,6 +78,8 @@ const PropertyRevenueDashboard = () => {
   updateRevenue,
   deleteRevenue,
  } = useRevenue();
+
+ const { createRevenueUpdateNotification } = useNotification();
 
  const [form] = Form.useForm();
 
@@ -235,7 +238,19 @@ const PropertyRevenueDashboard = () => {
     : await addMonthlyRevenue(revenueData);
 
    if (result) {
-    message.success(`Revenue ${values.id ? 'updated' : 'added'} successfully`);
+    const notification = await createRevenueUpdateNotification(
+     Number(userId), // propertyManagerId
+     Number(propertyId, 10), // propertyId
+     parseInt(values.amount), // amount
+     month, // month
+     year // year
+    );
+
+    message.success(
+     `${t('revenue.title')} ${
+      values.id ? t('messages.updateSuccess') : t('messages.createSuccess')
+     }`
+    );
     setIsModalVisible(false);
     form.resetFields();
     fetchRevenueData();
