@@ -18,7 +18,7 @@ const AddPropertyCard = ({ userData }) => {
    cover={
     <i
      className="fa-duotone fa-light fa-house fa-6x"
-     style={{ color: '#cfaf83' }}
+     style={{ color: '#FDB022' }}
     ></i>
    }
   >

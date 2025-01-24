@@ -894,7 +894,7 @@ const RestaurantsCafes = React.memo(({ nearbyPlaces }) => {
             title={
              <Flex justify="space-between">
               <Text strong>{place.name}</Text>
-              <Text strong style={{ color: '#cfaf83' }}>
+              <Text strong style={{ color: '#FDB022' }}>
                {place.rating}
               </Text>
              </Flex>
@@ -964,7 +964,7 @@ const Activities = React.memo(({ nearbyPlaces }) => {
             title={
              <Flex justify="space-between">
               <Text strong>{place.name}</Text>
-              <Text strong style={{ color: '#cfaf83' }}>
+              <Text strong style={{ color: '#FDB022' }}>
                {place.rating}
               </Text>
              </Flex>
@@ -1034,7 +1034,7 @@ const Attractions = React.memo(({ nearbyPlaces }) => {
             title={
              <Flex justify="space-between">
               <Text strong>{place.name}</Text>
-              <Text strong style={{ color: '#cfaf83' }}>
+              <Text strong style={{ color: '#FDB022' }}>
                {place.rating}
               </Text>
              </Flex>
@@ -1104,7 +1104,7 @@ const Malls = React.memo(({ nearbyPlaces }) => {
             title={
              <Flex justify="space-between">
               <Text strong>{place.name}</Text>
-              <Text strong style={{ color: '#cfaf83' }}>
+              <Text strong style={{ color: '#FDB022' }}>
                {place.rating}
               </Text>
              </Flex>

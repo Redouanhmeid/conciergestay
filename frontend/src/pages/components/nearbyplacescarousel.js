@@ -249,7 +249,7 @@ const Place = ({ place }) => {
         allowHalf
         disabled
         defaultValue={place.rating}
-        style={{ color: '#cfaf83', fontSize: 12 }}
+        style={{ color: '#FDB022', fontSize: 12 }}
        />{' '}
        {!screens.xs && place.rating}
       </div>

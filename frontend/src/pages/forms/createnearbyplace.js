@@ -194,7 +194,7 @@ const CreateNearbyPlace = () => {
          </Col>
          <Col xs={24} md={4}>
           <Form.Item name="rating" label={t('nearbyPlace.rating')}>
-           <Rate allowHalf style={{ color: '#aa7e42' }} />
+           <Rate allowHalf />
           </Form.Item>
          </Col>
          <Col xs={24} md={14}>

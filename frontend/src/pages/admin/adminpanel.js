@@ -365,7 +365,7 @@ const Dashboard = () => {
               allowHalf
               disabled
               defaultValue={item.rating}
-              style={{ color: '#cfaf83', fontSize: 12 }}
+              style={{ fontSize: 12 }}
              />{' '}
              {item.rating}
             </>

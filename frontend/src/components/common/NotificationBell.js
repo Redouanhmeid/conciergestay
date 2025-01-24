@@ -1,7 +1,6 @@
 // components/NotificationBell.js
 import React, { useEffect, useState } from 'react';
-import { Badge, Dropdown, List, Typography, Button, Space, Empty } from 'antd';
-import { BellOutlined } from '@ant-design/icons';
+import { Badge, Dropdown, Typography, Space, Empty } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import useNotification from '../../hooks/useNotification';
 import { useTranslation } from '../../context/TranslationContext';
@@ -79,7 +78,6 @@ const NotificationBell = ({ userId }) => {
     navigate('/dashboard');
     break;
    default:
-    // Default navigation or no navigation
     break;
   }
  };
@@ -97,54 +95,60 @@ const NotificationBell = ({ userId }) => {
   }
  };
 
- const notificationItems = (
-  <div
-   className="notification-dropdown"
-   style={{ width: 350, maxHeight: 400, overflow: 'auto' }}
-  >
-   {notifications.length > 0 ? (
-    <List
-     itemLayout="vertical"
-     dataSource={notifications}
-     renderItem={(item) => (
-      <List.Item
-       style={{
-        backgroundColor: item.read ? '#fff' : '#faf6f1',
-        padding: '12px',
-        cursor: 'pointer',
-        transition: 'all 0.3s ease',
-       }}
-       onClick={() => handleNotificationClick(item)}
-       className="notification-item"
-      >
-       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-        <span style={{ fontSize: '20px' }}>{getTypeIcon(item.type)}</span>
-        <div style={{ flex: 1 }}>
-         <Text strong>{item.title}</Text>
-         <div style={{ margin: '4px 0' }}>{item.message}</div>
-         <Text type="secondary" style={{ fontSize: '12px' }}>
-          {getNotificationTime(item.createdAt)}
-         </Text>
-        </div>
-       </div>
-      </List.Item>
-     )}
-    />
-   ) : (
-    <Empty
-     description={t('notification.noNotification')}
-     style={{ padding: '20px' }}
-    />
-   )}
-  </div>
+ // Create menu items for the dropdown
+ const dropdownRender = (menu) => (
+  <div style={{ maxHeight: '400px', overflow: 'auto' }}>{menu}</div>
  );
+
+ const menuItems = {
+  items:
+   notifications.length > 0
+    ? notifications.map((item, index) => ({
+       key: item.id || index,
+       label: (
+        <div
+         style={{
+          backgroundColor: item.read ? '#fff' : '#faf6f1',
+          padding: '12px',
+          width: '350px',
+         }}
+        >
+         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+          <span style={{ fontSize: '20px' }}>{getTypeIcon(item.type)}</span>
+          <div style={{ flex: 1 }}>
+           <Text strong>{item.title}</Text>
+           <div style={{ margin: '4px 0' }}>{item.message}</div>
+           <Text type="secondary" style={{ fontSize: '12px' }}>
+            {getNotificationTime(item.createdAt)}
+           </Text>
+          </div>
+         </div>
+        </div>
+       ),
+       onClick: () => handleNotificationClick(item),
+       style: { padding: 0 },
+      }))
+    : [
+       {
+        key: 'empty',
+        label: (
+         <Empty
+          description={t('notification.noNotification')}
+          style={{ padding: '20px', width: '350px' }}
+         />
+        ),
+       },
+      ],
+  style: { maxHeight: '400px', overflow: 'auto' },
+ };
 
  return (
   <Dropdown
-   overlay={notificationItems}
+   menu={menuItems}
    trigger={['click']}
    placement="bottomRight"
    arrow
+   dropdownRender={dropdownRender}
   >
    <Space style={{ cursor: 'pointer', padding: '1px 4px' }}>
     <Badge count={unreadCount} size="small" overflowCount={9} offset={[3, -2]}>
